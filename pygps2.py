@@ -1,3 +1,13 @@
+"""
+pygps2.py Version 2.0
+このプログラムの問題点 / Problems with this program
+1 GSVデータを完全に解析することができない / Cannot fully analyze GSV data
+2 すべてのGPSモジュールには対応しない
+ToDo
+1 GSVデータの解析を改善する / Improve GSV data analysis
+2 他のGPSモジュールにも対応する / Support other GPS modules
+3 特定のセンテンスのみを解析できるようにする / Allow analysis of specific sentences only
+"""
 import re
 
 def convert_to_degrees(coord, direction):
@@ -19,14 +29,14 @@ def convert_to_degrees(coord, direction):
 
 #パターン定義 / Pattern definitions
 patterns = {
-    'GGA': re.compile(r'\$GNGGA,.*?\*..'),
-    'GLL': re.compile(r'\$GNGLL,.*?\*..'),
-    'GSA': re.compile(r'\$GNGSA,.*?\*..'),
+    'GGA': re.compile(r'\$GNGGA,.*?\*..|\$GPGGA,.*?\*..|\$BDGGA,.*?\*..'),
+    'GLL': re.compile(r'\$GNGLL,.*?\*..|\$GPGLL,.*?\*..|\$BDGLL,.*?\*..'),
+    'GSA': re.compile(r'\$GNGSA,.*?\*..|\$GPGSA,.*?\*..|\$BDGSA,.*?\*..'),
     'GSV': re.compile(r'\$GPGSV,.*?\*..|\$BDGSV,.*?\*..|\$GQGSV,.*?\*..|\$GLGSV,.*?\*..|\$GAGSV,.*?\*..'),
-    'RMC': re.compile(r'\$GNRMC,.*?\*..'),
-    'VTG': re.compile(r'\$GNVTG,.*?\*..')
+    'RMC': re.compile(r'\$GNRMC,.*?\*..|\$GPRMC,.*?\*..|\$BDRMC,.*?\*..'),
+    'VTG': re.compile(r'\$GNVTG,.*?\*..|\$GPVTG,.*?\*..|\$BDVTG,.*?\*..')
 }
-
+#必要に応じて追加する / Add as needed
 def parse_nmea_sentences(nmea_data):
     sentences = nmea_data.split('\r\n')
     parsed_data = {key: [] for key in patterns.keys()}
