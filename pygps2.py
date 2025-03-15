@@ -1,4 +1,4 @@
-#pygps2.py Version 2.0
+#pygps2.py Version 2.1
 #このプログラムの問題点 / Problems with this program
 #1GSVデータを完全に解析することができない / Cannot fully analyze GSV data
 #2すべてのGPSモジュールには対応しない
@@ -35,7 +35,7 @@ patterns = {
     'RMC': re.compile(r'\$GNRMC,.*?\*..|\$GPRMC,.*?\*..|\$BDRMC,.*?\*..'),
     'VTG': re.compile(r'\$GNVTG,.*?\*..|\$GPVTG,.*?\*..|\$BDVTG,.*?\*..')
 }
-#必要に応じて追加する / Add as needed
+
 def parse_nmea_sentences(nmea_data):
     sentences = nmea_data.split('\r\n')
     parsed_data = {key: [] for key in patterns.keys()}
@@ -97,9 +97,12 @@ def parse_gsa(sentence):
     return data
 
 def parse_gsv(sentence):
-    #GSV解析 / GSV parsing
     fields = sentence.split(',')
+    #センテンスから識別文字を取得,衛星システムを判別
+    #Get the identifier from the sentence and determine the satellite system
+    system_type = sentence[1:3]
     data = {
+        'system_type': system_type,
         'num_messages': fields[1] if len(fields) > 1 and fields[1] else '1',
         'message_num': fields[2] if len(fields) > 2 and fields[2] else '1',
         'num_satellites': fields[3] if len(fields) > 3 and fields[3] else '0',
@@ -112,8 +115,11 @@ def parse_gsv(sentence):
         azimuth = fields[index+2] if len(fields) > index+2 and fields[index+2] else '0.0'
         snr_field = fields[index+3] if len(fields) > index+3 and fields[index+3] else '0.0'
         snr = snr_field.split('*')[0] if '*' in snr_field else snr_field
+
+        #リストに追加(辞書) / Add to list (dictionary)
         data['satellites_info'].append({
             'prn': prn,
+            'type': system_type,  #GSVの先頭2字から取得した衛星の種類 / Satellite type obtained from the first 2 characters of GSV
             'elevation': elevation,
             'azimuth': azimuth,
             'snr': snr
@@ -229,3 +235,4 @@ def analyze_nmea_data(parsed_data):
         analyzed_data['GSV'] = [parse_gsv('')]
     
     return analyzed_data
+

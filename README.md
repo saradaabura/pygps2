@@ -1,4 +1,7 @@
 # pygps2
+# バージョン情報
+2.0 作成
+2.1 GSV解析に対し、衛星の種類を取得できるように変更
 # Japanese 日本語
 Raspberry Pi Pico 1/2向けのGPS解析ライブラリです。
 # 機能
