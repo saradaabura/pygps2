@@ -1,13 +1,12 @@
-"""
-pygps2.py Version 2.0
-このプログラムの問題点 / Problems with this program
-1 GSVデータを完全に解析することができない / Cannot fully analyze GSV data
-2 すべてのGPSモジュールには対応しない
-ToDo
-1 GSVデータの解析を改善する / Improve GSV data analysis
-2 他のGPSモジュールにも対応する / Support other GPS modules
-3 特定のセンテンスのみを解析できるようにする / Allow analysis of specific sentences only
-"""
+#pygps2.py Version 2.0
+#このプログラムの問題点 / Problems with this program
+#1GSVデータを完全に解析することができない / Cannot fully analyze GSV data
+#2すべてのGPSモジュールには対応しない
+#ToDo
+#1GSVデータの解析を改善する / Improve GSV data analysis
+#2他のGPSモジュールにも対応する / Support other GPS modules
+#3特定のセンテンスのみを解析できるようにする / Allow analysis of specific sentences only
+
 import re
 
 def convert_to_degrees(coord, direction):
