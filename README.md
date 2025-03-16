@@ -15,6 +15,7 @@ Raspberry Pi Pico 1/2向けのGPS解析ライブラリです。
 - GSVのデータを解析でき、衛星の情報を取得できます。(不完全)
 - GGAのデータを解析でき、緯度、経度、高度、UTC時刻、測位精度、DGPS情報を取得できます。(不完全)
 - RMCのデータを解析でき、UTC時刻、緯度、経度、速度、進行方向、日付、磁気偏角、磁気偏角方向を取得できます。
+- RMC関数ではLocaltimeを設定できます
 # 使い方
 ```python:main.py
 from machine import UART, Pin
