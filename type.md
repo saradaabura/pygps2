@@ -1,4 +1,5 @@
 # 出力データと内容
+
 **GSVデータ**
 ```
 {'hdop': '2.8', 'vdop': '4.1', 'mode2': '3', 'satellites_used': ['09', '66', '02', '06', '22', '17'], 'pdop': '5.0', 'mode1': 'A'}
@@ -9,6 +10,7 @@
 - satellites_used : 使用衛星PRN番号
 - pdop : PDOP
 - mode1 : 使用しているGPSモジュールによって異なる(センテンス2番目を参照)
+
 **GSVデータ**
 ```
 {'num_messages': '7', 'num_satellites': '7', 'satellites_info': [{'snr': '17', 'elevation': '06', 'prn': '22', 'type': 'GP', 'azimuth': '204'}, {'snr': '24', 'elevation': '56', 'prn': '66', 'type': 'GL', 'azimuth': '192'}, {'snr': '28', 'elevation': '0.0', 'prn': '19', 'type': 'GA', 'azimuth': '0.0'}, {'snr': '0.0', 'elevation': '26', 'prn': '34', 'type': 'BD', 'azimuth': '131'}, {'snr': '28', 'elevation': '28', 'prn': '02', 'type': 'GQ', 'azimuth': '195'}], 'message_num': '1'}
@@ -22,6 +24,7 @@
   - type : 衛星識別子
   - azimuth : 方位角
 - message_num : メッセージ番号
+
 **GGAデータ**
 ```
 {'gps_quality': '1', 'hdop': '2.8', 'altitude': '88.29', 'geoid_units': 'M', 'dgps_station_id': '', 'geoid_height': '36.37', 'dgps_age': '', 'altitude_units': 'M', 'num_satellites': '06', 'latitude': 0.0, 'longitude': 0.0, 'timestamp': '094023.00'}
@@ -38,6 +41,7 @@
 - latitude : 緯度 (度で出力される)
 - longitude : 経度　(度で出力される)
 - timestamp : タイムスタンプ (生データ)
+
 **RMCデータ**
 ```
 {'longitude': 0.0, 'latitude': 0.0, 'course_over_ground': '0.0', 'status': 'A', 'mag_var_direction': '', 'magnetic_variation': '0.0', 'mode_indicator': 'A', 'timestamp': '094023.00', 'speed_over_ground': '0.50', 'date': '160325'}
@@ -52,6 +56,7 @@
 - timestamp : タイムスタンプ (生データ)
 - speed_over_ground : 地上速度
 - date : 日付 (生データ)
+
 **GLLデータ**
 ```
 {'longitude': 0.0, 'latitude': 0.0, 'timestamp': '094023.00', 'status': 'A', 'mode_indicator': 'A'}
@@ -61,6 +66,7 @@
 - timestamp : タイムスタンプ (生データ)
 - status : ステータス
 - mode_indicator : モードインジケータ
+
 **VTGデータ**
 ```
 {'reference_t': 'T', 'mode_indicator': 'A', 'speed_kmh': '0.92', 'course_over_ground_m': '0.0', 'reference_m': 'M', 'speed_knots': '0.50', 'units_knots': 'N', 'units_kmh': 'K', 'course_over_ground_t': '0.0'}
