@@ -70,7 +70,7 @@
 **VTGデータ**
 ```
 {'reference_t': 'T', 'mode_indicator': 'A', 'speed_kmh': '0.92', 'course_over_ground_m': '0.0', 'reference_m': 'M', 'speed_knots': '0.50', 'units_knots': 'N', 'units_kmh': 'K', 'course_over_ground_t': '0.0'}
-```磁
+```
 - reference_t : 真北, 磁北の判別(T:真北 M:磁北)
 - mode_indicator : モードインジケータ
 - speed_kmh : 地上速度(km/h)

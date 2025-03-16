@@ -1,4 +1,4 @@
-#pygps2.py Version 2.2
+#pygps2.py Version 2.3
 #このプログラムの問題点 / Problems with this program
 #1GSVデータを完全に解析することができない(一部解消) / Cannot completely analyze GSV data (partially resolved)
 #2すべてのGPSモジュールには対応しない
@@ -33,7 +33,8 @@ patterns = {
     'GSA': re.compile(r'\$GNGSA,.*?\*..|\$GPGSA,.*?\*..|\$BDGSA,.*?\*..'),
     'GSV': re.compile(r'\$GPGSV,.*?\*..|\$BDGSV,.*?\*..|\$GQGSV,.*?\*..|\$GLGSV,.*?\*..|\$GAGSV,.*?\*..'),
     'RMC': re.compile(r'\$GNRMC,.*?\*..|\$GPRMC,.*?\*..|\$BDRMC,.*?\*..'),
-    'VTG': re.compile(r'\$GNVTG,.*?\*..|\$GPVTG,.*?\*..|\$BDVTG,.*?\*..')
+    'VTG': re.compile(r'\$GNVTG,.*?\*..|\$GPVTG,.*?\*..|\$BDVTG,.*?\*..'),
+    'GST': re.compile(r'\$GNGST,.*?\*..|\$GPGST,.*?\*..|\$BDGST,.*?\*..')
 }
 
 def parse_nmea_sentences(nmea_data):
@@ -172,6 +173,18 @@ def parse_vtg(sentence):
     }
     return data
 
+def parse_gst(sentence):
+    # GST解析 / GST parsing
+    fields = sentence.split(',')
+    data = {
+        'timestamp': fields[1] if len(fields) > 1 and fields[1] else '000000.0',  #タイムスタンプ
+        'rms': fields[6] if len(fields) > 6 and fields[6] else '0.0',  #全体のRMS値
+        'std_dev_major': fields[7] if len(fields) > 7 and fields[7] else '0.0',  #主軸方向の標準偏差
+        'std_dev_minor': fields[8].split('*')[0] if len(fields) > 8 and fields[8] else '0.0',  #副軸方向の標準偏差
+        'std_dev_vertical': fields[9].split('*')[0] if len(fields) > 9 and fields[9] else '0.0'  #高度方向の標準偏差
+    }
+    return data
+
 #メッセージ統合(GSA GSV) / Message integration (GSA GSV)
 
 def merge_gsa(gsa_list):
@@ -221,11 +234,12 @@ def merge_gsv(gsv_list):
 def analyze_nmea_data(parsed_data):
     global sts
     analyzed_data = {}
-    #GGA, GLL, RMC, VTG 各リスト化 / GGA, GLL, RMC, VTG list
+    #GGA, GLL, RMC, VTG, GST 各リスト化 / GGA, GLL, RMC, VTG list
     analyzed_data['GGA'] = [parse_gga(sentence) for sentence in parsed_data['GGA']] if parsed_data['GGA'] else [parse_gga('')]
     analyzed_data['GLL'] = [parse_gll(sentence) for sentence in parsed_data['GLL']] if parsed_data['GLL'] else [parse_gll('')]
     analyzed_data['RMC'] = [parse_rmc(sentence) for sentence in parsed_data['RMC']] if parsed_data['RMC'] else [parse_rmc('')]
     analyzed_data['VTG'] = [parse_vtg(sentence) for sentence in parsed_data['VTG']] if parsed_data['VTG'] else [parse_vtg('')]
+    analyzed_data['GST'] = [parse_gst(sentence) for sentence in parsed_data['GST']] if parsed_data['GST'] else [parse_gst('')]
     #GSA統合化 / GSA merge
     if parsed_data['GSA']:
         gsa_list = [parse_gsa(sentence) for sentence in parsed_data['GSA']]
