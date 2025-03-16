@@ -6,9 +6,19 @@
 #1GSVデータの解析を改善する / Improve GSV data analysis
 #2他のGPSモジュールにも対応する / Support other GPS modules
 #3特定のセンテンスのみを解析できるようにする / Allow analysis of specific sentences only
+#pygps2.py Version 2.2
+#このプログラムの問題点 / Problems with this program
+#1GSVデータを完全に解析することができない(一部解消) / Cannot completely analyze GSV data (partially resolved)
+#2すべてのGPSモジュールには対応しない
+#ToDo
+#1GSVデータの解析を改善する / Improve GSV data analysis
+#2他のGPSモジュールにも対応する / Support other GPS modules
+#3特定のセンテンスのみを解析できるようにする / Allow analysis of specific sentences only
 
 import re
+import utime
 sts = []
+localtime = 9
 def convert_to_degrees(coord, direction):
     #経緯度変換 / Convert latitude and longitude
     try:
@@ -141,7 +151,7 @@ def parse_gsv(sentence):
     return data
 
 def parse_rmc(sentence):
-    #RMC解析 / RMC parsing
+    #RMC解析 / RMC parsing    
     fields = sentence.split(',')
     data = {
         'timestamp': fields[1] if len(fields) > 1 and fields[1] else '000000.0',
@@ -155,6 +165,27 @@ def parse_rmc(sentence):
         'mag_var_direction': fields[11] if len(fields) > 11 and fields[11] else '',
         'mode_indicator': fields[12].split('*')[0] if len(fields) > 12 and fields[12] else ''
     }
+    if data['timestamp'] and data['date']:
+        try:
+            hours = int(data['timestamp'][0:2])
+            minutes = int(data['timestamp'][2:4])
+            seconds = int(data['timestamp'][4:6])
+            day = int(data['date'][0:2])
+            month = int(data['date'][2:4])
+            year = int(data['date'][4:6]) + 2000
+            utc_seconds = utime.mktime((year, month, day, hours, minutes, seconds, 0, 0))
+            jst_seconds = utc_seconds + localtime * 3600
+            jst_time = utime.localtime(jst_seconds)
+            data['utc_datetime'] = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(
+                year, month, day, hours, minutes, seconds
+            )
+            data['jst_datetime'] = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(
+                jst_time[0], jst_time[1], jst_time[2], jst_time[3], jst_time[4], jst_time[5]
+            )
+        except Exception as e:
+            print("Error parsing RMC data:", e)
+            data['utc_datetime'] = None
+            data['jst_datetime'] = None
     return data
 
 def parse_vtg(sentence):
@@ -177,11 +208,11 @@ def parse_gst(sentence):
     # GST解析 / GST parsing
     fields = sentence.split(',')
     data = {
-        'timestamp': fields[1] if len(fields) > 1 and fields[1] else '000000.0',  #タイムスタンプ
-        'rms': fields[6] if len(fields) > 6 and fields[6] else '0.0',  #全体のRMS値
-        'std_dev_major': fields[7] if len(fields) > 7 and fields[7] else '0.0',  #主軸方向の標準偏差
-        'std_dev_minor': fields[8].split('*')[0] if len(fields) > 8 and fields[8] else '0.0',  #副軸方向の標準偏差
-        'std_dev_vertical': fields[9].split('*')[0] if len(fields) > 9 and fields[9] else '0.0'  #高度方向の標準偏差
+        'timestamp': fields[1] if len(fields) > 1 and fields[1] else '000000.0',  # タイムスタンプ
+        'rms': fields[6] if len(fields) > 6 and fields[6] else '0.0',  # 全体のRMS値
+        'std_dev_major': fields[7] if len(fields) > 7 and fields[7] else '0.0',  # 主軸方向の標準偏差
+        'std_dev_minor': fields[8].split('*')[0] if len(fields) > 8 and fields[8] else '0.0',  # 副軸方向の標準偏差
+        'std_dev_vertical': fields[9].split('*')[0] if len(fields) > 9 and fields[9] else '0.0'  # 高度方向の標準偏差
     }
     return data
 
