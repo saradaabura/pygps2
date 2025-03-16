@@ -1,9 +1,14 @@
 # pygps2
 # バージョン情報
+
 2.0 作成
+
 2.1 GSV解析に対し、衛星の種類を取得できるように変更
+
 2.2 衛星のデュアルバンドによるカウント重複の解消
+
 2.3 GST解析関数追加
+
 # Japanese 日本語
 Raspberry Pi Pico 1/2向けのGPS解析ライブラリです。
 # 機能
@@ -37,10 +42,13 @@ while True:
 ```
 # 詳細な使い方
 1.デコードしたデータを一行でpygps2.parse_nmea_sentencesに入力する。
+
 2.returnで返されるデータをpygps2.analyze_nmea_dataに入力する。
+
 3.returnで戻るので変数に代入する。
 
 動かない場合は上記のmain.pyを使ってみてください。
+
 UART(0, baudrate=115200, tx=Pin(0), rx=Pin(1))は接続されているピンに合わせて変更してください。
 # サンプル
 出力されるデータの例(analyze_nmea_dataが返す)
@@ -55,6 +63,7 @@ UART(0, baudrate=115200, tx=Pin(0), rx=Pin(1))は接続されているピンに合わせて変更
 モジュールによっては動作しないかもしれません。その場合出力データを載せてissueを立ててください。
 # English 英語
 I use Google Translate, so there may be some strange sentences.
+
 A GPS analysis library for Raspberry Pi Pico 1/2.
 # Functions
 - Can analyze GSV data and obtain satellite information. (Incomplete)
@@ -86,10 +95,13 @@ time.sleep(0.01) # CPU timing Adjust to your CPU timing
 ```
 # Detailed usage
 1. Enter the decoded data in one line into pygps2.parse_nmea_sentences.
+1. 
 2. Enter the data returned by return into pygps2.analyze_nmea_data.
+1. 
 3. Assign the data to a variable when it returns with return.
 
 If it doesn't work, try using the main.py above.
+
 Change UART(0, baudrate=115200, tx=Pin(0), rx=Pin(1)) to match the connected pins.
 # Sample
 Example of output data (returned by analyze_nmea_data)
