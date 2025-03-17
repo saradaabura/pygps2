@@ -1,12 +1,4 @@
-#pygps2.py Version 2.3
-#このプログラムの問題点 / Problems with this program
-#1GSVデータを完全に解析することができない(一部解消) / Cannot completely analyze GSV data (partially resolved)
-#2すべてのGPSモジュールには対応しない
-#ToDo
-#1GSVデータの解析を改善する / Improve GSV data analysis
-#2他のGPSモジュールにも対応する / Support other GPS modules
-#3特定のセンテンスのみを解析できるようにする / Allow analysis of specific sentences only
-#pygps2.py Version 2.2
+#pygps2.py Version 2.4
 #このプログラムの問題点 / Problems with this program
 #1GSVデータを完全に解析することができない(一部解消) / Cannot completely analyze GSV data (partially resolved)
 #2すべてのGPSモジュールには対応しない
@@ -16,9 +8,10 @@
 #3特定のセンテンスのみを解析できるようにする / Allow analysis of specific sentences only
 
 import re
-import utime
+import time
+import math
+
 sts = []
-localtime = 9
 def convert_to_degrees(coord, direction):
     #経緯度変換 / Convert latitude and longitude
     try:
@@ -151,7 +144,6 @@ def parse_gsv(sentence):
     return data
 
 def parse_rmc(sentence):
-    #RMC解析 / RMC parsing    
     fields = sentence.split(',')
     data = {
         'timestamp': fields[1] if len(fields) > 1 and fields[1] else '000000.0',
@@ -173,14 +165,15 @@ def parse_rmc(sentence):
             day = int(data['date'][0:2])
             month = int(data['date'][2:4])
             year = int(data['date'][4:6]) + 2000
-            utc_seconds = utime.mktime((year, month, day, hours, minutes, seconds, 0, 0))
-            jst_seconds = utc_seconds + localtime * 3600
-            jst_time = utime.localtime(jst_seconds)
+            utc_seconds = time.mktime((year, month, day, hours, minutes, seconds, 0, 0))
+            localtime = math.floor(data['longitude'] / 15)
+            local_seconds = utc_seconds + localtime * 3600
+            local_time = time.localtime(local_seconds)
             data['utc_datetime'] = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(
                 year, month, day, hours, minutes, seconds
             )
-            data['jst_datetime'] = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(
-                jst_time[0], jst_time[1], jst_time[2], jst_time[3], jst_time[4], jst_time[5]
+            data['local_datetime'] = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(
+                local_time[0], local_time[1], local_time[2], local_time[3], local_time[4], local_time[5]
             )
         except Exception as e:
             print("Error parsing RMC data:", e)

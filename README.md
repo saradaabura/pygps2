@@ -9,13 +9,15 @@
 
 2.3 GST解析関数追加
 
+2.4 RMCに経度から計算したローカル時刻を追加
+
 # Japanese 日本語
 Raspberry Pi Pico 1/2向けのGPS解析ライブラリです。
 # 機能
 - GSVのデータを解析でき、衛星の情報を取得できます。(不完全)
 - GGAのデータを解析でき、緯度、経度、高度、UTC時刻、測位精度、DGPS情報を取得できます。(不完全)
 - RMCのデータを解析でき、UTC時刻、緯度、経度、速度、進行方向、日付、磁気偏角、磁気偏角方向を取得できます。
-- RMC関数ではLocaltimeを設定できます
+- RMC関数ではLocaltimeの出力できます
 # 使い方
 ```python:main.py
 from machine import UART, Pin

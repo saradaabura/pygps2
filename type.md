@@ -44,7 +44,7 @@
 
 **RMCデータ**
 ```
-{'longitude': 0.0, 'latitude': 0.0, 'course_over_ground': '0.0', 'status': 'A', 'mag_var_direction': '', 'magnetic_variation': '0.0', 'mode_indicator': 'A', 'timestamp': '094023.00', 'speed_over_ground': '0.50', 'date': '160325'}
+[{'mode_indicator': 'N', 'date': '170325', 'mag_var_direction': '', 'utc_datetime': '2025-03-17 07:57:01', 'local_datetime': '2025-03-17 16:57:01', 'status': 'V', 'magnetic_variation': '0.0', 'course_over_ground': '0.0', 'speed_over_ground': '0.0', 'latitude': 0.0, 'longitude': 0.0, 'timestamp': '075701.00'}]
 ```
 - longitude : 経度 (度で出力される)
 - latitude : 緯度 (度で出力される)
@@ -56,6 +56,8 @@
 - timestamp : タイムスタンプ (生データ)
 - speed_over_ground : 地上速度
 - date : 日付 (生データ)
+- local_datetime : 経度から算出されたローカル時刻
+- utc_datetime : UTC時刻
 
 **GLLデータ**
 ```
