@@ -82,3 +82,44 @@
 - units_knots : 単位を示す
 - units_kmh : 単位を示す
 - course_over_ground_t : 真北を基準とした進路の角度
+
+**ZDAデータ**
+```
+[{'message': '18', 'additional_field1': '2025', 'timestamp': '063801.00', 'status': '03', 'additional_field2': None}]
+```
+- message : メッセージ数
+- additional_field1 : カスタム(モジュールによって異なる)
+- timestamp : タイムスタンプ (生データ)
+- status : ステータス
+- additional_field2 : カスタム(モジュールによって異なる)
+
+**TXTデータ**
+```
+[{'message': '01', 'additional_field1': 'JS=0', 'timestamp': '01', 'status': '02', 'additional_field2': None}]
+```
+何行かにわたって出力される
+- message : メッセージ数(使用できない場合あり)
+- additional_field1 : カスタム(モジュールによって異なる)
+- timestamp : モジュールによって異なる。(今後変更予定)
+- status : ステータス
+- additional_field2 : カスタム(モジュールによって異なる)
+
+**DHVデータ**
+```
+[{'message': '1.09', 'additional_field1': '-0.419', 'timestamp': '063801.00', 'status': '-0.867', 'additional_field2': None}]
+```
+- message: メッセージデータ(値に応じて意味が変わる、モジュール固有)
+- additional_field1: カスタムフィールド(モジュールによって異なるデータを格納)
+- timestamp: タイムスタンプ(生データとしてのUTC時間)
+- status: ステータス情報(値の意味はモジュール固有)
+- additional_field2: 追加フィールド(利用しない場合はNone)
+
+**GSTデータ**
+```
+[{'rms': '127', 'std_dev_minor': '134', 'timestamp': '063801.00', 'std_dev_vertical': '0.0', 'std_dev_major': '144'}]
+```
+- rms: 平均二乗誤差(Root Mean Square Error)
+- std_dev_minor: 短軸方向の標準偏差(最小標準偏差)
+- timestamp: タイムスタンプ(生データとしてのUTC時間)
+- std_dev_vertical: 垂直方向(高度)の標準偏差
+- std_dev_major: 長軸方向の標準偏差(最大標準偏差)
