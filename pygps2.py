@@ -55,6 +55,7 @@ def parse_nmea_sentences(nmea_data):
 
 # 各解析関数 / Parsing functions
 def parse_gga(sentence):
+    #GGA解析 / GGA parsing
     fields = sentence.split(',')
     data = {
         'timestamp': fields[1] if len(fields) > 1 and fields[1] else '000000.0',
@@ -110,7 +111,6 @@ def parse_gsv(sentence):
     #Get the identifier from the sentence and determine the satellite system
     system_type = sentence[1:3]
     global sts
-
     data = {
         'system_type': system_type,  # 衛星システムの種類
         'num_messages': fields[1] if len(fields) > 1 and fields[1] else '1',
@@ -118,7 +118,6 @@ def parse_gsv(sentence):
         'num_satellites': fields[3] if len(fields) > 3 and fields[3] else '0',
         'satellites_info': []
     }
-
     #GSVセンテンスを解析,2周波による重複を検出 / Parse GSV sentence, detect duplicates due to dual frequency
     index = 4
     while index + 3 < len(fields) - 1:
@@ -129,13 +128,11 @@ def parse_gsv(sentence):
             print(sentence)
             continue
         sts.append((system_type, prn))
-
         #衛星情報を解析 / Parse satellite information
         elevation = fields[index+1].strip() if len(fields) > index+1 and fields[index+1] else '0.0'
         azimuth = fields[index+2].strip() if len(fields) > index+2 and fields[index+2] else '0.0'
         snr_field = fields[index+3].strip() if len(fields) > index+3 and fields[index+3] else '0.0'
         snr = snr_field.split('*')[0] if '*' in snr_field else snr_field
-
         data['satellites_info'].append({
             'prn': prn,
             'type': system_type,
@@ -201,14 +198,15 @@ def parse_vtg(sentence):
     return data
 
 def parse_gst(sentence):
-    # GST解析 / GST parsing
+    #GST解析 / GST parsing
     fields = sentence.split(',')
+    print(fields)
     data = {
         'timestamp': fields[1] if len(fields) > 1 and fields[1] else '000000.0',
-        'rms': fields[6] if len(fields) > 6 and fields[6] else '0.0',
-        'std_dev_major': fields[7] if len(fields) > 7 and fields[7] else '0.0',
-        'std_dev_minor': fields[8].split('*')[0] if len(fields) > 8 and fields[8] else '0.0',
-        'std_dev_vertical': fields[9].split('*')[0] if len(fields) > 9 and fields[9] else '0.0'
+        'rms': fields[2] if len(fields) > 2 and fields[2] else '0.0',
+        'std_lat': fields[6] if len(fields) > 6 and fields[6] else '0.0',
+        'std_lon': fields[7] if len(fields) > 7 and fields[7] else '0.0',
+        'std_alt': fields[8].split('*')[0] if len(fields) > 8 and fields[8] else '0.0'
     }
     return data
 
@@ -217,11 +215,12 @@ def parse_dhv(sentence):
     fields = sentence.split(',')
     return {
         'timestamp': fields[1] if len(fields) > 1 else None,
-        'message': fields[2] if len(fields) > 2 else None,
-        'status': fields[3] if len(fields) > 3 else None,
-        'additional_field1': fields[4] if len(fields) > 4 else None,
-        'additional_field2': fields[5].split('*')[0] if len(fields) > 5 and '*' in fields[5] else None
-    }
+        '3d_speed': fields[2] if len(fields) > 2 else None,
+        'ecef_x_speed': fields[3] if len(fields) > 3 else None,
+        'ecef_y_speed': fields[4] if len(fields) > 4 else None,
+        'ecef_z_speed': fields[5] if len(fields) > 5 else None,
+        'horizontal_ground_speed': fields[6].split('*')[0] if len(fields) > 6 and '*' in fields[6] else None
+}
 
 def parse_zda(sentence):
     #ZDA解析 / ZDA parsing
@@ -239,12 +238,11 @@ def parse_txt(sentence):
     #TXT解析 / TXT parsing
     fields = sentence.split(',')
     return {
-        'total_messages': fields[1] if len(fields) > 1 else None,
-        'message_number': fields[2] if len(fields) > 2 else None,
-        'priority': fields[3] if len(fields) > 3 else None,
+        'several_lines': fields[1] if len(fields) > 1 else None,
+        'free': fields[2] if len(fields) > 2 else None,
+        'type': fields[3] if len(fields) > 3 else None,
         'text': fields[4].split('*')[0] if len(fields) > 4 and '*' in fields[4] else None
     }
-
 #メッセージ統合(GSA GSV) / Message integration (GSA GSV)
 
 def merge_gsa(gsa_list):
@@ -292,9 +290,9 @@ def merge_gsv(gsv_list):
     return merged
 
 def analyze_nmea_data(parsed_data):
-    global sts
+    global sts#(SatelliTeS)
     analyzed_data = {}
-    #GGA, GLL, RMC, VTG, GST 各リスト化 / GGA, GLL, RMC, VTG, GST, DHV, ZDA, TXT list
+    #GGA, GLL, RMC, VTG, GST, DHV, ZDA, TXT 各リスト化 / GGA, GLL, RMC, VTG, GST, DHV, ZDA, TXT list
     analyzed_data['GGA'] = [parse_gga(sentence) for sentence in parsed_data['GGA']] if parsed_data['GGA'] else [parse_gga('')]
     analyzed_data['GLL'] = [parse_gll(sentence) for sentence in parsed_data['GLL']] if parsed_data['GLL'] else [parse_gll('')]
     analyzed_data['RMC'] = [parse_rmc(sentence) for sentence in parsed_data['RMC']] if parsed_data['RMC'] else [parse_rmc('')]
