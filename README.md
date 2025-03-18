@@ -11,6 +11,8 @@
 
 2.4 RMCに経度から計算したローカル時刻を追加
 
+2.5 DHV ZDA TXT追加 RMC日付初期値 2000/01/01へ変更
+
 # Japanese 日本語
 Raspberry Pi Pico 1/2向けのGPS解析ライブラリです。
 # 機能
