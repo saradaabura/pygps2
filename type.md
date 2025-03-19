@@ -1,15 +1,15 @@
 # 出力データと内容
 
-**GSVデータ**
+**GSAデータ**
 ```
-{'hdop': '2.8', 'vdop': '4.1', 'mode2': '3', 'satellites_used': ['09', '66', '02', '06', '22', '17'], 'pdop': '5.0', 'mode1': 'A'}
+{'vdop': '2.3', 'fix_status': '3', 'pdop': '2.7', 'fix_select': 'A', 'satellites_used': ['66', '27', '02', '01', '08', '03', '31', '17'], 'hdop': '1.4'}
 ```
 - hdop : HDOP
 - vdop : VDOP
-- mode2 : Fix状態(1:NoFix 2:2DFix 3:3Dfix)
+- fix_status_ : Fix状態(1:NoFix 2:2DFix 3:3Dfix)
 - satellites_used : 使用衛星PRN番号
 - pdop : PDOP
-- mode1 : 使用しているGPSモジュールによって異なる(センテンス2番目を参照)
+- fix_select : 測距モード(A:オート M:マニュアル)
 
 **GSVデータ**
 ```
@@ -106,20 +106,20 @@
 
 **DHVデータ**
 ```
-[{'message': '1.09', 'additional_field1': '-0.419', 'timestamp': '063801.00', 'status': '-0.867', 'additional_field2': None}]
+{'ecef_x_speed': '-0.294', 'ecef_z_speed': '-0.315', '3d_speed': '0.43', 'ecef_y_speed': '0.033', 'horizontal_ground_speed': None, 'timestamp': '052745.00'}
 ```
-- message: メッセージデータ(値に応じて意味が変わる、モジュール固有)
-- additional_field1: カスタムフィールド(モジュールによって異なるデータを格納)
-- timestamp: タイムスタンプ(生データとしてのUTC時間)
-- status: ステータス情報(値の意味はモジュール固有)
-- additional_field2: 追加フィールド(利用しない場合はNone)
-
+- ecef_x_speed : x軸方向の速度
+- ecef_z_speed : z軸方向の速度
+- 3d_speed : 3次元速度
+- ecef_y_speed : y軸方向の速度
+- horizontal_ground_speed : 水平地上速度
+- timestamp : タイムスタンプ(生データとしてのUTC時間)
 **GSTデータ**
 ```
-[{'rms': '127', 'std_dev_minor': '134', 'timestamp': '063801.00', 'std_dev_vertical': '0.0', 'std_dev_major': '144'}]
+{'rms': '30.9', 'std_lon': '32.9', 'timestamp': '052745.00', 'std_lat': '39.6', 'std_alt': '37.5'}
 ```
 - rms: 平均二乗誤差(Root Mean Square Error)
-- std_dev_minor: 短軸方向の標準偏差(最小標準偏差)
+- std_lon: 経度方向の標準偏差(メートル単位)
 - timestamp: タイムスタンプ(生データとしてのUTC時間)
-- std_dev_vertical: 垂直方向(高度)の標準偏差
-- std_dev_major: 長軸方向の標準偏差(最大標準偏差)
+- std_lat: 緯度方向の標準偏差(メートル単位)
+- std_alt: 高度方向の標準偏差(メートル単位)

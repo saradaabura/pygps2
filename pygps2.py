@@ -12,6 +12,7 @@ import time
 import math
 
 sts = []
+
 def convert_to_degrees(coord, direction):
     #経緯度変換 / Convert latitude and longitude
     try:
@@ -95,8 +96,8 @@ def parse_gsa(sentence):
         else:
             satellites_used.append('0')
     data = {
-        'mode1': fields[1] if len(fields) > 1 and fields[1] else 'A',
-        'mode2': fields[2] if len(fields) > 2 and fields[2] else '1',
+        'fix_select': fields[1] if len(fields) > 1 and fields[1] else 'A',
+        'fix_status': fields[2] if len(fields) > 2 and fields[2] else '1',
         'satellites_used': satellites_used,
         'pdop': fields[15] if len(fields) > 15 and fields[15] else '0.0',
         'hdop': fields[16] if len(fields) > 16 and fields[16] else '0.0',
@@ -125,7 +126,6 @@ def parse_gsv(sentence):
         satellite_id = (system_type, prn)  #衛星識別子 (システムコード, PRN)
         if satellite_id in sts:  #重複チェック
             index += 4  #次の衛星データブロックに移動
-            print(sentence)
             continue
         sts.append((system_type, prn))
         #衛星情報を解析 / Parse satellite information
@@ -200,7 +200,6 @@ def parse_vtg(sentence):
 def parse_gst(sentence):
     #GST解析 / GST parsing
     fields = sentence.split(',')
-    print(fields)
     data = {
         'timestamp': fields[1] if len(fields) > 1 and fields[1] else '000000.0',
         'rms': fields[2] if len(fields) > 2 and fields[2] else '0.0',
@@ -250,8 +249,8 @@ def merge_gsa(gsa_list):
     if not gsa_list:
         return parse_gsa('')
     merged = {}
-    merged['mode1'] = gsa_list[0].get('mode1', 'A')
-    merged['mode2'] = gsa_list[0].get('mode2', '1')
+    merged['fix_select'] = gsa_list[0].get('fix_select', 'A')
+    merged['fix_status'] = gsa_list[0].get('fix_status', '1')
     #衛星IDは '0' 以外の値をすべて結合 / Concatenate all satellite IDs other than '0'
     sats = []
     for gsa in gsa_list:
@@ -317,3 +316,4 @@ def analyze_nmea_data(parsed_data):
     else:
         analyzed_data['GSV'] = [parse_gsv('')]
     return analyzed_data
+
