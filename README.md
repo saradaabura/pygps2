@@ -15,6 +15,19 @@
 
 # Japanese 日本語
 Raspberry Pi Pico 1/2向けのGPS解析ライブラリです。
+# 対応センテンス
+```
+GGA:$GNGGA, $GPGGA, $BDGGA
+GLL:$GNGLL, $GPGLL, $BDGLL
+GSA:$GNGSA, $GPGSA, $BDGSA
+GSV:$GPGSV, $BDGSV, $GQGSV, $GLGSV, $GAGSV
+RMC:$GNRMC, $GPRMC, $BDRMC
+VTG:$GNVTG, $GPVTG, $BDVTG
+GST:$GNGST, $GPGST, $BDGST
+DHV:$GNDHV, $GPDHV, $BDDHV
+ZDA:$GNZDA, $GPZDA, $BDZDA
+TXT:$GNTXT, $GPTXT, $BDTXT
+```
 # 機能
 - GSVのデータを解析でき、衛星の情報を取得できます。(不完全)
 - GGAのデータを解析でき、緯度、経度、高度、UTC時刻、測位精度、DGPS情報を取得できます。(不完全)

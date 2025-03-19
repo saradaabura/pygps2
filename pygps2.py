@@ -1,4 +1,4 @@
-#pygps2.py Version 2.5
+#pygps2.py Version 2.6
 #このプログラムの問題点 / Problems with this program
 #1GSVデータを完全に解析することができない(一部解消) / Cannot completely analyze GSV data (partially resolved)
 #2すべてのGPSモジュールには対応しない
@@ -47,11 +47,17 @@ patterns = {
 def parse_nmea_sentences(nmea_data):
     sentences = nmea_data.split('\r\n')
     parsed_data = {key: [] for key in patterns.keys()}
+    parsed_data['Other'] = []
     for sentence in sentences:
         sentence = sentence.strip()
+        matched = False
         for key, pattern in patterns.items():
             if pattern.match(sentence):
                 parsed_data[key].append(sentence)
+                matched = True
+                break
+        if not matched and sentence:
+            parsed_data['Other'].append(sentence)
     return parsed_data
 
 # 各解析関数 / Parsing functions
@@ -223,7 +229,7 @@ def parse_dhv(sentence):
 
 def parse_zda(sentence):
     #ZDA解析 / ZDA parsing
-    fields = sentence.split
+    fields = sentence.split(',')
     return {
         'timestamp': fields[1] if len(fields) > 1 else None,
         'day': fields[2] if len(fields) > 2 else None,
@@ -297,9 +303,9 @@ def analyze_nmea_data(parsed_data):
     analyzed_data['RMC'] = [parse_rmc(sentence) for sentence in parsed_data['RMC']] if parsed_data['RMC'] else [parse_rmc('')]
     analyzed_data['VTG'] = [parse_vtg(sentence) for sentence in parsed_data['VTG']] if parsed_data['VTG'] else [parse_vtg('')]
     analyzed_data['GST'] = [parse_gst(sentence) for sentence in parsed_data['GST']] if parsed_data['GST'] else [parse_gst('')]
-    analyzed_data['DHV'] = [parse_dhv(sentence) for sentence in parsed_data['DHV']] if parsed_data['DHV'] else [parse_gst('')]
-    analyzed_data['ZDA'] = [parse_dhv(sentence) for sentence in parsed_data['ZDA']] if parsed_data['ZDA'] else [parse_gst('')]
-    analyzed_data['TXT'] = [parse_dhv(sentence) for sentence in parsed_data['TXT']] if parsed_data['TXT'] else [parse_gst('')]
+    analyzed_data['DHV'] = [parse_dhv(sentence) for sentence in parsed_data['DHV']] if parsed_data['DHV'] else [parse_dhv('')]
+    analyzed_data['ZDA'] = [parse_zda(sentence) for sentence in parsed_data['ZDA']] if parsed_data['ZDA'] else [parse_zda('')]
+    analyzed_data['TXT'] = [parse_txt(sentence) for sentence in parsed_data['TXT']] if parsed_data['TXT'] else [parse_txt('')]
     #GSA統合化 / GSA merge
     if parsed_data['GSA']:
         gsa_list = [parse_gsa(sentence) for sentence in parsed_data['GSA']]
@@ -316,4 +322,3 @@ def analyze_nmea_data(parsed_data):
     else:
         analyzed_data['GSV'] = [parse_gsv('')]
     return analyzed_data
-

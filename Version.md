@@ -1,3 +1,9 @@
+# version 2.6
+**パターンにないデータの処理**
+2.5以前はpatternsにないデータは処理されなかったが、2.6以降は処理されるようになった。
+
+処理されたデータはpygps2.parse_nmea_sentences()でOtherに分類される。pygps2.analyze_nmea_data()では処理されない。
+
 # Version 2.5
 **DHV ZDA TXT追加**
 - 解析センテンスの追加
