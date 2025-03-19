@@ -114,6 +114,7 @@
 - ecef_y_speed : y軸方向の速度
 - horizontal_ground_speed : 水平地上速度
 - timestamp : タイムスタンプ(生データとしてのUTC時間)
+
 **GSTデータ**
 ```
 {'rms': '30.9', 'std_lon': '32.9', 'timestamp': '052745.00', 'std_lat': '39.6', 'std_alt': '37.5'}

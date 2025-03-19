@@ -1,3 +1,4 @@
+# Japanese 日本語
 # pygps2
 # バージョン情報
 
@@ -13,9 +14,11 @@
 
 2.5 DHV ZDA TXT追加 RMC日付初期値 2000/01/01へ変更
 
-# Japanese 日本語
-Raspberry Pi Pico 1/2向けのGPS解析ライブラリです。
+2.6 未知のパターンのデータを処理できるように変更
+
+### Raspberry Pi Pico 1/2向けのGPS解析ライブラリです。
 # 対応センテンス
+基本的にすべてのセンテンスに対応。
 ```
 GGA:$GNGGA, $GPGGA, $BDGGA
 GLL:$GNGLL, $GPGLL, $BDGLL
@@ -79,14 +82,47 @@ UART(0, baudrate=115200, tx=Pin(0), rx=Pin(1))は接続されているピンに合わせて変更
 - GPSモジュール: AT6668 (M5Stack GPSモジュールv1.1)
 - GPSモジュール: AT6558 (Air530Z)
 モジュールによっては動作しないかもしれません。その場合出力データを載せてissueを立ててください。
-# English 英語
-I use Google Translate, so there may be some strange sentences.
 
-A GPS analysis library for Raspberry Pi Pico 1/2.
-# Functions
-- Can analyze GSV data and obtain satellite information. (Incomplete)
-- Can analyze GGA data and obtain latitude, longitude, altitude, UTC time, positioning accuracy, and DGPS information. (Incomplete)
-- Can analyze RMC data and obtain UTC time, latitude, longitude, speed, heading, date, magnetic declination, and magnetic declination direction.
+# English 英語
+# pygps2
+# Version information
+
+2.0 created
+
+2.1 Changed to allow satellite type to be obtained for GSV analysis
+
+2.2 Eliminated duplicate counts due to dual band satellites
+
+2.3 Added GST analysis function
+
+2.4 Added local time calculated from longitude to RMC
+
+2.5 Added DHV ZDA TXT Changed RMC date default to 2000/01/01
+
+2.6 Changed to allow processing of unknown pattern data
+
+
+### GPS analysis library for Raspberry Pi Pico 1/2.
+
+# Supported sentences
+Basically supports all sentences.
+```
+GGA:$GNGGA, $GPGGA, $BDGGA
+GLL:$GNGLL, $GPGLL, $BDGLL
+GSA:$GNGSA, $GPGSA, $BDGSA
+GSV:$GPGSV, $BDGSV, $GQGSV, $GLGSV, $GAGSV
+RMC:$GNRMC, $GPRMC, $BDRMC
+VTG:$GNVTG, $GPVTG, $BDVTG
+GST:$GNGST, $GPGST, $BDGST
+DHV:$GNDHV, $GPDHV, $BDDHV
+ZDA:$GNZDA, $GPZDA, $BDZDA
+TXT:$GNTXT, $GPTXT, $BDTXT
+```
+# Function
+- It can analyze GSV data and obtain satellite information. (Incomplete)
+- GGA data can be analyzed, and latitude, longitude, altitude, UTC time, positioning accuracy, and DGPS information can be obtained. (Incomplete)
+- RMC data can be analyzed, and UTC time, latitude, longitude, speed, heading, date, magnetic declination, and magnetic declination direction can be obtained.
+- Localtime can be output in RMC functions
 # How to use
 ```python:main.py
 from machine import UART, Pin
@@ -94,29 +130,32 @@ import pygps2
 import time
 gps = UART(0, baudrate=115200, tx=Pin(0), rx=Pin(1))
 while True:
- raw = gps.read(8192)
- if raw is not None:
- try:
- raw = raw.replace(b'\r', b'').replace(b'\n', b'')
- raw = raw.replace(b'/', b'')
- data = raw.decode("utf-8", "ignore")
- except Exception as e:
- print(f"error: {e}")
- print(raw)
- continue
- sentences = data.split('$')
- sentences = ['$' + sentence for sentence in sentences if sentence]
- data = '\r\n'.join(sentences) + '\r\n' parsed_data = pygps2.parse_nmea_sentences(data)
-analyzed_data = pygps2.analyze_nmea_data(parsed_data)
-print(analyzed_data)
-time.sleep(0.01) # CPU timing Adjust to your CPU timing
+    raw = gps.read(8192)
+    if raw is not None:
+        try:
+            raw = raw.replace(b'\r', b'').replace(b'\n', b'')
+            raw = raw.replace(b'/', b'')
+            data = raw.decode("utf-8", "ignore")
+        except Exception as e:
+            print(f"error: {e}")
+            print(raw)
+            continue
+        sentences = data.split('$')
+        sentences = ['$' + sentence for sentence in sentences if sentence]
+        data = '\r\n'.join(sentences) + '\r\n'
+        parsed_data = pygps2.parse_nmea_sentences(data)
+        analyzed_data = pygps2.analyze_nmea_data(parsed_data)
+        print(analyzed_data)
+    time.sleep(0.01) # CPU timing 各自調整 / Adjust to your CPU timing
 ```
+
 # Detailed usage
+
 1. Enter the decoded data in one line into pygps2.parse_nmea_sentences.
-1. 
+
 2. Enter the data returned by return into pygps2.analyze_nmea_data.
-1. 
-3. Assign the data to a variable when it returns with return.
+
+3. Return with return, so assign it to a variable.
 
 If it doesn't work, try using the main.py above.
 
