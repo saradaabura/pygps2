@@ -1,4 +1,13 @@
-# version 2.7
+# Version 2.8
+**RMC‚âŒoˆÜ“x•ÏŠ·ŠÖ”‚Ì•ÏX**
+### RMC
+- cpythonŠÂ‹«‰º‚Åmktime‚ÌƒGƒ‰[‰ñ”ð@cpython‚Å‚Ímicropython‚Æ“¯‚¶‚æ‚¤‚ÉŽg—p‰Â”\
+### ŒoˆÜ“x•ÏŠ·ŠÖ”
+- cpython‚ÅDecimal‚ðŽg—p‚·‚é‚æ‚¤‚É•ÏXB
+
+## ‚Ç‚¿‚ç‚àðŒ•ªŠò‚Åmicropython‚Æcpython‚Åˆ—‚ð•ÏX‚·‚é‚æ‚¤‚É‚µ‚Ä‚¢‚éB
+‚±‚ê‚É‚æ‚èAcpythonŠÂ‹«‚Å‚àˆÀ’è‚µ‚Ä“®ì‚·‚é‚æ‚¤‚É‚È‚Á‚½B
+# Version 2.7
 **decimalŠÖ”‚ð—p‚¢‚Äissues#2‚ð‰ðÁ**
 Žg—p‚µ‚½ƒ‰ƒCƒuƒ‰ƒŠ
 - micropython-decimal-number
@@ -8,7 +17,7 @@ lat‚Ílon‚Íˆ—‚·‚é‘O‚Éstr()‚Å•¶Žš—ñ‚É•ÏŠ·‚·‚é•K—v‚ª‚ ‚éB¡Œã‚Í‚±‚Ìˆ—‚ðŠÖ”‚É‘
 
 float(str())‚É‚µ‚Ä‰‰ŽZ‚ðs‚¤‚ÆA¸“x‚ª—Ž‚¿‚é‚½‚ß‚È‚é‚×‚­Astr‚Å•ÛŽ‚·‚é‚æ‚¤‚É‚·‚éB
 
-# version 2.6
+# Version 2.6
 
 **ƒpƒ^[ƒ“‚É‚È‚¢ƒf[ƒ^‚Ìˆ—**
 

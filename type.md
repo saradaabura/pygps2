@@ -38,16 +38,16 @@
 - dgps_age : DGPSデータ系
 - altitude_units : 標高単位
 - num_satellites : 衛星数
-- latitude : 緯度 (度で出力される)
-- longitude : 経度　(度で出力される)
+- latitude : 緯度 (度で出力される) str型
+- longitude : 経度　(度で出力される) str型
 - timestamp : タイムスタンプ (生データ)
 
 **RMCデータ**
 ```
 [{'mode_indicator': 'N', 'date': '170325', 'mag_var_direction': '', 'utc_datetime': '2025-03-17 07:57:01', 'local_datetime': '2025-03-17 16:57:01', 'status': 'V', 'magnetic_variation': '0.0', 'course_over_ground': '0.0', 'speed_over_ground': '0.0', 'latitude': 0.0, 'longitude': 0.0, 'timestamp': '075701.00'}]
 ```
-- longitude : 経度 (度で出力される)
-- latitude : 緯度 (度で出力される)
+- longitude : 経度 (度で出力される) str型
+- latitude : 緯度 (度で出力される) str型
 - course_over_ground : 移動方向の角度
 - status : ステータス
 - mag_var_direction : 磁気偏角方向
@@ -63,8 +63,8 @@
 ```
 {'longitude': 0.0, 'latitude': 0.0, 'timestamp': '094023.00', 'status': 'A', 'mode_indicator': 'A'}
 ```
-- longitude : 経度 (度で出力される)
-- latitude : 緯度 (度で出力される)
+- longitude : 経度 (度で出力される) str型
+- latitude : 緯度 (度で出力される) Sstr型
 - timestamp : タイムスタンプ (生データ)
 - status : ステータス
 - mode_indicator : モードインジケータ
