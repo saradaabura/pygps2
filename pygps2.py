@@ -1,14 +1,3 @@
-#pygps2.py Version 2.7
-#このプログラムの問題点 / Problems with this program
-#1GSVデータを完全に解析することができない(一部解消) / Cannot completely analyze GSV data (partially resolved)
-#2すべてのGPSモジュールには対応しない
-#ToDo
-#1GSVデータの解析を改善する / Improve GSV data analysis
-#2他のGPSモジュールにも対応する / Support other GPS modules
-#3特定のセンテンスのみを解析できるようにする / Allow analysis of specific sentences only
-
-#https://github.com/mpy-dev/micropython-decimal-number/blob/main/README.md このライブラリを使用しました。
-#ライブラリの名称はdecimal.pyで保存する
 import re
 import time
 import math
@@ -19,7 +8,6 @@ sts = []
 
 def convert_to_degrees(coord, direction):
     if sys.implementation.name == "cpython":
-        #経緯度変換 / Latitude and longitude conversion
         try:
             if not coord:
                 return str(Decimal('0.0'))
@@ -36,7 +24,6 @@ def convert_to_degrees(coord, direction):
             print(f"Error in coordinate conversion: {e}")
             return str(Decimal('0.0'))
     if sys.implementation.name == "micropython":
-        #経緯度変換 / Latitude and longitude conversion
         try:
             if not coord:
                 return str(DecimalNumber('0.0'))
@@ -53,7 +40,6 @@ def convert_to_degrees(coord, direction):
             print(f"Error in coordinate conversion: {e}")
             return str(DecimalNumber('0.0'))
 
-#パターン定義 / Pattern definitions
 patterns = {
     'GGA': re.compile(r'\$GNGGA,.*?\*..|\$GPGGA,.*?\*..|\$BDGGA,.*?\*..'),
     'GLL': re.compile(r'\$GNGLL,.*?\*..|\$GPGLL,.*?\*..|\$BDGLL,.*?\*..'),
@@ -66,7 +52,6 @@ patterns = {
     'ZDA': re.compile(r'\$GNZDA,.*?\*..|\$GPZDA,.*?\*..|\$BDZDA,.*?\*..'),
     'TXT': re.compile(r'\$GNTXT,.*?\*..|\$GPTXT,.*?\*..|\$BDTXT,.*?\*..')
 }
-
 def parse_nmea_sentences(nmea_data):
     sentences = nmea_data.split('\r\n')
     parsed_data = {key: [] for key in patterns.keys()}
@@ -83,9 +68,7 @@ def parse_nmea_sentences(nmea_data):
             parsed_data['Other'].append(sentence)
     return parsed_data
 
-# 各解析関数 / Parsing functions
 def parse_gga(sentence):
-    #GGA解析 / GGA parsing
     fields = sentence.split(',')
     data = {
         'timestamp': fields[1] if len(fields) > 1 and fields[1] else '000000.0',
@@ -104,7 +87,6 @@ def parse_gga(sentence):
     return data
 
 def parse_gll(sentence):
-    #GLL解析 / GLL parsing
     fields = sentence.split(',')
     data = {
         'latitude': convert_to_degrees(fields[1], fields[2]) if len(fields) > 2 and fields[1] and fields[2] else 0.0,
@@ -116,7 +98,6 @@ def parse_gll(sentence):
     return data
 
 def parse_gsa(sentence):
-    #GSA解析 / GSA parsing
     fields = sentence.split(',')
     satellites_used = []
     for i in range(3, 15):
@@ -135,29 +116,24 @@ def parse_gsa(sentence):
     return data
 
 def parse_gsv(sentence):
-    #GSV解析 / GSV parsing
     fields = sentence.split(',')
-    #センテンスから識別文字を取得し、衛星システムを判別
-    #Get the identifier from the sentence and determine the satellite system
     system_type = sentence[1:3]
     global sts
     data = {
-        'system_type': system_type,  # 衛星システムの種類
+        'system_type': system_type,
         'num_messages': fields[1] if len(fields) > 1 and fields[1] else '1',
         'message_num': fields[2] if len(fields) > 2 and fields[2] else '1',
         'num_satellites': fields[3] if len(fields) > 3 and fields[3] else '0',
         'satellites_info': []
     }
-    #GSVセンテンスを解析,2周波による重複を検出 / Parse GSV sentence, detect duplicates due to dual frequency
     index = 4
     while index + 3 < len(fields) - 1:
         prn = fields[index].strip() if len(fields) > index and fields[index] else '0'
-        satellite_id = (system_type, prn)  #衛星識別子 (システムコード, PRN)
-        if satellite_id in sts:  #重複チェック
-            index += 4  #次の衛星データブロックに移動
+        satellite_id = (system_type, prn)
+        if satellite_id in sts:
+            index += 4
             continue
         sts.append((system_type, prn))
-        #衛星情報を解析 / Parse satellite information
         elevation = fields[index+1].strip() if len(fields) > index+1 and fields[index+1] else '0.0'
         azimuth = fields[index+2].strip() if len(fields) > index+2 and fields[index+2] else '0.0'
         snr_field = fields[index+3].strip() if len(fields) > index+3 and fields[index+3] else '0.0'
@@ -169,7 +145,7 @@ def parse_gsv(sentence):
             'azimuth': azimuth,
             'snr': snr
         })
-        index += 4  # 次の衛星データブロックへ
+        index += 4
     return data
 
 def parse_rmc(sentence):
@@ -194,7 +170,10 @@ def parse_rmc(sentence):
             day = int(data['date'][0:2])
             month = int(data['date'][2:4])
             year = int(data['date'][4:6]) + 2000
-            utc_seconds = time.mktime((year, month, day, hours, minutes, seconds, 0, 0))
+            if sys.implementation.name == "cpython":
+                utc_seconds = time.mktime((year, month, day, hours, minutes, seconds, 0, 0, 0))
+            if sys.implementation.name == "micropython":
+                utc_seconds = time.mktime((year, month, day, hours, minutes, seconds, 0, 0))
             localtime = math.floor(float(str(data['longitude'])) / 15)
             local_seconds = utc_seconds + localtime * 3600
             local_time = time.localtime(local_seconds)
@@ -211,7 +190,6 @@ def parse_rmc(sentence):
     return data
 
 def parse_vtg(sentence):
-    #VTG解析 / VTG parsing
     fields = sentence.split(',')
     data = {
         'course_over_ground_t': fields[1] if len(fields) > 1 and fields[1] else '0.0',
@@ -227,7 +205,6 @@ def parse_vtg(sentence):
     return data
 
 def parse_gst(sentence):
-    #GST解析 / GST parsing
     fields = sentence.split(',')
     data = {
         'timestamp': fields[1] if len(fields) > 1 and fields[1] else '000000.0',
@@ -239,7 +216,6 @@ def parse_gst(sentence):
     return data
 
 def parse_dhv(sentence):
-    #DHV解析 / DHV parsing
     fields = sentence.split(',')
     return {
         'timestamp': fields[1] if len(fields) > 1 else None,
@@ -248,10 +224,9 @@ def parse_dhv(sentence):
         'ecef_y_speed': fields[4] if len(fields) > 4 else None,
         'ecef_z_speed': fields[5] if len(fields) > 5 else None,
         'horizontal_ground_speed': fields[6].split('*')[0] if len(fields) > 6 and '*' in fields[6] else None
-}
+    }
 
 def parse_zda(sentence):
-    #ZDA解析 / ZDA parsing
     fields = sentence.split(',')
     return {
         'timestamp': fields[1] if len(fields) > 1 else None,
@@ -263,7 +238,6 @@ def parse_zda(sentence):
     }
 
 def parse_txt(sentence):
-    #TXT解析 / TXT parsing
     fields = sentence.split(',')
     return {
         'several_lines': fields[1] if len(fields) > 1 else None,
@@ -271,16 +245,13 @@ def parse_txt(sentence):
         'type': fields[3] if len(fields) > 3 else None,
         'text': fields[4].split('*')[0] if len(fields) > 4 and '*' in fields[4] else None
     }
-#メッセージ統合(GSA GSV) / Message integration (GSA GSV)
 
 def merge_gsa(gsa_list):
-    #GSA統合 / GSA integration
     if not gsa_list:
         return parse_gsa('')
     merged = {}
     merged['fix_select'] = gsa_list[0].get('fix_select', 'A')
     merged['fix_status'] = gsa_list[0].get('fix_status', '1')
-    #衛星IDは '0' 以外の値をすべて結合 / Concatenate all satellite IDs other than '0'
     sats = []
     for gsa in gsa_list:
         sats.extend([s for s in gsa.get('satellites_used', []) if s != '0' and s != ''])
@@ -296,11 +267,9 @@ def merge_gsa(gsa_list):
     merged['pdop'] = average(pdops) if pdops else '0.0'
     merged['hdop'] = average(hdops) if hdops else '0.0'
     merged['vdop'] = average(vdops) if vdops else '0.0'
-    
     return merged
 
 def merge_gsv(gsv_list):
-    #GSV統合 / GSV integration
     if not gsv_list:
         return parse_gsv('')
     merged = {}
@@ -320,7 +289,6 @@ def merge_gsv(gsv_list):
 def analyze_nmea_data(parsed_data):
     global sts#(SatelliTeS)
     analyzed_data = {}
-    #GGA, GLL, RMC, VTG, GST, DHV, ZDA, TXT 各リスト化 / GGA, GLL, RMC, VTG, GST, DHV, ZDA, TXT list
     analyzed_data['GGA'] = [parse_gga(sentence) for sentence in parsed_data['GGA']] if parsed_data['GGA'] else [parse_gga('')]
     analyzed_data['GLL'] = [parse_gll(sentence) for sentence in parsed_data['GLL']] if parsed_data['GLL'] else [parse_gll('')]
     analyzed_data['RMC'] = [parse_rmc(sentence) for sentence in parsed_data['RMC']] if parsed_data['RMC'] else [parse_rmc('')]
@@ -329,14 +297,12 @@ def analyze_nmea_data(parsed_data):
     analyzed_data['DHV'] = [parse_dhv(sentence) for sentence in parsed_data['DHV']] if parsed_data['DHV'] else [parse_dhv('')]
     analyzed_data['ZDA'] = [parse_zda(sentence) for sentence in parsed_data['ZDA']] if parsed_data['ZDA'] else [parse_zda('')]
     analyzed_data['TXT'] = [parse_txt(sentence) for sentence in parsed_data['TXT']] if parsed_data['TXT'] else [parse_txt('')]
-    #GSA統合化 / GSA merge
     if parsed_data['GSA']:
         gsa_list = [parse_gsa(sentence) for sentence in parsed_data['GSA']]
         merged_gsa = merge_gsa(gsa_list)
         analyzed_data['GSA'] = [merged_gsa]
     else:
         analyzed_data['GSA'] = [parse_gsa('')]
-    #GSV統合化 / GSV merge
     sts = []
     if parsed_data['GSV']:
         gsv_list = [parse_gsv(sentence) for sentence in parsed_data['GSV']]
@@ -345,4 +311,3 @@ def analyze_nmea_data(parsed_data):
     else:
         analyzed_data['GSV'] = [parse_gsv('')]
     return analyzed_data
-
