@@ -36,6 +36,7 @@ TXT:$GNTXT, $GPTXT, $BDTXT
 - GGAのデータを解析でき、緯度、経度、高度、UTC時刻、測位精度、DGPS情報を取得できます。(不完全)
 - RMCのデータを解析でき、UTC時刻、緯度、経度、速度、進行方向、日付、磁気偏角、磁気偏角方向を取得できます。
 - RMC関数ではLocaltimeの出力できます
+- すべてのセンテンスに対応しています。
 # 使い方
 ```python:main.py
 from machine import UART, Pin
@@ -123,6 +124,7 @@ TXT:$GNTXT, $GPTXT, $BDTXT
 - GGA data can be analyzed, and latitude, longitude, altitude, UTC time, positioning accuracy, and DGPS information can be obtained. (Incomplete)
 - RMC data can be analyzed, and UTC time, latitude, longitude, speed, heading, date, magnetic declination, and magnetic declination direction can be obtained.
 - Localtime can be output in RMC functions
+- All sentences are supported.
 # How to use
 ```python:main.py
 from machine import UART, Pin
