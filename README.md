@@ -20,6 +20,9 @@
 
 (詳細はVersion.mdに記載)
 
+# 依存ライブラリ
+- micropython-decimal-number
+
 ### Raspberry Pi Pico 1/2向けのGPS解析ライブラリです。
 # 対応センテンス
 基本的にすべてのセンテンスに対応。
