@@ -1,4 +1,4 @@
-#pygps2.py Version 2.6
+#pygps2.py Version 2.7
 #このプログラムの問題点 / Problems with this program
 #1GSVデータを完全に解析することができない(一部解消) / Cannot completely analyze GSV data (partially resolved)
 #2すべてのGPSモジュールには対応しない
@@ -7,28 +7,32 @@
 #2他のGPSモジュールにも対応する / Support other GPS modules
 #3特定のセンテンスのみを解析できるようにする / Allow analysis of specific sentences only
 
+#https://github.com/mpy-dev/micropython-decimal-number/blob/main/README.md このライブラリを使用しました。
+
 import re
 import time
 import math
+from decimal import *
 
 sts = []
 
 def convert_to_degrees(coord, direction):
-    #経緯度変換 / Convert latitude and longitude
+    #経緯度を度に変換 / Convert latitude and longitude to degrees
     try:
         if not coord:
-            return 0.0
+            return DecimalNumber('0.0')
         degree_len = 2 if direction in ('N', 'S') else 3 if direction in ('E', 'W') else 0
         if degree_len == 0:
-            return 0.0
-        degrees = int(coord[:degree_len])
-        minutes = float(coord[degree_len:]) if len(coord) > degree_len else 0.0
-        decimal_degrees = degrees + minutes / 60.0
+            return DecimalNumber('0.0')
+        degrees = DecimalNumber(coord[:degree_len])
+        minutes = DecimalNumber(coord[degree_len:]) if len(coord) > degree_len else DecimalNumber('0.0')
+        decimal_degrees = degrees + minutes / DecimalNumber('60.0')
         if direction in ('S', 'W'):
             decimal_degrees = -decimal_degrees
         return decimal_degrees
-    except Exception:
-        return 0.0
+    except Exception as e:
+        print(f"Error in coordinate conversion: {e}")
+        return DecimalNumber('0.0')
 
 #パターン定義 / Pattern definitions
 patterns = {
@@ -172,7 +176,7 @@ def parse_rmc(sentence):
             month = int(data['date'][2:4])
             year = int(data['date'][4:6]) + 2000
             utc_seconds = time.mktime((year, month, day, hours, minutes, seconds, 0, 0))
-            localtime = math.floor(data['longitude'] / 15)
+            localtime = math.floor(float(str(data['longitude'])) / 15)
             local_seconds = utc_seconds + localtime * 3600
             local_time = time.localtime(local_seconds)
             data['utc_datetime'] = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(
@@ -322,3 +326,4 @@ def analyze_nmea_data(parsed_data):
     else:
         analyzed_data['GSV'] = [parse_gsv('')]
     return analyzed_data
+

@@ -16,6 +16,10 @@
 
 2.6 未知のパターンのデータを処理できるように変更
 
+2.7 decimal関数を用いてissues#2を解消→micropython-decimal-numberを使用　LATやLONにはstr()で変換する必要がある。
+
+(詳細はVersion.mdに記載)
+
 ### Raspberry Pi Pico 1/2向けのGPS解析ライブラリです。
 # 対応センテンス
 基本的にすべてのセンテンスに対応。

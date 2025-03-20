@@ -1,3 +1,13 @@
+# version 2.7
+**decimal関数を用いてissues#2を解消**
+使用したライブラリ
+- micropython-decimal-number
+https://github.com/mpy-dev/micropython-decimal-number/tree/main
+THANK YOU!
+latはlonは処理する前にstr()で文字列に変換する必要がある。今後はこの処理を関数に組み込む予定。
+
+float(str())にして演算を行うと、精度が落ちるためなるべく、strで保持するようにする。
+
 # version 2.6
 
 **パターンにないデータの処理**
