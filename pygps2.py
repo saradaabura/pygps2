@@ -22,19 +22,19 @@ def convert_to_degrees(coord, direction):
         #経緯度変換 / Latitude and longitude conversion
         try:
             if not coord:
-                return Decimal('0.0')
+                return str(Decimal('0.0'))
             degree_len = 2 if direction in ('N', 'S') else 3 if direction in ('E', 'W') else 0
             if degree_len == 0:
-                return Decimal('0.0')
+                return str(Decimal('0.0'))
             degrees = Decimal(coord[:degree_len])
             minutes = Decimal(coord[degree_len:]) if len(coord) > degree_len else Decimal('0.0')
             decimal_degrees = degrees + minutes / Decimal('60.0')
             if direction in ('S', 'W'):
                 decimal_degrees = -decimal_degrees
-            return decimal_degrees
+            return str(decimal_degrees)
         except Exception as e:
             print(f"Error in coordinate conversion: {e}")
-            return Decimal('0.0')
+            return str(Decimal('0.0'))
     if sys.implementation.name == "micropython":
         #経緯度変換 / Latitude and longitude conversion
         try:
