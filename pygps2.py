@@ -1,4 +1,4 @@
-#Version 2.8
+#Version 2.9
 import re
 import time
 import math
@@ -53,12 +53,25 @@ patterns = {
     'ZDA': re.compile(r'\$GNZDA,.*?\*..|\$GPZDA,.*?\*..|\$BDZDA,.*?\*..'),
     'TXT': re.compile(r'\$GNTXT,.*?\*..|\$GPTXT,.*?\*..|\$BDTXT,.*?\*..')
 }
+import re
+
+def verify_checksum(sentence):
+    if '*' not in sentence:
+        return False
+    data, checksum = sentence.split('*')
+    calculated_checksum = 0
+    for char in data[1:]:
+        calculated_checksum ^= ord(char)
+    return f"{calculated_checksum:02X}" == checksum.strip().upper()
+
 def parse_nmea_sentences(nmea_data):
     sentences = nmea_data.split('\r\n')
     parsed_data = {key: [] for key in patterns.keys()}
     parsed_data['Other'] = []
     for sentence in sentences:
         sentence = sentence.strip()
+        if not verify_checksum(sentence):
+            continue
         matched = False
         for key, pattern in patterns.items():
             if pattern.match(sentence):
