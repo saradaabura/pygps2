@@ -18,6 +18,10 @@
 
 2.7 decimal関数を用いてissues#2を解消→micropython-decimal-numberを使用　LATやLONにはstr()で変換する必要がある。
 
+2.8 cpythonとmicropythonで互換性を保つ処理を追加
+
+2.9 チェックサムの機能を追加
+
 (詳細はVersion.mdに記載)
 
 # 依存ライブラリ
