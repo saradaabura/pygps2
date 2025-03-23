@@ -1,9 +1,10 @@
-#Version 2.9
+#Version 3.0
 import re
 import time
 import math
 import sys
 from decimal import *
+import gc
 
 sts = []
 
@@ -80,7 +81,9 @@ def parse_nmea_sentences(nmea_data):
                 break
         if not matched and sentence:
             parsed_data['Other'].append(sentence)
+    del sentences
     return parsed_data
+
 
 def parse_gga(sentence):
     fields = sentence.split(',')
@@ -98,6 +101,7 @@ def parse_gga(sentence):
         'dgps_age': fields[13] if len(fields) > 13 and fields[13] else '',
         'dgps_station_id': fields[14].split('*')[0] if len(fields) > 14 and fields[14] else ''
     }
+    del fields
     return data
 
 def parse_gll(sentence):
@@ -109,6 +113,7 @@ def parse_gll(sentence):
         'status': fields[6] if len(fields) > 6 and fields[6] else 'V',
         'mode_indicator': fields[7].split('*')[0] if len(fields) > 7 and fields[7] else ''
     }
+    del fields
     return data
 
 def parse_gsa(sentence):
@@ -127,6 +132,7 @@ def parse_gsa(sentence):
         'hdop': fields[16] if len(fields) > 16 and fields[16] else '0.0',
         'vdop': fields[17].split('*')[0] if len(fields) > 17 and fields[17] else '0.0'
     }
+    del fields
     return data
 
 def parse_gsv(sentence):
@@ -160,6 +166,7 @@ def parse_gsv(sentence):
             'snr': snr
         })
         index += 4
+    del fields
     return data
 
 def parse_rmc(sentence):
@@ -201,6 +208,7 @@ def parse_rmc(sentence):
             print("Error parsing RMC data:", e)
             data['utc_datetime'] = None
             data['jst_datetime'] = None
+    del fields
     return data
 
 def parse_vtg(sentence):
@@ -216,6 +224,7 @@ def parse_vtg(sentence):
         'units_kmh': fields[8] if len(fields) > 8 and fields[8] else 'K',
         'mode_indicator': fields[9].split('*')[0] if len(fields) > 9 and fields[9] else ''
     }
+    del fields
     return data
 
 def parse_gst(sentence):
@@ -227,11 +236,12 @@ def parse_gst(sentence):
         'std_lon': fields[7] if len(fields) > 7 and fields[7] else '0.0',
         'std_alt': fields[8].split('*')[0] if len(fields) > 8 and fields[8] else '0.0'
     }
+    del fields
     return data
 
 def parse_dhv(sentence):
     fields = sentence.split(',')
-    return {
+    data = {
         'timestamp': fields[1] if len(fields) > 1 else None,
         '3d_speed': fields[2] if len(fields) > 2 else None,
         'ecef_x_speed': fields[3] if len(fields) > 3 else None,
@@ -239,10 +249,12 @@ def parse_dhv(sentence):
         'ecef_z_speed': fields[5] if len(fields) > 5 else None,
         'horizontal_ground_speed': fields[6].split('*')[0] if len(fields) > 6 and '*' in fields[6] else None
     }
+    del fields
+    return data
 
 def parse_zda(sentence):
     fields = sentence.split(',')
-    return {
+    data = {
         'timestamp': fields[1] if len(fields) > 1 else None,
         'day': fields[2] if len(fields) > 2 else None,
         'month': fields[3] if len(fields) > 3 else None,
@@ -250,15 +262,19 @@ def parse_zda(sentence):
         'timezone_offset_hour': fields[5] if len(fields) > 5 else None,
         'timezone_offset_minute': fields[6].split('*')[0] if len(fields) > 6 and '*' in fields[6] else None
     }
+    del fields
+    return data
 
 def parse_txt(sentence):
     fields = sentence.split(',')
-    return {
+    data = {
         'several_lines': fields[1] if len(fields) > 1 else None,
         'free': fields[2] if len(fields) > 2 else None,
         'type': fields[3] if len(fields) > 3 else None,
         'text': fields[4].split('*')[0] if len(fields) > 4 and '*' in fields[4] else None
     }
+    del fields
+    return data
 
 def merge_gsa(gsa_list):
     if not gsa_list:
@@ -300,28 +316,25 @@ def merge_gsv(gsv_list):
     merged['satellites_info'] = sats
     return merged
 
-def analyze_nmea_data(parsed_data):
-    global sts#(SatelliTeS)
+def analyze_nmea_data(parsed_data, enable_type=(1, 1, 1, 1, 1, 1, 1, 1, 1, 1)):
     analyzed_data = {}
-    analyzed_data['GGA'] = [parse_gga(sentence) for sentence in parsed_data['GGA']] if parsed_data['GGA'] else [parse_gga('')]
-    analyzed_data['GLL'] = [parse_gll(sentence) for sentence in parsed_data['GLL']] if parsed_data['GLL'] else [parse_gll('')]
-    analyzed_data['RMC'] = [parse_rmc(sentence) for sentence in parsed_data['RMC']] if parsed_data['RMC'] else [parse_rmc('')]
-    analyzed_data['VTG'] = [parse_vtg(sentence) for sentence in parsed_data['VTG']] if parsed_data['VTG'] else [parse_vtg('')]
-    analyzed_data['GST'] = [parse_gst(sentence) for sentence in parsed_data['GST']] if parsed_data['GST'] else [parse_gst('')]
-    analyzed_data['DHV'] = [parse_dhv(sentence) for sentence in parsed_data['DHV']] if parsed_data['DHV'] else [parse_dhv('')]
-    analyzed_data['ZDA'] = [parse_zda(sentence) for sentence in parsed_data['ZDA']] if parsed_data['ZDA'] else [parse_zda('')]
-    analyzed_data['TXT'] = [parse_txt(sentence) for sentence in parsed_data['TXT']] if parsed_data['TXT'] else [parse_txt('')]
-    if parsed_data['GSA']:
-        gsa_list = [parse_gsa(sentence) for sentence in parsed_data['GSA']]
-        merged_gsa = merge_gsa(gsa_list)
+    parsers = [
+        ('GGA', parse_gga), ('GLL', parse_gll), ('RMC', parse_rmc),
+        ('VTG', parse_vtg), ('GST', parse_gst), ('DHV', parse_dhv),
+        ('ZDA', parse_zda), ('TXT', parse_txt)
+    ]
+    for i, (key, parser) in enumerate(parsers):
+        if enable_type[i] == 1:
+            analyzed_data[key] = [parser(sentence) for sentence in parsed_data.get(key, [])] or [parser('')]
+    if enable_type[8] == 1:
+        gsa_list = [parse_gsa(sentence) for sentence in parsed_data.get('GSA', [])]
+        merged_gsa = merge_gsa(gsa_list) if gsa_list else parse_gsa('')
         analyzed_data['GSA'] = [merged_gsa]
-    else:
-        analyzed_data['GSA'] = [parse_gsa('')]
-    sts = []
-    if parsed_data['GSV']:
-        gsv_list = [parse_gsv(sentence) for sentence in parsed_data['GSV']]
-        merged_gsv = merge_gsv(gsv_list)
+    if enable_type[9] == 1:
+        gsv_list = [parse_gsv(sentence) for sentence in parsed_data.get('GSV', [])]
+        merged_gsv = merge_gsv(gsv_list) if gsv_list else parse_gsv('')
         analyzed_data['GSV'] = [merged_gsv]
-    else:
-        analyzed_data['GSV'] = [parse_gsv('')]
+    for key in parsed_data.keys():
+        del parsed_data[key]
+    gc.collect()
     return analyzed_data

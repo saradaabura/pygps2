@@ -124,3 +124,42 @@
 - timestamp: タイムスタンプ(生データとしてのUTC時間)
 - std_lat: 緯度方向の標準偏差(メートル単位)
 - std_alt: 高度方向の標準偏差(メートル単位)
+
+# 入力データと内容
+**analyze_nmea_date**
+
+使用例
+pygps2.analyze_nmea_data(parsed_data, [1, 1,1 ,1 ,1, 0, 0, 0, 1, 1])
+
+- parsed_data : parse_nmea_sentencesで解析されたデータ
+- [1,1,1,1,1,0,0,0,1,1] : 解析するデータの種類を指定するリスト
+必須の項目ではない デフォルト値はすべて有効になっている([1, 1, 1, 1, 1, 1, 1 , 1, 1, 1])
+  - 0 : 解析しない
+  - 1 : 解析する
+どれがどこに対応しているかは以下の通りである
+```
+enable_type:
+[0]: GGA
+[1]: GLL
+[2]: RMC
+[3]: VTG
+[4]: GST
+[5]: DHV
+[6]: ZDA
+[7]: TXT
+[8]: GSA
+[9]: GSV
+```
+
+機能
+センテンス解析を行う関数
+
+**parse_nmea_sentences**
+
+使用例
+pygps2.parse_nmea_sentences(data)
+
+- data : 改行などを含んだ生データ
+
+機能
+生のセンテンスをリスト化
