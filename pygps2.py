@@ -1,4 +1,4 @@
-#Version 3.0
+#Version 3.01
 import re
 import time
 import math
@@ -317,6 +317,8 @@ def merge_gsv(gsv_list):
     return merged
 
 def analyze_nmea_data(parsed_data, enable_type=(1, 1, 1, 1, 1, 1, 1, 1, 1, 1)):
+    global sts
+    sts = []
     analyzed_data = {}
     parsers = [
         ('GGA', parse_gga), ('GLL', parse_gll), ('RMC', parse_rmc),
@@ -334,7 +336,5 @@ def analyze_nmea_data(parsed_data, enable_type=(1, 1, 1, 1, 1, 1, 1, 1, 1, 1)):
         gsv_list = [parse_gsv(sentence) for sentence in parsed_data.get('GSV', [])]
         merged_gsv = merge_gsv(gsv_list) if gsv_list else parse_gsv('')
         analyzed_data['GSV'] = [merged_gsv]
-    for key in parsed_data.keys():
-        del parsed_data[key]
-    gc.collect()
+    del parsed_data
     return analyzed_data
