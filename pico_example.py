@@ -1,4 +1,5 @@
 # Raspberry pi Pico 1/2ê—p / Only for Raspberry Pi Pico 1/2
+#version3.1ˆÈ~‚Ípico_example_31.py‚ğQÆ / Refer to pico_example_31.py for version 3.1 or later
 from machine import UART, Pin
 import pygps2
 import time

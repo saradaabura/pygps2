@@ -1,4 +1,4 @@
-#Version 3.01
+#Version 3.1
 import re
 import time
 import math
@@ -316,8 +316,17 @@ def merge_gsv(gsv_list):
     merged['satellites_info'] = sats
     return merged
 
-def analyze_nmea_data(parsed_data, enable_type=(1, 1, 1, 1, 1, 1, 1, 1, 1, 1)):
+def tolist(data):
+        sentences = data.split('$')
+        sentences = ['$' + sentence for sentence in sentences if sentence]
+        data = '\r\n'.join(sentences) + '\r\n'
+        return data
+
+def analyze(data, enable_type=(1, 1, 1, 1, 1, 1, 1, 1, 1, 1)):
+    start = time.ticks_cpu()
     global sts
+    data = tolist(data)
+    parsed_data = parse_nmea_sentences(data)
     sts = []
     analyzed_data = {}
     parsers = [
@@ -337,4 +346,8 @@ def analyze_nmea_data(parsed_data, enable_type=(1, 1, 1, 1, 1, 1, 1, 1, 1, 1)):
         merged_gsv = merge_gsv(gsv_list) if gsv_list else parse_gsv('')
         analyzed_data['GSV'] = [merged_gsv]
     del parsed_data
+    del data
+    finish = time.ticks_cpu()
+    runtime = finish - start
+    print(runtime)
     return analyzed_data
