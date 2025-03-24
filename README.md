@@ -24,6 +24,8 @@
 
 3.0 軽量化
 
+3.1 analyzeで解析できるようになった。
+
 (詳細はVersion.mdに記載)
 
 # 依存ライブラリ
@@ -52,8 +54,9 @@ TXT:$GNTXT, $GPTXT, $BDTXT
 - すべてのセンテンスに対応しています。
 # 使い方
 ```python:main.py
-from machine import UART, Pin
+# ver3.1 
 import pygps2
+from machine import UART, Pin
 import time
 gps = UART(0, baudrate=115200, tx=Pin(0), rx=Pin(1))
 while True:
@@ -63,24 +66,20 @@ while True:
             raw = raw.replace(b'\r', b'').replace(b'\n', b'')
             raw = raw.replace(b'/', b'')
             data = raw.decode("utf-8", "ignore")
+            del raw
         except Exception as e:
             print(f"error: {e}")
-            print(raw)
-            continue
-        sentences = data.split('$')
-        sentences = ['$' + sentence for sentence in sentences if sentence]
-        data = '\r\n'.join(sentences) + '\r\n'
-        parsed_data = pygps2.parse_nmea_sentences(data)
-        analyzed_data = pygps2.analyze_nmea_data(parsed_data)
-        print(analyzed_data)
-    time.sleep(0.01) # CPU timing 各自調整 / Adjust to your CPU timing
+            continue 
+        analyzed_data = pygps2.analyze(data)
+        #program here to use the analyzed_data
+        del data
+    time.sleep(0.01)
+
 ```
 # 詳細な使い方
-1.デコードしたデータを一行でpygps2.parse_nmea_sentencesに入力する。
+1.デコードしたデータをpygps2.analyzeに入力します。(pygps2.analyze(decoded)みたいにする)
 
-2.returnで返されるデータをpygps2.analyze_nmea_dataに入力する。
-
-3.returnで戻るので変数に代入する。
+2.returnで戻ったデータは解析済み
 
 動かない場合は上記のmain.pyを使ってみてください。
 
@@ -101,7 +100,7 @@ UART(0, baudrate=115200, tx=Pin(0), rx=Pin(1))は接続されているピンに合わせて変更
 # pygps2
 # Version information
 
-2.0 created
+2.0 Created
 
 2.1 Changed to allow satellite type to be obtained for GSV analysis
 
@@ -111,13 +110,26 @@ UART(0, baudrate=115200, tx=Pin(0), rx=Pin(1))は接続されているピンに合わせて変更
 
 2.4 Added local time calculated from longitude to RMC
 
-2.5 Added DHV ZDA TXT Changed RMC date default to 2000/01/01
+2.5 Added DHV ZDA TXT Changed RMC date initial value to 2000/01/01
 
-2.6 Changed to allow processing of unknown pattern data
+2.6 Changed to allow processing of data with unknown patterns
 
+2.7 Fixed issues#2 using decimal function → Use micropython-decimal-number. LAT and LON require conversion with str().
 
-### GPS analysis library for Raspberry Pi Pico 1/2.
+2.8 Added processing to maintain compatibility between cpython and micropython
 
+2.9 Added checksum function
+
+3.0 Lightweight
+
+3.1 Now can be analyzed with analyze.
+
+(Details are given in Version.md)
+
+# Dependent libraries
+- micropython-decimal-number
+
+### A GPS analysis library for Raspberry Pi Pico 1/2.
 # Supported sentences
 Basically supports all sentences.
 ```
@@ -134,46 +146,38 @@ TXT:$GNTXT, $GPTXT, $BDTXT
 ```
 # Function
 - It can analyze GSV data and obtain satellite information. (Incomplete)
-- GGA data can be analyzed, and latitude, longitude, altitude, UTC time, positioning accuracy, and DGPS information can be obtained. (Incomplete)
-- RMC data can be analyzed, and UTC time, latitude, longitude, speed, heading, date, magnetic declination, and magnetic declination direction can be obtained.
-- Localtime can be output in RMC functions
+- GGA data can be analyzed to obtain latitude, longitude, altitude, UTC time, positioning accuracy, and DGPS information. (Incomplete)
+- RMC data can be analyzed to obtain UTC time, latitude, longitude, speed, heading, date, magnetic declination, and magnetic declination direction.
+- RMC functions can output localtime
 - All sentences are supported.
 # How to use
 ```python:main.py
-from machine import UART, Pin
+# ver3.1
 import pygps2
+from machine import UART, Pin
 import time
 gps = UART(0, baudrate=115200, tx=Pin(0), rx=Pin(1))
 while True:
-    raw = gps.read(8192)
-    if raw is not None:
-        try:
-            raw = raw.replace(b'\r', b'').replace(b'\n', b'')
-            raw = raw.replace(b'/', b'')
-            data = raw.decode("utf-8", "ignore")
-        except Exception as e:
-            print(f"error: {e}")
-            print(raw)
-            continue
-        sentences = data.split('$')
-        sentences = ['$' + sentence for sentence in sentences if sentence]
-        data = '\r\n'.join(sentences) + '\r\n'
-        parsed_data = pygps2.parse_nmea_sentences(data)
-        analyzed_data = pygps2.analyze_nmea_data(parsed_data)
-        print(analyzed_data)
-    time.sleep(0.01) # CPU timing 各自調整 / Adjust to your CPU timing
-```
+ raw = gps.read(8192)
+ if raw is not None:
+ try:
+ raw = raw.replace(b'\r', b'').replace(b'\n', b'')
+ raw = raw.replace(b'/', b'')
+ data = raw.decode("utf-8", "ignore")
+ del raw
+ except Exception as e:
+ print(f"error: {e}")
+ continue
+ analyzed_data = pygps2.analyze(data)
+ #program here to use the analyzed_data
+ del data
+ time.sleep(0.01)
 
+````
 # Detailed usage
-
-1. Enter the decoded data in one line into pygps2.parse_nmea_sentences.
-
-2. Enter the data returned by return into pygps2.analyze_nmea_data.
-
-3. Return with return, so assign it to a variable.
-
-If it doesn't work, try using the main.py above.
-
+1. Input the decoded data into pygps2.analyze. (Use pygps2.analyze(decoded))
+2. Data returned by return has been analyzed
+If it doesn't work, try using main.py above.
 Change UART(0, baudrate=115200, tx=Pin(0), rx=Pin(1)) to match the connected pins.
 # Sample
 Example of output data (returned by analyze_nmea_data)
