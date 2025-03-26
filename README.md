@@ -57,13 +57,14 @@ TXT:$GNTXT, $GPTXT, $BDTXT
 - メモリ対策があります
 # 使い方
 最新バージョン3.2での使い方
+**複雑になったので、とりあえずサンプルを実行することをおすすめします**
 ```python:main.py
 import pygps2
 from machine import UART, Pin
 gps = UART(0, baudrate=115200, tx=Pin(0), rx=Pin(1))
 analyzed_data = pygps2.init()
 while True:
-    raw = gps.read(8192)
+    raw = gps.read(8192)# 128~
     if raw is not None:
         try:
             raw = raw.replace(b'\r', b'').replace(b'\n', b'')
