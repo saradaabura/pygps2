@@ -1,4 +1,4 @@
-#Version 3.1
+#Version 3.2
 import re
 import time
 import math
@@ -322,32 +322,38 @@ def tolist(data):
         data = '\r\n'.join(sentences) + '\r\n'
         return data
 
-def analyze(data, enable_type=(1, 1, 1, 1, 1, 1, 1, 1, 1, 1)):
+def init():
+    return {'VTG': [{'reference_t': 'T', 'mode_indicator': 'N', 'speed_kmh': '0.0', 'course_over_ground_m': '0.0', 'reference_m': 'M', 'speed_knots': '0.0', 'units_knots': 'N', 'units_kmh': 'K', 'course_over_ground_t': '0.0'}], 'TXT': [], 'GSA': [{'vdop': '0.0', 'fix_status': '1', 'pdop': '0.0', 'fix_select': 'A', 'satellites_used': [], 'hdop': '0.0'}], 'RMC': [{'mode_indicator': 'N', 'date': '000000', 'mag_var_direction': '', 'utc_datetime': '2000-01-01 00:00:00', 'local_datetime': '2000-01-01 00:00:00', 'status': 'V', 'magnetic_variation': '0.0', 'course_over_ground': '0.0', 'speed_over_ground': '0.0', 'latitude': 0.0, 'longitude': 0.0, 'timestamp': '000000.00'}], 'DHV': [{'ecef_x_speed': '', 'ecef_z_speed': '', '3d_speed': '', 'ecef_y_speed': '', 'horizontal_ground_speed': None, 'timestamp': '000000.00'}], 'GSV': [{'num_messages': '0', 'num_satellites': '0', 'satellites_info': [], 'message_num': '0'}], 'ZDA': [{'timezone_offset_minute': '00', 'timezone_offset_hour': '00', 'year': '2000', 'day': '01', 'month': '01', 'timestamp': '000000.00'}], 'GST': [{'rms': '0.0', 'std_lon': '0.0', 'timestamp': '000000.00', 'std_lat': '0.0', 'std_alt': ''}], 'GLL': [{'longitude': 0.0, 'latitude': 0.0, 'timestamp': '000000.00', 'status': 'V', 'mode_indicator': 'N'}], 'GGA': [{'gps_quality': '0', 'hdop': '0.0', 'altitude': '0.0', 'geoid_units': 'M', 'dgps_station_id': '', 'geoid_height': '0.0', 'dgps_age': '', 'altitude_units': 'M', 'num_satellites': '00', 'latitude': 0.0, 'longitude': 0.0, 'timestamp': '000000.00'}]}
+
+def analyze(data, enable_type=(1, 1, 1, 1, 1, 1, 1, 1, 1, 1), oldata={}):
     start = time.ticks_cpu()
     global sts
+    data = str(data)
     data = tolist(data)
     parsed_data = parse_nmea_sentences(data)
     sts = []
-    analyzed_data = {}
+    analyzed_data = oldata
     parsers = [
         ('GGA', parse_gga), ('GLL', parse_gll), ('RMC', parse_rmc),
         ('VTG', parse_vtg), ('GST', parse_gst), ('DHV', parse_dhv),
         ('ZDA', parse_zda), ('TXT', parse_txt)
     ]
     for i, (key, parser) in enumerate(parsers):
-        if enable_type[i] == 1:
-            analyzed_data[key] = [parser(sentence) for sentence in parsed_data.get(key, [])] or [parser('')]
-    if enable_type[8] == 1:
-        gsa_list = [parse_gsa(sentence) for sentence in parsed_data.get('GSA', [])]
-        merged_gsa = merge_gsa(gsa_list) if gsa_list else parse_gsa('')
-        analyzed_data['GSA'] = [merged_gsa]
-    if enable_type[9] == 1:
-        gsv_list = [parse_gsv(sentence) for sentence in parsed_data.get('GSV', [])]
-        merged_gsv = merge_gsv(gsv_list) if gsv_list else parse_gsv('')
-        analyzed_data['GSV'] = [merged_gsv]
+        if parsed_data[key] != []:
+            if enable_type[i] == 1:
+                analyzed_data[key] = [parser(sentence) for sentence in parsed_data.get(key, [])] or [parser('')]
+    if parsed_data['GSA'] != []:
+        if enable_type[8] == 1:
+            gsa_list = [parse_gsa(sentence) for sentence in parsed_data.get('GSA', [])]
+            merged_gsa = merge_gsa(gsa_list) if gsa_list else parse_gsa('')
+            analyzed_data['GSA'] = [merged_gsa]
+    if parsed_data['GSV'] != []:
+        if enable_type[9] == 1:
+            gsv_list = [parse_gsv(sentence) for sentence in parsed_data.get('GSV', [])]
+            merged_gsv = merge_gsv(gsv_list) if gsv_list else parse_gsv('')
+            analyzed_data['GSV'] = [merged_gsv]
     del parsed_data
     del data
     finish = time.ticks_cpu()
     runtime = finish - start
-    print(runtime)
     return analyzed_data

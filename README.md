@@ -26,6 +26,8 @@
 
 3.1 analyzeで解析できるようになった。
 
+3.2 メモリ対策のため以前のデータを保持する機能を追加(差分方式)
+
 (詳細はVersion.mdに記載)
 
 # 依存ライブラリ
@@ -51,14 +53,15 @@ TXT:$GNTXT, $GPTXT, $BDTXT
 - GGAのデータを解析でき、緯度、経度、高度、UTC時刻、測位精度、DGPS情報を取得できます。(不完全)
 - RMCのデータを解析でき、UTC時刻、緯度、経度、速度、進行方向、日付、磁気偏角、磁気偏角方向を取得できます。
 - RMC関数ではLocaltimeの出力できます
-- すべてのセンテンスに対応しています。
+- すべてのセンテンスに対応しています
+- メモリ対策があります
 # 使い方
+最新バージョン3.2での使い方
 ```python:main.py
-# ver3.1 
 import pygps2
 from machine import UART, Pin
-import time
 gps = UART(0, baudrate=115200, tx=Pin(0), rx=Pin(1))
+analyzed_data = pygps2.init()
 while True:
     raw = gps.read(8192)
     if raw is not None:
@@ -69,11 +72,9 @@ while True:
             del raw
         except Exception as e:
             print(f"error: {e}")
-            continue 
-        analyzed_data = pygps2.analyze(data)
-        #program here to use the analyzed_data
-        del data
-    time.sleep(0.01)
+            continue
+        analyzed_data = pygps2.analyze(data, oldata=analyzed_data)
+
 
 ```
 # 詳細な使い方
@@ -84,6 +85,7 @@ while True:
 動かない場合は上記のmain.pyを使ってみてください。
 
 UART(0, baudrate=115200, tx=Pin(0), rx=Pin(1))は接続されているピンに合わせて変更してください。
+
 # サンプル
 出力されるデータの例(analyze_nmea_dataが返す)
 ```python
