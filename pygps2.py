@@ -11,6 +11,9 @@ sts = []
 OBTAIN_IDENTIFLER_FROM_GSA=True
 #Possibly useful for modules using two or more satellite systems
 
+IN_BAND_DATA_INTO_GSV=True
+#Set whether to obtain multi-band information
+#Disable if an error occurs
 
 def convert_to_degrees(coord, direction):
     if sys.implementation.name == "cpython":
@@ -156,21 +159,21 @@ def parse_gsv(sentence):
     index = 4
     while index + 3 < len(fields) - 1:
         prn = fields[index].strip() if len(fields) > index and fields[index] else '0'
-        satellite_id = (system_type, prn)
-        if satellite_id in sts:
-            index += 4
-            continue
-        sts.append((system_type, prn))
         elevation = fields[index+1].strip() if len(fields) > index+1 and fields[index+1] else '0.0'
         azimuth = fields[index+2].strip() if len(fields) > index+2 and fields[index+2] else '0.0'
         snr_field = fields[index+3].strip() if len(fields) > index+3 and fields[index+3] else '0.0'
         snr = snr_field.split('*')[0] if '*' in snr_field else snr_field
+        if IN_BAND_DATA_INTO_GSV == True:
+            band = fields[len(fields) - 1].split('*')[0]
+        else:
+            band = 0
         data['satellites_info'].append({
             'prn': prn,
             'type': system_type,
             'elevation': elevation,
             'azimuth': azimuth,
-            'snr': snr
+            'snr': snr,
+            'band': band
         })
         index += 4
     del fields
@@ -320,7 +323,15 @@ def merge_gsv(gsv_list):
     sats = []
     for gsv in gsv_list:
         sats.extend(gsv.get('satellites_info', []))
-    merged['satellites_info'] = sats
+    unique_satellites = {}
+    for sat in sats:
+        key = (sat['prn'], sat['type'], sat['elevation'], sat['azimuth'])
+        if key not in unique_satellites:
+            unique_satellites[key] = {k: sat[k] for k in ['prn', 'type', 'elevation', 'azimuth', 'snr']}
+            unique_satellites[key]['band'] = [int(sat['band'])]
+        else:
+            unique_satellites[key]['band'].append(int(sat['band']))
+    merged['satellites_info'] = list(unique_satellites.values())
     return merged
 
 def tolist(data):
@@ -333,11 +344,9 @@ def init():
     return {'VTG': [{'reference_t': 'T', 'mode_indicator': 'N', 'speed_kmh': '0.0', 'course_over_ground_m': '0.0', 'reference_m': 'M', 'speed_knots': '0.0', 'units_knots': 'N', 'units_kmh': 'K', 'course_over_ground_t': '0.0'}], 'TXT': [], 'GSA': [{'vdop': '0.0', 'fix_status': '1', 'pdop': '0.0', 'fix_select': 'A', 'satellites_used': [], 'hdop': '0.0'}], 'RMC': [{'mode_indicator': 'N', 'date': '000000', 'mag_var_direction': '', 'utc_datetime': '2000-01-01 00:00:00', 'local_datetime': '2000-01-01 00:00:00', 'status': 'V', 'magnetic_variation': '0.0', 'course_over_ground': '0.0', 'speed_over_ground': '0.0', 'latitude': 0.0, 'longitude': 0.0, 'timestamp': '000000.00'}], 'DHV': [{'ecef_x_speed': '', 'ecef_z_speed': '', '3d_speed': '', 'ecef_y_speed': '', 'horizontal_ground_speed': None, 'timestamp': '000000.00'}], 'GSV': [{'num_messages': '0', 'num_satellites': '0', 'satellites_info': [], 'message_num': '0'}], 'ZDA': [{'timezone_offset_minute': '00', 'timezone_offset_hour': '00', 'year': '2000', 'day': '01', 'month': '01', 'timestamp': '000000.00'}], 'GST': [{'rms': '0.0', 'std_lon': '0.0', 'timestamp': '000000.00', 'std_lat': '0.0', 'std_alt': ''}], 'GLL': [{'longitude': 0.0, 'latitude': 0.0, 'timestamp': '000000.00', 'status': 'V', 'mode_indicator': 'N'}], 'GGA': [{'gps_quality': '0', 'hdop': '0.0', 'altitude': '0.0', 'geoid_units': 'M', 'dgps_station_id': '', 'geoid_height': '0.0', 'dgps_age': '', 'altitude_units': 'M', 'num_satellites': '00', 'latitude': 0.0, 'longitude': 0.0, 'timestamp': '000000.00'}]}
 
 def analyze(data, enable_type=(1, 1, 1, 1, 1, 1, 1, 1, 1, 1), oldata={}):
-    global sts
     data = str(data)
     data = tolist(data)
     parsed_data = parse_nmea_sentences(data)
-    sts = []
     analyzed_data = oldata
     parsers = [
         ('GGA', parse_gga), ('GLL', parse_gll), ('RMC', parse_rmc),
