@@ -14,7 +14,7 @@ while True:
         except Exception as e:
             print(f"error: {e}")
             continue 
-        analyzed_data = pygps2.analyze(data, oldata={})
+        analyzed_data = pygps2.analyze(data)
         #program here to use the analyzed_data
         del data
     time.sleep(0.01)

@@ -40,7 +40,7 @@
 GGA:$GNGGA, $GPGGA, $BDGGA
 GLL:$GNGLL, $GPGLL, $BDGLL
 GSA:$GNGSA, $GPGSA, $BDGSA
-GSV:$GPGSV, $BDGSV, $GQGSV, $GLGSV, $GAGSV
+GSV:$GPGSV, $BDGSV, $GQGSV, $GLGSV, $GAGSV, $GBGSV
 RMC:$GNRMC, $GPRMC, $BDRMC
 VTG:$GNVTG, $GPVTG, $BDVTG
 GST:$GNGST, $GPGST, $BDGST
@@ -97,6 +97,7 @@ UART(0, baudrate=115200, tx=Pin(0), rx=Pin(1))は接続されているピンに合わせて変更
 - MicroPython v1.24.1 on 2024-11-29; Raspberry Pi Pico2 with RP2350
 - GPSモジュール: AT6668 (M5Stack GPSモジュールv1.1)
 - GPSモジュール: AT6558 (Air530Z)
+- GPS受信機: GT-505GGBL5-DR-N(秋月電子
 モジュールによっては動作しないかもしれません。その場合出力データを載せてissueを立ててください。
 
 # English 英語

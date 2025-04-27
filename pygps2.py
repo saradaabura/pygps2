@@ -1,4 +1,4 @@
-#Version 3.2
+#Version 3.22
 import re
 import time
 import math
@@ -7,6 +7,10 @@ from decimal import *
 import gc
 
 sts = []
+###CONFIG###
+OBTAIN_IDENTIFLER_FROM_GSA=True
+#Possibly useful for modules using two or more satellite systems
+
 
 def convert_to_degrees(coord, direction):
     if sys.implementation.name == "cpython":
@@ -46,7 +50,7 @@ patterns = {
     'GGA': re.compile(r'\$GNGGA,.*?\*..|\$GPGGA,.*?\*..|\$BDGGA,.*?\*..'),
     'GLL': re.compile(r'\$GNGLL,.*?\*..|\$GPGLL,.*?\*..|\$BDGLL,.*?\*..'),
     'GSA': re.compile(r'\$GNGSA,.*?\*..|\$GPGSA,.*?\*..|\$BDGSA,.*?\*..'),
-    'GSV': re.compile(r'\$GPGSV,.*?\*..|\$BDGSV,.*?\*..|\$GQGSV,.*?\*..|\$GLGSV,.*?\*..|\$GAGSV,.*?\*..'),
+    'GSV': re.compile(r'\$GPGSV,.*?\*..|\$BDGSV,.*?\*..|\$GQGSV,.*?\*..|\$GLGSV,.*?\*..|\$GAGSV,.*?\*..|\$GBGSV,.*?\*..'),
     'RMC': re.compile(r'\$GNRMC,.*?\*..|\$GPRMC,.*?\*..|\$BDRMC,.*?\*..'),
     'VTG': re.compile(r'\$GNVTG,.*?\*..|\$GPVTG,.*?\*..|\$BDVTG,.*?\*..'),
     'GST': re.compile(r'\$GNGST,.*?\*..|\$GPGST,.*?\*..|\$BDGST,.*?\*..'),
@@ -121,7 +125,10 @@ def parse_gsa(sentence):
     satellites_used = []
     for i in range(3, 15):
         if len(fields) > i and fields[i]:
-            satellites_used.append(fields[i])
+            if OBTAIN_IDENTIFLER_FROM_GSA == True:
+                satellites_used.append((fields[i], fields[18].split('*')[0]))
+            else:
+                satellites_used.append((fields[i]))
         else:
             satellites_used.append('0')
     data = {
@@ -326,7 +333,6 @@ def init():
     return {'VTG': [{'reference_t': 'T', 'mode_indicator': 'N', 'speed_kmh': '0.0', 'course_over_ground_m': '0.0', 'reference_m': 'M', 'speed_knots': '0.0', 'units_knots': 'N', 'units_kmh': 'K', 'course_over_ground_t': '0.0'}], 'TXT': [], 'GSA': [{'vdop': '0.0', 'fix_status': '1', 'pdop': '0.0', 'fix_select': 'A', 'satellites_used': [], 'hdop': '0.0'}], 'RMC': [{'mode_indicator': 'N', 'date': '000000', 'mag_var_direction': '', 'utc_datetime': '2000-01-01 00:00:00', 'local_datetime': '2000-01-01 00:00:00', 'status': 'V', 'magnetic_variation': '0.0', 'course_over_ground': '0.0', 'speed_over_ground': '0.0', 'latitude': 0.0, 'longitude': 0.0, 'timestamp': '000000.00'}], 'DHV': [{'ecef_x_speed': '', 'ecef_z_speed': '', '3d_speed': '', 'ecef_y_speed': '', 'horizontal_ground_speed': None, 'timestamp': '000000.00'}], 'GSV': [{'num_messages': '0', 'num_satellites': '0', 'satellites_info': [], 'message_num': '0'}], 'ZDA': [{'timezone_offset_minute': '00', 'timezone_offset_hour': '00', 'year': '2000', 'day': '01', 'month': '01', 'timestamp': '000000.00'}], 'GST': [{'rms': '0.0', 'std_lon': '0.0', 'timestamp': '000000.00', 'std_lat': '0.0', 'std_alt': ''}], 'GLL': [{'longitude': 0.0, 'latitude': 0.0, 'timestamp': '000000.00', 'status': 'V', 'mode_indicator': 'N'}], 'GGA': [{'gps_quality': '0', 'hdop': '0.0', 'altitude': '0.0', 'geoid_units': 'M', 'dgps_station_id': '', 'geoid_height': '0.0', 'dgps_age': '', 'altitude_units': 'M', 'num_satellites': '00', 'latitude': 0.0, 'longitude': 0.0, 'timestamp': '000000.00'}]}
 
 def analyze(data, enable_type=(1, 1, 1, 1, 1, 1, 1, 1, 1, 1), oldata={}):
-    start = time.ticks_cpu()
     global sts
     data = str(data)
     data = tolist(data)
@@ -354,6 +360,4 @@ def analyze(data, enable_type=(1, 1, 1, 1, 1, 1, 1, 1, 1, 1), oldata={}):
             analyzed_data['GSV'] = [merged_gsv]
     del parsed_data
     del data
-    finish = time.ticks_cpu()
-    runtime = finish - start
     return analyzed_data
