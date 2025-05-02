@@ -1,4 +1,4 @@
-#Version 3.22
+#Version 3.3
 import re
 import time
 import math
@@ -12,8 +12,10 @@ OBTAIN_IDENTIFLER_FROM_GSA=True
 #Possibly useful for modules using two or more satellite systems
 
 IN_BAND_DATA_INTO_GSV=True
-#Set whether to obtain multi-band information
-#Disable if an error occurs
+
+#dev
+DETECT_CONVERT_QZS=True
+
 
 def convert_to_degrees(coord, direction):
     if sys.implementation.name == "cpython":
@@ -332,7 +334,22 @@ def merge_gsv(gsv_list):
         else:
             unique_satellites[key]['band'].append(int(sat['band']))
     merged['satellites_info'] = list(unique_satellites.values())
+    if DETECT_CONVERT_QZS == True:
+        merged['satellites_info'] = qzss_detect(merged['satellites_info'])
     return merged
+
+def qzss_detect(info):
+    n = len(info)
+    nn = 0
+    output = []
+    while n > nn:
+        temp_s = info[nn]
+        if temp_s["type"] == "GP" or temp_s["type"] == "GN":
+            if 193 <= int(temp_s["prn"]) <= 210:
+                temp_s["type"] = "QZS"
+        output.append(temp_s)
+        nn += 1
+    return output
 
 def tolist(data):
         sentences = data.split('$')
