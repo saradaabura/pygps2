@@ -1,145 +1,146 @@
-# o—Íƒf[ƒ^‚Æ“à—e
+# å‡ºåŠ›ãƒ‡ãƒ¼ã‚¿ã¨å†…å®¹
 
-**GSAƒf[ƒ^**
+**GSAãƒ‡ãƒ¼ã‚¿**
 ```
-{'vdop': '2.3', 'fix_status': '3', 'pdop': '2.7', 'fix_select': 'A', 'satellites_used': ['66', '27', '02', '01', '08', '03', '31', '17'], 'hdop': '1.4'}
+'GSA': [{'fix_select': 'A', 'fix_status': '3', 'satellites_used': [('194', '1'), ('08', '1'), ('27', '1'), ('195', '1'), ('16', '1'), ('02', '1'), ('199', '1')], 'pdop': '0.8', 'hdop': '0.55', 'vdop': '0.58'}]
 ```
 - hdop : HDOP
 - vdop : VDOP
-- fix_status_ : Fixó‘Ô(1:NoFix 2:2DFix 3:3Dfix)
-- satellites_used : g—p‰q¯PRN”Ô†
+- fix_status_ : FixçŠ¶æ…‹(1:NoFix 2:2DFix 3:3Dfix)
+- satellites_used : ä½¿ç”¨è¡›æ˜ŸPRNç•ªå·ã¨ã‚ªãƒ—ã‚·ãƒ§ãƒ³æ©Ÿèƒ½ã®è­˜åˆ¥å­ (PRN, CODE)
 - pdop : PDOP
-- fix_select : ‘ª‹—ƒ‚[ƒh(A:ƒI[ƒg M:ƒ}ƒjƒ…ƒAƒ‹)
+- fix_select : æ¸¬è·ãƒ¢ãƒ¼ãƒ‰(A:ã‚ªãƒ¼ãƒˆ M:ãƒãƒ‹ãƒ¥ã‚¢ãƒ«)
 
-**GSVƒf[ƒ^**
+**GSVãƒ‡ãƒ¼ã‚¿**
 ```
-{'num_messages': '7', 'num_satellites': '7', 'satellites_info': [{'snr': '17', 'elevation': '06', 'prn': '22', 'type': 'GP', 'azimuth': '204'}, {'snr': '24', 'elevation': '56', 'prn': '66', 'type': 'GL', 'azimuth': '192'}, {'snr': '28', 'elevation': '0.0', 'prn': '19', 'type': 'GA', 'azimuth': '0.0'}, {'snr': '0.0', 'elevation': '26', 'prn': '34', 'type': 'BD', 'azimuth': '131'}, {'snr': '28', 'elevation': '28', 'prn': '02', 'type': 'GQ', 'azimuth': '195'}], 'message_num': '1'}
+'GSV': [{'num_messages': '21', 'message_num': '1', 'num_satellites': '24', 'satellites_info': [{'prn': '194', 'type': 'QZS', 'elevation': '89', 'azimuth': '332', 'snr': '18', 'band': [1, 8]}]}]}
 ```
-- num_messages : ƒƒbƒZ[ƒW”
-- num_satellites : ‰q¯”
-- satellites_info : ‰q¯î•ñ
+- num_messages : ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸æ•°
+- num_satellites : è¡›æ˜Ÿæ•°(lenã‹ã‚‰å–å¾—ã™ã‚‹ã€€ä¿®æ­£)
+- satellites_info : è¡›æ˜Ÿæƒ…å ±
   - snr : SNR
-  - elevation : ‹ÂŠp
-  - prn : PRN”Ô†
-  - type : ‰q¯¯•Êq
-  - azimuth : •ûˆÊŠp
-- message_num : ƒƒbƒZ[ƒW”Ô†
+  - elevation : ä»°è§’
+  - prn : PRNç•ªå·
+  - type : è¡›æ˜Ÿè­˜åˆ¥å­
+  - azimuth : æ–¹ä½è§’
+  - band : å‘¨æ³¢æ•°å¸¯(ã‚ªãƒ—ã‚·ãƒ§ãƒ³)
+- message_num : ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ç•ªå·
 
-**GGAƒf[ƒ^**
+**GGAãƒ‡ãƒ¼ã‚¿**
 ```
-{'gps_quality': '1', 'hdop': '2.8', 'altitude': '88.29', 'geoid_units': 'M', 'dgps_station_id': '', 'geoid_height': '36.37', 'dgps_age': '', 'altitude_units': 'M', 'num_satellites': '06', 'latitude': 0.0, 'longitude': 0.0, 'timestamp': '094023.00'}
+{'GGA': [{'timestamp': '298893.000', 'latitude': '0.0', 'longitude': '0.0', 'gps_quality': '1', 'num_satellites': '52', 'hdop': '0.55', 'altitude': '76.219', 'altitude_units': 'M', 'geoid_height': '37.106', 'geoid_units': 'M', 'dgps_age': '', 'dgps_station_id': ''}]
 ```
-- gps_quality : GPS•i¿
+- gps_quality : GPSå“è³ª
 - hdop : HDOP
-- altitude : •W‚
-- geoid_units : ƒWƒIƒCƒh‚‚³’PˆÊ
-- dgps_station_id : DGPSŠî’n‹ÇID
-- geoid_height : ƒWƒIƒCƒh‚‚³
-- dgps_age : DGPSƒf[ƒ^Œn
-- altitude_units : •W‚’PˆÊ
-- num_satellites : ‰q¯”
-- latitude : ˆÜ“x (“x‚Åo—Í‚³‚ê‚é) strŒ^
-- longitude : Œo“x@(“x‚Åo—Í‚³‚ê‚é) strŒ^
-- timestamp : ƒ^ƒCƒ€ƒXƒ^ƒ“ƒv (¶ƒf[ƒ^)
+- altitude : æ¨™é«˜
+- geoid_units : ã‚¸ã‚ªã‚¤ãƒ‰é«˜ã•å˜ä½
+- dgps_station_id : DGPSåŸºåœ°å±€ID
+- geoid_height : ã‚¸ã‚ªã‚¤ãƒ‰é«˜ã•
+- dgps_age : DGPSãƒ‡ãƒ¼ã‚¿ç³»
+- altitude_units : æ¨™é«˜å˜ä½
+- num_satellites : è¡›æ˜Ÿæ•°
+- latitude : ç·¯åº¦ (åº¦ã§å‡ºåŠ›ã•ã‚Œã‚‹) strå‹
+- longitude : çµŒåº¦ã€€(åº¦ã§å‡ºåŠ›ã•ã‚Œã‚‹) strå‹
+- timestamp : ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ— (ç”Ÿãƒ‡ãƒ¼ã‚¿)
 
-**RMCƒf[ƒ^**
+**RMCãƒ‡ãƒ¼ã‚¿**
 ```
 [{'mode_indicator': 'N', 'date': '170325', 'mag_var_direction': '', 'utc_datetime': '2025-03-17 07:57:01', 'local_datetime': '2025-03-17 16:57:01', 'status': 'V', 'magnetic_variation': '0.0', 'course_over_ground': '0.0', 'speed_over_ground': '0.0', 'latitude': 0.0, 'longitude': 0.0, 'timestamp': '075701.00'}]
 ```
-- longitude : Œo“x (“x‚Åo—Í‚³‚ê‚é) strŒ^
-- latitude : ˆÜ“x (“x‚Åo—Í‚³‚ê‚é) strŒ^
-- course_over_ground : ˆÚ“®•ûŒü‚ÌŠp“x
-- status : ƒXƒe[ƒ^ƒX
-- mag_var_direction : ¥‹C•ÎŠp•ûŒü
-- magnetic_variation : ¥‹C•ÎŠp
-- mode_indicator : ƒ‚[ƒhƒCƒ“ƒWƒP[ƒ^
-- timestamp : ƒ^ƒCƒ€ƒXƒ^ƒ“ƒv (¶ƒf[ƒ^)
-- speed_over_ground : ’nã‘¬“x
-- date : “ú•t (¶ƒf[ƒ^)
-- local_datetime : Œo“x‚©‚çZo‚³‚ê‚½ƒ[ƒJƒ‹
-- utc_datetime : UTC
+- longitude : çµŒåº¦ (åº¦ã§å‡ºåŠ›ã•ã‚Œã‚‹) strå‹
+- latitude : ç·¯åº¦ (åº¦ã§å‡ºåŠ›ã•ã‚Œã‚‹) strå‹
+- course_over_ground : ç§»å‹•æ–¹å‘ã®è§’åº¦
+- status : ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹
+- mag_var_direction : ç£æ°—åè§’æ–¹å‘
+- magnetic_variation : ç£æ°—åè§’
+- mode_indicator : ãƒ¢ãƒ¼ãƒ‰ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿
+- timestamp : ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ— (ç”Ÿãƒ‡ãƒ¼ã‚¿)
+- speed_over_ground : åœ°ä¸Šé€Ÿåº¦
+- date : æ—¥ä»˜ (ç”Ÿãƒ‡ãƒ¼ã‚¿)
+- local_datetime : çµŒåº¦ã‹ã‚‰ç®—å‡ºã•ã‚ŒãŸãƒ­ãƒ¼ã‚«ãƒ«æ™‚åˆ»
+- utc_datetime : UTCæ™‚åˆ»
 
-**GLLƒf[ƒ^**
+**GLLãƒ‡ãƒ¼ã‚¿**
 ```
 {'longitude': 0.0, 'latitude': 0.0, 'timestamp': '094023.00', 'status': 'A', 'mode_indicator': 'A'}
 ```
-- longitude : Œo“x (“x‚Åo—Í‚³‚ê‚é) strŒ^
-- latitude : ˆÜ“x (“x‚Åo—Í‚³‚ê‚é) SstrŒ^
-- timestamp : ƒ^ƒCƒ€ƒXƒ^ƒ“ƒv (¶ƒf[ƒ^)
-- status : ƒXƒe[ƒ^ƒX
-- mode_indicator : ƒ‚[ƒhƒCƒ“ƒWƒP[ƒ^
+- longitude : çµŒåº¦ (åº¦ã§å‡ºåŠ›ã•ã‚Œã‚‹) strå‹
+- latitude : ç·¯åº¦ (åº¦ã§å‡ºåŠ›ã•ã‚Œã‚‹) Sstrå‹
+- timestamp : ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ— (ç”Ÿãƒ‡ãƒ¼ã‚¿)
+- status : ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹
+- mode_indicator : ãƒ¢ãƒ¼ãƒ‰ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿
 
-**VTGƒf[ƒ^**
+**VTGãƒ‡ãƒ¼ã‚¿**
 ```
 {'reference_t': 'T', 'mode_indicator': 'A', 'speed_kmh': '0.92', 'course_over_ground_m': '0.0', 'reference_m': 'M', 'speed_knots': '0.50', 'units_knots': 'N', 'units_kmh': 'K', 'course_over_ground_t': '0.0'}
 ```
-- reference_t : ^–k, ¥–k‚Ì”»•Ê(T:^–k M:¥–k)
-- mode_indicator : ƒ‚[ƒhƒCƒ“ƒWƒP[ƒ^
-- speed_kmh : ’nã‘¬“x(km/h)
-- course_over_ground_m : ¥–k‚ğŠî€‚Æ‚µ‚½i˜H‚ÌŠp“x
-- reference_m : ^–k, ¥–k‚Ì”»•Ê(T:^–k M:¥–k)
-- speed_knots : ’nã‘¬“x(knots)
-- units_knots : ’PˆÊ‚ğ¦‚·
-- units_kmh : ’PˆÊ‚ğ¦‚·
-- course_over_ground_t : ^–k‚ğŠî€‚Æ‚µ‚½i˜H‚ÌŠp“x
+- reference_t : çœŸåŒ—, ç£åŒ—ã®åˆ¤åˆ¥(T:çœŸåŒ— M:ç£åŒ—)
+- mode_indicator : ãƒ¢ãƒ¼ãƒ‰ã‚¤ãƒ³ã‚¸ã‚±ãƒ¼ã‚¿
+- speed_kmh : åœ°ä¸Šé€Ÿåº¦(km/h)
+- course_over_ground_m : ç£åŒ—ã‚’åŸºæº–ã¨ã—ãŸé€²è·¯ã®è§’åº¦
+- reference_m : çœŸåŒ—, ç£åŒ—ã®åˆ¤åˆ¥(T:çœŸåŒ— M:ç£åŒ—)
+- speed_knots : åœ°ä¸Šé€Ÿåº¦(knots)
+- units_knots : å˜ä½ã‚’ç¤ºã™
+- units_kmh : å˜ä½ã‚’ç¤ºã™
+- course_over_ground_t : çœŸåŒ—ã‚’åŸºæº–ã¨ã—ãŸé€²è·¯ã®è§’åº¦
 
-**ZDAƒf[ƒ^**
+**ZDAãƒ‡ãƒ¼ã‚¿**
 ```
 [{'message': '18', 'additional_field1': '2025', 'timestamp': '063801.00', 'status': '03', 'additional_field2': None}]
 ```
-- message : ƒƒbƒZ[ƒW”
-- additional_field1 : ƒJƒXƒ^ƒ€(ƒ‚ƒWƒ…[ƒ‹‚É‚æ‚Á‚ÄˆÙ‚È‚é)
-- timestamp : ƒ^ƒCƒ€ƒXƒ^ƒ“ƒv (¶ƒf[ƒ^)
-- status : ƒXƒe[ƒ^ƒX
-- additional_field2 : ƒJƒXƒ^ƒ€(ƒ‚ƒWƒ…[ƒ‹‚É‚æ‚Á‚ÄˆÙ‚È‚é)
+- message : ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸æ•°
+- additional_field1 : ã‚«ã‚¹ã‚¿ãƒ (ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã«ã‚ˆã£ã¦ç•°ãªã‚‹)
+- timestamp : ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ— (ç”Ÿãƒ‡ãƒ¼ã‚¿)
+- status : ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹
+- additional_field2 : ã‚«ã‚¹ã‚¿ãƒ (ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã«ã‚ˆã£ã¦ç•°ãªã‚‹)
 
-**TXTƒf[ƒ^**
+**TXTãƒ‡ãƒ¼ã‚¿**
 ```
 [{'message': '01', 'additional_field1': 'JS=0', 'timestamp': '01', 'status': '02', 'additional_field2': None}]
 ```
-‰½s‚©‚É‚í‚½‚Á‚Äo—Í‚³‚ê‚é
-- message : ƒƒbƒZ[ƒW”(g—p‚Å‚«‚È‚¢ê‡‚ ‚è)
-- additional_field1 : ƒJƒXƒ^ƒ€(ƒ‚ƒWƒ…[ƒ‹‚É‚æ‚Á‚ÄˆÙ‚È‚é)
-- timestamp : ƒ‚ƒWƒ…[ƒ‹‚É‚æ‚Á‚ÄˆÙ‚È‚éB(¡Œã•ÏX—\’è)
-- status : ƒXƒe[ƒ^ƒX
-- additional_field2 : ƒJƒXƒ^ƒ€(ƒ‚ƒWƒ…[ƒ‹‚É‚æ‚Á‚ÄˆÙ‚È‚é)
+ä½•è¡Œã‹ã«ã‚ãŸã£ã¦å‡ºåŠ›ã•ã‚Œã‚‹
+- message : ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸æ•°(ä½¿ç”¨ã§ããªã„å ´åˆã‚ã‚Š)
+- additional_field1 : ã‚«ã‚¹ã‚¿ãƒ (ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã«ã‚ˆã£ã¦ç•°ãªã‚‹)
+- timestamp : ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã«ã‚ˆã£ã¦ç•°ãªã‚‹ã€‚(ä»Šå¾Œå¤‰æ›´äºˆå®š)
+- status : ã‚¹ãƒ†ãƒ¼ã‚¿ã‚¹
+- additional_field2 : ã‚«ã‚¹ã‚¿ãƒ (ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã«ã‚ˆã£ã¦ç•°ãªã‚‹)
 
-**DHVƒf[ƒ^**
+**DHVãƒ‡ãƒ¼ã‚¿**
 ```
 {'ecef_x_speed': '-0.294', 'ecef_z_speed': '-0.315', '3d_speed': '0.43', 'ecef_y_speed': '0.033', 'horizontal_ground_speed': None, 'timestamp': '052745.00'}
 ```
-- ecef_x_speed : x²•ûŒü‚Ì‘¬“x
-- ecef_z_speed : z²•ûŒü‚Ì‘¬“x
-- 3d_speed : 3ŸŒ³‘¬“x
-- ecef_y_speed : y²•ûŒü‚Ì‘¬“x
-- horizontal_ground_speed : …•½’nã‘¬“x
-- timestamp : ƒ^ƒCƒ€ƒXƒ^ƒ“ƒv(¶ƒf[ƒ^‚Æ‚µ‚Ä‚ÌUTCŠÔ)
+- ecef_x_speed : xè»¸æ–¹å‘ã®é€Ÿåº¦
+- ecef_z_speed : zè»¸æ–¹å‘ã®é€Ÿåº¦
+- 3d_speed : 3æ¬¡å…ƒé€Ÿåº¦
+- ecef_y_speed : yè»¸æ–¹å‘ã®é€Ÿåº¦
+- horizontal_ground_speed : æ°´å¹³åœ°ä¸Šé€Ÿåº¦
+- timestamp : ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—(ç”Ÿãƒ‡ãƒ¼ã‚¿ã¨ã—ã¦ã®UTCæ™‚é–“)
 
-**GSTƒf[ƒ^**
+**GSTãƒ‡ãƒ¼ã‚¿**
 ```
 {'rms': '30.9', 'std_lon': '32.9', 'timestamp': '052745.00', 'std_lat': '39.6', 'std_alt': '37.5'}
 ```
-- rms: •½‹Ï“ñæŒë·(Root Mean Square Error)
-- std_lon: Œo“x•ûŒü‚Ì•W€•Î·(ƒ[ƒgƒ‹’PˆÊ)
-- timestamp: ƒ^ƒCƒ€ƒXƒ^ƒ“ƒv(¶ƒf[ƒ^‚Æ‚µ‚Ä‚ÌUTCŠÔ)
-- std_lat: ˆÜ“x•ûŒü‚Ì•W€•Î·(ƒ[ƒgƒ‹’PˆÊ)
-- std_alt: ‚“x•ûŒü‚Ì•W€•Î·(ƒ[ƒgƒ‹’PˆÊ)
+- rms: å¹³å‡äºŒä¹—èª¤å·®(Root Mean Square Error)
+- std_lon: çµŒåº¦æ–¹å‘ã®æ¨™æº–åå·®(ãƒ¡ãƒ¼ãƒˆãƒ«å˜ä½)
+- timestamp: ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—(ç”Ÿãƒ‡ãƒ¼ã‚¿ã¨ã—ã¦ã®UTCæ™‚é–“)
+- std_lat: ç·¯åº¦æ–¹å‘ã®æ¨™æº–åå·®(ãƒ¡ãƒ¼ãƒˆãƒ«å˜ä½)
+- std_alt: é«˜åº¦æ–¹å‘ã®æ¨™æº–åå·®(ãƒ¡ãƒ¼ãƒˆãƒ«å˜ä½)
 
-# “ü—Íƒf[ƒ^‚Æ“à—e
+# å…¥åŠ›ãƒ‡ãƒ¼ã‚¿ã¨å†…å®¹
 
 **analyze**
-g—p—á
+ä½¿ç”¨ä¾‹
 pygps2.analyze(data, [1, 1,1 ,1 ,1, 0, 0, 0, 1, 1], oldata)
 
-data‚É‚Í‰üs‚ª‚ ‚éƒfƒR[ƒhƒf[ƒ^‚ğ“ü—Í
+dataã«ã¯æ”¹è¡ŒãŒã‚ã‚‹ãƒ‡ã‚³ãƒ¼ãƒ‰ãƒ‡ãƒ¼ã‚¿ã‚’å…¥åŠ›
 
-- 1‚Â–Ú‚Í•K{
-- 2‚Â–Ú‚Í‰ğÍ‚·‚éƒf[ƒ^‚Ìí—Ş‚ğw’è‚·‚éƒŠƒXƒg
-  - 0 : ‰ğÍ‚µ‚È‚¢
-  - 1 : ‰ğÍ‚·‚é
-- 3‚Â–Ú‚ÍˆÈ‘O‚Ìƒf[ƒ^‚ğ“ü—Í‚·‚é
-  - ˆêƒ‹[ƒv‘O‚Ì‰ğÍƒf[ƒ^‚ğ“Š“ü
-  -‚±‚ê‚ÍAƒƒ‚ƒŠ‘Îô‚Ì‚½‚ß3.2‚©‚ç’Ç‰Á‚³‚ê‚½‹@”\‚Å‚ ‚é
+- 1ã¤ç›®ã¯å¿…é ˆ
+- 2ã¤ç›®ã¯è§£æã™ã‚‹ãƒ‡ãƒ¼ã‚¿ã®ç¨®é¡ã‚’æŒ‡å®šã™ã‚‹ãƒªã‚¹ãƒˆ
+  - 0 : è§£æã—ãªã„
+  - 1 : è§£æã™ã‚‹
+- 3ã¤ç›®ã¯ä»¥å‰ã®ãƒ‡ãƒ¼ã‚¿ã‚’å…¥åŠ›ã™ã‚‹
+  - ä¸€ãƒ«ãƒ¼ãƒ—å‰ã®è§£æãƒ‡ãƒ¼ã‚¿ã‚’æŠ•å…¥
+  -ã“ã‚Œã¯ã€ãƒ¡ãƒ¢ãƒªå¯¾ç­–ã®ãŸã‚3.2ã‹ã‚‰è¿½åŠ ã•ã‚ŒãŸæ©Ÿèƒ½ã§ã‚ã‚‹
 ```
 enable_type:
 [0]: GGA
@@ -154,18 +155,18 @@ enable_type:
 [9]: GSV
 ```
 
-## ˆÈ‰º‚ÍVer3.1ˆÈ‘O‚Ìpygps2.py‚ğg—p‚µ‚½Û‚Ì“ü—Íƒf[ƒ^‚Æ“à—e
+## ä»¥ä¸‹ã¯Ver3.1ä»¥å‰ã®pygps2.pyã‚’ä½¿ç”¨ã—ãŸéš›ã®å…¥åŠ›ãƒ‡ãƒ¼ã‚¿ã¨å†…å®¹
 **analyze_nmea_date**
 
-g—p—á
+ä½¿ç”¨ä¾‹
 pygps2.analyze_nmea_data(parsed_data, [1, 1,1 ,1 ,1, 0, 0, 0, 1, 1])
 
-- parsed_data : parse_nmea_sentences‚Å‰ğÍ‚³‚ê‚½ƒf[ƒ^
-- [1,1,1,1,1,0,0,0,1,1] : ‰ğÍ‚·‚éƒf[ƒ^‚Ìí—Ş‚ğw’è‚·‚éƒŠƒXƒg
-•K{‚Ì€–Ú‚Å‚Í‚È‚¢ ƒfƒtƒHƒ‹ƒg’l‚Í‚·‚×‚Ä—LŒø‚É‚È‚Á‚Ä‚¢‚é([1, 1, 1, 1, 1, 1, 1 , 1, 1, 1])
-  - 0 : ‰ğÍ‚µ‚È‚¢
-  - 1 : ‰ğÍ‚·‚é
-‚Ç‚ê‚ª‚Ç‚±‚É‘Î‰‚µ‚Ä‚¢‚é‚©‚ÍˆÈ‰º‚Ì’Ê‚è‚Å‚ ‚é
+- parsed_data : parse_nmea_sentencesã§è§£æã•ã‚ŒãŸãƒ‡ãƒ¼ã‚¿
+- [1,1,1,1,1,0,0,0,1,1] : è§£æã™ã‚‹ãƒ‡ãƒ¼ã‚¿ã®ç¨®é¡ã‚’æŒ‡å®šã™ã‚‹ãƒªã‚¹ãƒˆ
+å¿…é ˆã®é …ç›®ã§ã¯ãªã„ ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆå€¤ã¯ã™ã¹ã¦æœ‰åŠ¹ã«ãªã£ã¦ã„ã‚‹([1, 1, 1, 1, 1, 1, 1 , 1, 1, 1])
+  - 0 : è§£æã—ãªã„
+  - 1 : è§£æã™ã‚‹
+ã©ã‚ŒãŒã©ã“ã«å¯¾å¿œã—ã¦ã„ã‚‹ã‹ã¯ä»¥ä¸‹ã®é€šã‚Šã§ã‚ã‚‹
 ```
 enable_type:
 [0]: GGA
@@ -180,15 +181,15 @@ enable_type:
 [9]: GSV
 ```
 
-‹@”\
-ƒZƒ“ƒeƒ“ƒX‰ğÍ‚ğs‚¤ŠÖ”
+æ©Ÿèƒ½
+ã‚»ãƒ³ãƒ†ãƒ³ã‚¹è§£æã‚’è¡Œã†é–¢æ•°
 
 **parse_nmea_sentences**
 
-g—p—á
+ä½¿ç”¨ä¾‹
 pygps2.parse_nmea_sentences(data)
 
-- data : ‰üs‚È‚Ç‚ğŠÜ‚ñ‚¾¶ƒf[ƒ^
+- data : æ”¹è¡Œãªã©ã‚’å«ã‚“ã ç”Ÿãƒ‡ãƒ¼ã‚¿
 
-‹@”\
-¶‚ÌƒZƒ“ƒeƒ“ƒX‚ğƒŠƒXƒg‰»
+æ©Ÿèƒ½
+ç”Ÿã®ã‚»ãƒ³ãƒ†ãƒ³ã‚¹ã‚’ãƒªã‚¹ãƒˆåŒ–
