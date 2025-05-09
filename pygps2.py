@@ -61,9 +61,16 @@ patterns = {
     'GST': re.compile(r'\$GNGST,.*?\*..|\$GPGST,.*?\*..|\$BDGST,.*?\*..'),
     'DHV': re.compile(r'\$GNDHV,.*?\*..|\$GPDHV,.*?\*..|\$BDDHV,.*?\*..'),
     'ZDA': re.compile(r'\$GNZDA,.*?\*..|\$GPZDA,.*?\*..|\$BDZDA,.*?\*..'),
+    'GNS': re.compile(r'\$GNGNS,.*?\*..|\$GPGNS,.*?\*..'),
     'TXT': re.compile(r'\$GNTXT,.*?\*..|\$GPTXT,.*?\*..|\$BDTXT,.*?\*..')
 }
-import re
+
+"""
+If the number of sentences to be classified is 6 or more, micropython will stop execution with an error.
+Therefore, it is recommended to select the necessary sentences. (especially GSV)
+Default: ($GPGSV, $BDGSV, $GQGSV, $GLGSV, $GAGSV, $GBGSV)
+It will work if you delete unnecessary sentences from here.
+"""
 
 def verify_checksum(sentence):
     if '*' not in sentence:
@@ -224,6 +231,7 @@ def parse_rmc(sentence):
     return data
 
 def parse_vtg(sentence):
+    print(sentence)
     fields = sentence.split(',')
     data = {
         'course_over_ground_t': fields[1] if len(fields) > 1 and fields[1] else '0.0',
@@ -273,6 +281,23 @@ def parse_zda(sentence):
         'year': fields[4] if len(fields) > 4 else None,
         'timezone_offset_hour': fields[5] if len(fields) > 5 else None,
         'timezone_offset_minute': fields[6].split('*')[0] if len(fields) > 6 and '*' in fields[6] else None
+    }
+    del fields
+    return data
+
+def parse_gns(sentence):
+    fields = sentence.split(',')
+    data = {
+        'utc_time': fields[1] if len(fields) > 1 and fields[1] else '000000.0',
+        'latitude': convert_to_degrees(fields[2], fields[3]) if len(fields) > 3 and fields[2] and fields[3] else 0.0,
+        'longitude': convert_to_degrees(fields[4], fields[5]) if len(fields) > 5 and fields[4] and fields[5] else 0.0,
+        'mode_indicator': fields[6] if len(fields) > 6 and fields[6] else 'N',
+        'use_sv': fields[7] if len(fields) > 7 and fields[7] else '0',
+        'hdop': fields[8] if len(fields) > 8 and fields[8] else '0.0',
+        'msl': fields[9] if len(fields) > 9 and fields[9] else '0.0',
+        'geoid_alt': fields[11] if len(fields) > 11 and fields[11] else '0.0',
+        'age_of_differential_data': fields[13] if len(fields) > 13 and fields[13] else '0.0',
+        'station_id': fields[14] if len(fields) > 14 and fields[14] else '0000'
     }
     del fields
     return data
@@ -360,7 +385,7 @@ def tolist(data):
 def init():
     return {'VTG': [{'reference_t': 'T', 'mode_indicator': 'N', 'speed_kmh': '0.0', 'course_over_ground_m': '0.0', 'reference_m': 'M', 'speed_knots': '0.0', 'units_knots': 'N', 'units_kmh': 'K', 'course_over_ground_t': '0.0'}], 'TXT': [], 'GSA': [{'vdop': '0.0', 'fix_status': '1', 'pdop': '0.0', 'fix_select': 'A', 'satellites_used': [], 'hdop': '0.0'}], 'RMC': [{'mode_indicator': 'N', 'date': '000000', 'mag_var_direction': '', 'utc_datetime': '2000-01-01 00:00:00', 'local_datetime': '2000-01-01 00:00:00', 'status': 'V', 'magnetic_variation': '0.0', 'course_over_ground': '0.0', 'speed_over_ground': '0.0', 'latitude': 0.0, 'longitude': 0.0, 'timestamp': '000000.00'}], 'DHV': [{'ecef_x_speed': '', 'ecef_z_speed': '', '3d_speed': '', 'ecef_y_speed': '', 'horizontal_ground_speed': None, 'timestamp': '000000.00'}], 'GSV': [{'num_messages': '0', 'num_satellites': '0', 'satellites_info': [], 'message_num': '0'}], 'ZDA': [{'timezone_offset_minute': '00', 'timezone_offset_hour': '00', 'year': '2000', 'day': '01', 'month': '01', 'timestamp': '000000.00'}], 'GST': [{'rms': '0.0', 'std_lon': '0.0', 'timestamp': '000000.00', 'std_lat': '0.0', 'std_alt': ''}], 'GLL': [{'longitude': 0.0, 'latitude': 0.0, 'timestamp': '000000.00', 'status': 'V', 'mode_indicator': 'N'}], 'GGA': [{'gps_quality': '0', 'hdop': '0.0', 'altitude': '0.0', 'geoid_units': 'M', 'dgps_station_id': '', 'geoid_height': '0.0', 'dgps_age': '', 'altitude_units': 'M', 'num_satellites': '00', 'latitude': 0.0, 'longitude': 0.0, 'timestamp': '000000.00'}]}
 
-def analyze(data, enable_type=(1, 1, 1, 1, 1, 1, 1, 1, 1, 1), oldata={}):
+def analyze(data, enable_type=(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1), oldata={}):
     data = str(data)
     data = tolist(data)
     parsed_data = parse_nmea_sentences(data)
@@ -368,7 +393,7 @@ def analyze(data, enable_type=(1, 1, 1, 1, 1, 1, 1, 1, 1, 1), oldata={}):
     parsers = [
         ('GGA', parse_gga), ('GLL', parse_gll), ('RMC', parse_rmc),
         ('VTG', parse_vtg), ('GST', parse_gst), ('DHV', parse_dhv),
-        ('ZDA', parse_zda), ('TXT', parse_txt)
+        ('ZDA', parse_zda), ('TXT', parse_txt), ('GNS', parse_gns)
     ]
     for i, (key, parser) in enumerate(parsers):
         if parsed_data[key] != []:
@@ -387,3 +412,4 @@ def analyze(data, enable_type=(1, 1, 1, 1, 1, 1, 1, 1, 1, 1), oldata={}):
     del parsed_data
     del data
     return analyzed_data
+

@@ -52,6 +52,11 @@ DHV:$GNDHV, $GPDHV, $BDDHV
 ZDA:$GNZDA, $GPZDA, $BDZDA
 TXT:$GNTXT, $GPTXT, $BDTXT
 ```
+POINT
+分類するセンテンスが6以上になるとmicropythonではエラーで実行が止まる。よって必要なセンテンスを選択することが好ましい。(特にGSV)
+デフォルト:($GPGSV,$BDGSV,$GQGSV,$GLGSV,$GAGSV,$GBGSV)
+このなかから不要なセンテンスを消すことで、動作する。
+
 # 機能
 - GSVのデータを解析でき、衛星の情報を取得できます。(不完全)
 - GGAのデータを解析でき、緯度、経度、高度、UTC時刻、測位精度、DGPS情報を取得できます。(不完全)
@@ -160,8 +165,14 @@ VTG:$GNVTG, $GPVTG, $BDVTG
 GST:$GNGST, $GPGST, $BDGST
 DHV:$GNDHV, $GPDHV, $BDDHV
 ZDA:$GNZDA, $GPZDA, $BDZDA
-TXT:$GNTXT, $GPTXT, $BDTXT
+TXT:$GNTXT,$GPTXT, $BDTXT
 ```
+POINT
+If the number of sentences to be classified is 6 or more, micropython will stop execution with an error.
+Therefore, it is recommended to select the necessary sentences. (especially GSV)
+Default: ($GPGSV, $BDGSV, $GQGSV, $GLGSV, $GAGSV, $GBGSV)
+It will work if you delete unnecessary sentences from here.
+
 # Function
 - It can analyze GSV data and obtain satellite information. (Incomplete)
 - You can analyze GGA data and obtain latitude, longitude, altitude, UTC time, positioning accuracy, and DGPS information. (Incomplete)
