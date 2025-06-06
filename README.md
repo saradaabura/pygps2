@@ -1,45 +1,45 @@
-# Japanese “ú–{Œê
+# Japanese æ—¥æœ¬èª
 # pygps2
-‚±‚Ìƒ‰ƒCƒuƒ‰ƒŠ‚Í©—R‚Ég—p‚µ‚Ä‚­‚¾‚³‚¢B‚Ç‚ñ‚Èê‡‚Å‚àOK‚Å‚·
-# ƒo[ƒWƒ‡ƒ“î•ñ
+ã“ã®ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã¯è‡ªç”±ã«ä½¿ç”¨ã—ã¦ãã ã•ã„ã€‚ã©ã‚“ãªå ´åˆã§ã‚‚OKã§ã™
+# ãƒãƒ¼ã‚¸ãƒ§ãƒ³æƒ…å ±
 
-2.0 ì¬
+2.0 ä½œæˆ
 
-2.1 GSV‰ğÍ‚É‘Î‚µA‰q¯‚Ìí—Ş‚ğæ“¾‚Å‚«‚é‚æ‚¤‚É•ÏX
+2.1 GSVè§£æã«å¯¾ã—ã€è¡›æ˜Ÿã®ç¨®é¡ã‚’å–å¾—ã§ãã‚‹ã‚ˆã†ã«å¤‰æ›´
 
-2.2 ‰q¯‚Ìƒfƒ…ƒAƒ‹ƒoƒ“ƒh‚É‚æ‚éƒJƒEƒ“ƒgd•¡‚Ì‰ğÁ
+2.2 è¡›æ˜Ÿã®ãƒ‡ãƒ¥ã‚¢ãƒ«ãƒãƒ³ãƒ‰ã«ã‚ˆã‚‹ã‚«ã‚¦ãƒ³ãƒˆé‡è¤‡ã®è§£æ¶ˆ
 
-2.3 GST‰ğÍŠÖ”’Ç‰Á
+2.3 GSTè§£æé–¢æ•°è¿½åŠ 
 
-2.4 RMC‚ÉŒo“x‚©‚çŒvZ‚µ‚½ƒ[ƒJƒ‹‚ğ’Ç‰Á
+2.4 RMCã«çµŒåº¦ã‹ã‚‰è¨ˆç®—ã—ãŸãƒ­ãƒ¼ã‚«ãƒ«æ™‚åˆ»ã‚’è¿½åŠ 
 
-2.5 DHV ZDA TXT’Ç‰Á RMC“ú•t‰Šú’l 2000/01/01‚Ö•ÏX
+2.5 DHV ZDA TXTè¿½åŠ  RMCæ—¥ä»˜åˆæœŸå€¤ 2000/01/01ã¸å¤‰æ›´
 
-2.6 –¢’m‚Ìƒpƒ^[ƒ“‚Ìƒf[ƒ^‚ğˆ—‚Å‚«‚é‚æ‚¤‚É•ÏX
+2.6 æœªçŸ¥ã®ãƒ‘ã‚¿ãƒ¼ãƒ³ã®ãƒ‡ãƒ¼ã‚¿ã‚’å‡¦ç†ã§ãã‚‹ã‚ˆã†ã«å¤‰æ›´
 
-2.7 decimalŠÖ”‚ğ—p‚¢‚Äissues#2‚ğ‰ğÁ¨micropython-decimal-number‚ğg—p@LAT‚âLON‚É‚Ístr()‚Å•ÏŠ·‚·‚é•K—v‚ª‚ ‚éB
+2.7 decimalé–¢æ•°ã‚’ç”¨ã„ã¦issues#2ã‚’è§£æ¶ˆâ†’micropython-decimal-numberã‚’ä½¿ç”¨ã€€LATã‚„LONã«ã¯str()ã§å¤‰æ›ã™ã‚‹å¿…è¦ãŒã‚ã‚‹ã€‚
 
-2.8 cpython‚Æmicropython‚ÅŒİŠ·«‚ğ•Û‚Âˆ—‚ğ’Ç‰Á
+2.8 cpythonã¨micropythonã§äº’æ›æ€§ã‚’ä¿ã¤å‡¦ç†ã‚’è¿½åŠ 
 
-2.9 ƒ`ƒFƒbƒNƒTƒ€‚Ì‹@”\‚ğ’Ç‰Á
+2.9 ãƒã‚§ãƒƒã‚¯ã‚µãƒ ã®æ©Ÿèƒ½ã‚’è¿½åŠ 
 
-3.0 Œy—Ê‰»
+3.0 è»½é‡åŒ–
 
-3.1 analyze‚Å‰ğÍ‚Å‚«‚é‚æ‚¤‚É‚È‚Á‚½B
+3.1 analyzeã§è§£æã§ãã‚‹ã‚ˆã†ã«ãªã£ãŸã€‚
 
-3.2 ƒƒ‚ƒŠ‘Îô‚Ì‚½‚ßˆÈ‘O‚Ìƒf[ƒ^‚ğ•Û‚·‚é‹@”\‚ğ’Ç‰Á(·•ª•û®)
+3.2 ãƒ¡ãƒ¢ãƒªå¯¾ç­–ã®ãŸã‚ä»¥å‰ã®ãƒ‡ãƒ¼ã‚¿ã‚’ä¿æŒã™ã‚‹æ©Ÿèƒ½ã‚’è¿½åŠ (å·®åˆ†æ–¹å¼)
 
-3.22~3.3 Ú×‚Èİ’è‚ª‚Å‚«‚é‚æ‚¤ACONFIG‚ğ’Ç‰Á‚µ‚½B
+3.22~3.3 è©³ç´°ãªè¨­å®šãŒã§ãã‚‹ã‚ˆã†ã€CONFIGã‚’è¿½åŠ ã—ãŸã€‚
 
-(Ú×‚ÍVersion.md‚É‹LÚ)
+(è©³ç´°ã¯Version.mdã«è¨˜è¼‰)
 
-# ˆË‘¶ƒ‰ƒCƒuƒ‰ƒŠ (micropython)
+# ä¾å­˜ãƒ©ã‚¤ãƒ–ãƒ©ãƒª (micropython)
 - micropython-decimal-number
 
-### Raspberry Pi Pico 1/2Œü‚¯‚ÌGPS‰ğÍƒ‰ƒCƒuƒ‰ƒŠ‚Å‚·B
-### ’Êí‚ÌPython‚É‚à‘Î‰‚µ‚Ä‚¢‚é‚½‚ßApyserial‚È‚Ç‚Å“®ì‚Å‚«‚Ü‚·
-# ‘Î‰ƒZƒ“ƒeƒ“ƒX
-Šî–{“I‚É‚·‚×‚Ä‚ÌƒZƒ“ƒeƒ“ƒX‚É‘Î‰B
+### Raspberry Pi Pico 1/2å‘ã‘ã®GPSè§£æãƒ©ã‚¤ãƒ–ãƒ©ãƒªã§ã™ã€‚
+### é€šå¸¸ã®Pythonã«ã‚‚å¯¾å¿œã—ã¦ã„ã‚‹ãŸã‚ã€pyserialãªã©ã§å‹•ä½œã§ãã¾ã™
+# å¯¾å¿œã‚»ãƒ³ãƒ†ãƒ³ã‚¹
+åŸºæœ¬çš„ã«ã™ã¹ã¦ã®ã‚»ãƒ³ãƒ†ãƒ³ã‚¹ã«å¯¾å¿œã€‚
 ```
 GGA:$GNGGA, $GPGGA, $BDGGA
 GLL:$GNGLL, $GPGLL, $BDGLL
@@ -53,23 +53,23 @@ ZDA:$GNZDA, $GPZDA, $BDZDA
 TXT:$GNTXT, $GPTXT, $BDTXT
 ```
 POINT
-•ª—Ş‚·‚éƒZƒ“ƒeƒ“ƒX‚ª6ˆÈã‚É‚È‚é‚Æmicropython‚Å‚ÍƒGƒ‰[‚ÅÀs‚ª~‚Ü‚éB‚æ‚Á‚Ä•K—v‚ÈƒZƒ“ƒeƒ“ƒX‚ğ‘I‘ğ‚·‚é‚±‚Æ‚ªD‚Ü‚µ‚¢B(“Á‚ÉGSV)
-ƒfƒtƒHƒ‹ƒg:($GPGSV,$BDGSV,$GQGSV,$GLGSV,$GAGSV,$GBGSV)
-ã‹L‚©‚ç•s—v‚ÈƒZƒ“ƒeƒ“ƒX‚ğÁ‚·‚±‚Æ‚ÅA“®ì‚·‚éB
+åˆ†é¡ã™ã‚‹ã‚»ãƒ³ãƒ†ãƒ³ã‚¹ãŒ6ä»¥ä¸Šã«ãªã‚‹ã¨micropythonã§ã¯ã‚¨ãƒ©ãƒ¼ã§å®Ÿè¡ŒãŒæ­¢ã¾ã‚‹ã€‚ã‚ˆã£ã¦å¿…è¦ãªã‚»ãƒ³ãƒ†ãƒ³ã‚¹ã‚’é¸æŠã™ã‚‹ã“ã¨ãŒå¥½ã¾ã—ã„ã€‚(ç‰¹ã«GSV)
+ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆ:($GPGSV,$BDGSV,$GQGSV,$GLGSV,$GAGSV,$GBGSV)
+ä¸Šè¨˜ã‹ã‚‰ä¸è¦ãªã‚»ãƒ³ãƒ†ãƒ³ã‚¹ã‚’æ¶ˆã™ã“ã¨ã§ã€å‹•ä½œã™ã‚‹ã€‚
 
-# ‹@”\
-- GSV‚Ìƒf[ƒ^‚ğ‰ğÍ‚Å‚«A‰q¯‚Ìî•ñ‚ğæ“¾‚Å‚«‚Ü‚·B(•sŠ®‘S)
-- GGA‚Ìƒf[ƒ^‚ğ‰ğÍ‚Å‚«AˆÜ“xAŒo“xA‚“xAUTCA‘ªˆÊ¸“xADGPSî•ñ‚ğæ“¾‚Å‚«‚Ü‚·B(•sŠ®‘S)
-- RMC‚Ìƒf[ƒ^‚ğ‰ğÍ‚Å‚«AUTCAˆÜ“xAŒo“xA‘¬“xAis•ûŒüA“ú•tA¥‹C•ÎŠpA¥‹C•ÎŠp•ûŒü‚ğæ“¾‚Å‚«‚Ü‚·B
-- RMCŠÖ”‚Å‚ÍLocaltime‚Ìo—Í‚Å‚«‚Ü‚·
-- ‚·‚×‚Ä‚ÌƒZƒ“ƒeƒ“ƒX‚É‘Î‰‚µ‚Ä‚¢‚Ü‚·
-- ƒƒ‚ƒŠ‘Îô‚ª‚ ‚è‚Ü‚·
-# g‚¢•û
+# æ©Ÿèƒ½
+- GSVã®ãƒ‡ãƒ¼ã‚¿ã‚’è§£æã§ãã€è¡›æ˜Ÿã®æƒ…å ±ã‚’å–å¾—ã§ãã¾ã™ã€‚(ä¸å®Œå…¨)
+- GGAã®ãƒ‡ãƒ¼ã‚¿ã‚’è§£æã§ãã€ç·¯åº¦ã€çµŒåº¦ã€é«˜åº¦ã€UTCæ™‚åˆ»ã€æ¸¬ä½ç²¾åº¦ã€DGPSæƒ…å ±ã‚’å–å¾—ã§ãã¾ã™ã€‚(ä¸å®Œå…¨)
+- RMCã®ãƒ‡ãƒ¼ã‚¿ã‚’è§£æã§ãã€UTCæ™‚åˆ»ã€ç·¯åº¦ã€çµŒåº¦ã€é€Ÿåº¦ã€é€²è¡Œæ–¹å‘ã€æ—¥ä»˜ã€ç£æ°—åè§’ã€ç£æ°—åè§’æ–¹å‘ã‚’å–å¾—ã§ãã¾ã™ã€‚
+- RMCé–¢æ•°ã§ã¯Localtimeã®å‡ºåŠ›ã§ãã¾ã™
+- ã™ã¹ã¦ã®ã‚»ãƒ³ãƒ†ãƒ³ã‚¹ã«å¯¾å¿œã—ã¦ã„ã¾ã™
+- ãƒ¡ãƒ¢ãƒªå¯¾ç­–ãŒã‚ã‚Šã¾ã™
+# ä½¿ã„æ–¹
 
-/example.py‚ÉŠÂ‹«‚É‚ ‚Á‚½ƒTƒ“ƒvƒ‹ƒR[ƒh‚ª‚ ‚è‚Ü‚·B‚Ç‚¤‚¼D‚«‚Ég‚Á‚Ä‚­‚¾‚³‚¢B
+/example.pyã«ç’°å¢ƒã«ã‚ã£ãŸã‚µãƒ³ãƒ—ãƒ«ã‚³ãƒ¼ãƒ‰ãŒã‚ã‚Šã¾ã™ã€‚ã©ã†ãå¥½ãã«ä½¿ã£ã¦ãã ã•ã„ã€‚
 
-ÅVƒo[ƒWƒ‡ƒ“3.2‚Å‚Ìg‚¢•û
-**•¡G‚É‚È‚Á‚½‚Ì‚ÅA‚Æ‚è‚ ‚¦‚¸ƒTƒ“ƒvƒ‹‚ğÀs‚·‚é‚±‚Æ‚ğ‚¨‚·‚·‚ß‚µ‚Ü‚·**
+æœ€æ–°ãƒãƒ¼ã‚¸ãƒ§ãƒ³3.2ã§ã®ä½¿ã„æ–¹
+**è¤‡é›‘ã«ãªã£ãŸã®ã§ã€ã¨ã‚Šã‚ãˆãšã‚µãƒ³ãƒ—ãƒ«ã‚’å®Ÿè¡Œã™ã‚‹ã“ã¨ã‚’ãŠã™ã™ã‚ã—ã¾ã™**
 ```python:main.py
 import pygps2
 from machine import UART, Pin
@@ -90,30 +90,30 @@ while True:
 
 
 ```
-# Ú×‚Èg‚¢•û
-1.ƒfƒR[ƒh‚µ‚½ƒf[ƒ^‚ğpygps2.analyze‚É“ü—Í‚µ‚Ü‚·B(pygps2.analyze(decoded)‚İ‚½‚¢‚É‚·‚é)
+# è©³ç´°ãªä½¿ã„æ–¹
+1.ãƒ‡ã‚³ãƒ¼ãƒ‰ã—ãŸãƒ‡ãƒ¼ã‚¿ã‚’pygps2.analyzeã«å…¥åŠ›ã—ã¾ã™ã€‚(pygps2.analyze(decoded)ã¿ãŸã„ã«ã™ã‚‹)
 
-2.return‚Å–ß‚Á‚½ƒf[ƒ^‚Í‰ğÍÏ‚İ
+2.returnã§æˆ»ã£ãŸãƒ‡ãƒ¼ã‚¿ã¯è§£ææ¸ˆã¿
 
-“®‚©‚È‚¢ê‡‚Íã‹L‚Ìmain.py‚ğg‚Á‚Ä‚İ‚Ä‚­‚¾‚³‚¢B
+å‹•ã‹ãªã„å ´åˆã¯ä¸Šè¨˜ã®main.pyã‚’ä½¿ã£ã¦ã¿ã¦ãã ã•ã„ã€‚
 
-UART(0, baudrate=115200, tx=Pin(0), rx=Pin(1))‚ÍÚ‘±‚³‚ê‚Ä‚¢‚éƒsƒ“‚É‡‚í‚¹‚Ä•ÏX‚µ‚Ä‚­‚¾‚³‚¢B
+UART(0, baudrate=115200, tx=Pin(0), rx=Pin(1))ã¯æ¥ç¶šã•ã‚Œã¦ã„ã‚‹ãƒ”ãƒ³ã«åˆã‚ã›ã¦å¤‰æ›´ã—ã¦ãã ã•ã„ã€‚
 
-# ƒTƒ“ƒvƒ‹
-o—Í‚³‚ê‚éƒf[ƒ^‚Ì—á(analyze_nmea_data‚ª•Ô‚·)
+# ã‚µãƒ³ãƒ—ãƒ«
+å‡ºåŠ›ã•ã‚Œã‚‹ãƒ‡ãƒ¼ã‚¿ã®ä¾‹(analyzeãŒè¿”ã™)
 ```python
 {'GGA': [{'timestamp': '124311.000', 'latitude': '0.0', 'longitude': '0.0', 'gps_quality': '1', 'num_satellites': '57', 'hdop': '0.46', 'altitude': '52.981', 'altitude_units': 'M', 'geoid_height': '37.106', 'geoid_units': 'M', 'dgps_age': '', 'dgps_station_id': ''}], 'GLL': [{'latitude': '0.0', 'longitude': '0.0', 'timestamp': '124311.000', 'status': 'A', 'mode_indicator': 'A'}], 'RMC': [{'timestamp': '124311.000', 'status': 'A', 'latitude': '0.0', 'longitude': '0.0', 'speed_over_ground': '0.03', 'course_over_ground': '297.23', 'date': '020525', 'magnetic_variation': '0.0', 'mag_var_direction': '', 'mode_indicator': 'A', 'utc_datetime': '2025-05-02 12:43:11', 'local_datetime': '2025-05-02 21:43:11'}], 'VTG': [{'course_over_ground_t': '297.23', 'reference_t': 'T', 'course_over_ground_m': '0.0', 'reference_m': 'M', 'speed_knots': '0.03', 'units_knots': 'N', 'speed_kmh': '0.05', 'units_kmh': 'K', 'mode_indicator': 'A'}], 'GST': [{'timestamp': '124311.000', 'rms': '5.5', 'std_lat': '2.4', 'std_lon': '2.3', 'std_alt': '9.5'}], 'ZDA': [{'timestamp': '124311.000', 'day': '02', 'month': '05', 'year': '2025', 'timezone_offset_hour': '', 'timezone_offset_minute': ''}], 'GSA': [{'fix_select': 'A', 'fix_status': '3', 'satellites_used': [('15', '1'), ('24', '1'), ('199', '1'), ('05', '1'), ('18', '1'), ('23', '1'), ('13', '1'), ('195', '1'), ('22', '1'), ('194', '1'), ('14', '1'), ('67', '2'), ('68', '2'), ('77', '2'), ('78', '2'), ('76', '2'), ('82', '2'), ('06', '3'), ('09', '3'), ('04', '3'), ('11', '3'), ('23', '3'), ('10', '3'), ('21', '3'), ('12', '3'), ('36', '3'), ('19', '4'), ('39', '4'), ('16', '4'), ('36', '4'), ('20', '4'), ('22', '4'), ('06', '4'), ('09', '4'), ('35', '4'), ('44', '4'), ('38', '4'), ('37', '4')], 'pdop': '0.82', 'hdop': '0.46', 'vdop': '0.68'}], 'GSV': [{'num_messages': '21', 'message_num': '1', 'num_satellites': '20', 'satellites_info': [{'prn': '196', 'type': 'QZS', 'elevation': '86', 'azimuth': '228', 'snr': '18', 'band': [1, 8]}, {'prn': '15', 'type': 'GP', 'elevation': '70', 'azimuth': '009', 'snr': '18', 'band': [1]}, {'prn': '24', 'type': 'GP', 'elevation': '63', 'azimuth': '221', 'snr': '18', 'band': [1, 8]}, {'prn': '199', 'type': 'QZS', 'elevation': '43', 'azimuth': '202', 'snr': '22', 'band': [1, 8]}, {'prn': '05', 'type': 'GP', 'elevation': '43', 'azimuth': '135', 'snr': '29', 'band': [1]}, {'prn': '18', 'type': 'GP', 'elevation': '41', 'azimuth': '263', 'snr': '22', 'band': [1, 8]}, {'prn': '23', 'type': 'GP', 'elevation': '41', 'azimuth': '315', 'snr': '28', 'band': [1, 8]}, {'prn': '13', 'type': 'GP', 'elevation': '40', 'azimuth': '058', 'snr': '29', 'band': [1]}, {'prn': '195', 'type': 'QZS', 'elevation': '34', 'azimuth': '197', 'snr': '37', 'band': [1, 8]}, {'prn': '22', 'type': 'GP', 'elevation': '23', 'azimuth': '071', 'snr': '19', 'band': [1]}, {'prn': '14', 'type': 'GP', 'elevation': '17', 'azimuth': '053', 'snr': '0.0', 'band': [1, 8]}, {'prn': '194', 'type': 'QZS', 'elevation': '10', 'azimuth': '171', 'snr': '21', 'band': [1, 8]}, {'prn': '20', 'type': 'GP', 'elevation': '09', 'azimuth': '141', 'snr': '0.0', 'band': [1]}, {'prn': '12', 'type': 'GP', 'elevation': '03', 'azimuth': '172', 'snr': '17', 'band': [1]}, {'prn': '10', 'type': 'GP', 'elevation': '01', 'azimuth': '314', 'snr': '0.0', 'band': [1]}, {'prn': '67', 'type': 'GL', 'elevation': '50', 'azimuth': '054', 'snr': '17', 'band': [1]}, {'prn': '68', 'type': 'GL', 'elevation': '46', 'azimuth': '330', 'snr': '17', 'band': [1]}, {'prn': '77', 'type': 'GL', 'elevation': '45', 'azimuth': '057', 'snr': '16', 'band': [1]}, {'prn': '78', 'type': 'GL', 'elevation': '44', 'azimuth': '151', 'snr': '33', 'band': [1]}, {'prn': '84', 'type': 'GL', 'elevation': '18', 'azimuth': '322', 'snr': '0.0', 'band': [1]}, {'prn': '76', 'type': 'GL', 'elevation': '09', 'azimuth': '025', 'snr': '25', 'band': [1]}, {'prn': '82', 'type': 'GL', 'elevation': '09', 'azimuth': '216', 'snr': '30', 'band': [1]}, {'prn': '69', 'type': 'GL', 'elevation': '08', 'azimuth': '296', 'snr': '0.0', 'band': [1]}, {'prn': '06', 'type': 'GA', 'elevation': '70', 'azimuth': '353', 'snr': '20', 'band': [7, 1]}, {'prn': '09', 'type': 'GA', 'elevation': '57', 'azimuth': '299', 'snr': '18', 'band': [7, 1]}, {'prn': '04', 'type': 'GA', 'elevation': '55', 'azimuth': '048', 'snr': '21', 'band': [7, 1]}, {'prn': '36', 'type': 'GA', 'elevation': '44', 'azimuth': '282', 'snr': '0.0', 'band': [7, 1]}, {'prn': '11', 'type': 'GA', 'elevation': '39', 'azimuth': '211', 'snr': '22', 'band': [7, 1]}, {'prn': '23', 'type': 'GA', 'elevation': '28', 'azimuth': '088', 'snr': '25', 'band': [7, 1]}, {'prn': '10', 'type': 'GA', 'elevation': '21', 'azimuth': '187', 'snr': '31', 'band': [7, 1]}, {'prn': '31', 'type': 'GA', 'elevation': '20', 'azimuth': '142', 'snr': '0.0', 'band': [7]}, {'prn': '05', 'type': 'GA', 'elevation': '11', 'azimuth': '268', 'snr': '0.0', 'band': [7]}, {'prn': '34', 'type': 'GA', 'elevation': '10', 'azimuth': '326', 'snr': '0.0', 'band': [7]}, {'prn': '21', 'type': 'GA', 'elevation': '09', 'azimuth': '039', 'snr': '15', 'band': [7, 1]}, {'prn': '12', 'type': 'GA', 'elevation': '04', 'azimuth': '173', 'snr': '15', 'band': [7]}, {'prn': '19', 'type': 'GA', 'elevation': '04', 'azimuth': '076', 'snr': '08', 'band': [7]}, {'prn': '38', 'type': 'GB', 'elevation': '83', 'azimuth': '322', 'snr': '0.0', 'band': [1, 4]}, {'prn': '19', 'type': 'GB', 'elevation': '71', 'azimuth': '025', 'snr': '18', 'band': [1, 4]}, {'prn': '08', 'type': 'GB', 'elevation': '70', 'azimuth': '333', 'snr': '17', 'band': [1]}, {'prn': '57', 'type': 'GB', 'elevation': '59', 'azimuth': '243', 'snr': '0.0', 'band': [1]}, {'prn': '46', 'type': 'GB', 'elevation': '58', 'azimuth': '100', 'snr': '0.0', 'band': [1]}, {'prn': '13', 'type': 'GB', 'elevation': '53', 'azimuth': '321', 'snr': '0.0', 'band': [1]}, {'prn': '56', 'type': 'GB', 'elevation': '48', 'azimuth': '309', 'snr': '0.0', 'band': [1]}, {'prn': '01', 'type': 'GB', 'elevation': '47', 'azimuth': '174', 'snr': '28', 'band': [1]}, {'prn': '39', 'type': 'GB', 'elevation': '45', 'azimuth': '222', 'snr': '27', 'band': [1, 4]}]}]}
 ```
-# “®ìŠm”FÏ‚İŠÂ‹«
+# å‹•ä½œç¢ºèªæ¸ˆã¿ç’°å¢ƒ
 - CPython
 - Raspberry Pi Pico 2
 - MicroPython v1.24.1 on 2024-11-29; Raspberry Pi Pico2 with RP2350
-- GPSƒ‚ƒWƒ…[ƒ‹: AT6668 (M5Stack GPSƒ‚ƒWƒ…[ƒ‹v1.1)
-- GPSƒ‚ƒWƒ…[ƒ‹: AT6558 (Air530Z)
-- GPSóM‹@: GT-505GGBL5-DR-N(HŒ“dq)
-ƒ‚ƒWƒ…[ƒ‹‚É‚æ‚Á‚Ä‚Í“®ì‚µ‚È‚¢‚©‚à‚µ‚ê‚Ü‚¹‚ñB‚»‚Ìê‡o—Íƒf[ƒ^‚ğÚ‚¹‚Äissue‚ğ—§‚Ä‚Ä‚­‚¾‚³‚¢B
+- GPSãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«: AT6668 (M5Stack GPSãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«v1.1)
+- GPSãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«: AT6558 (Air530Z)
+- GPSå—ä¿¡æ©Ÿ: GT-505GGBL5-DR-N(ç§‹æœˆé›»å­)
+ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã«ã‚ˆã£ã¦ã¯å‹•ä½œã—ãªã„ã‹ã‚‚ã—ã‚Œã¾ã›ã‚“ã€‚ãã®å ´åˆå‡ºåŠ›ãƒ‡ãƒ¼ã‚¿ã‚’è¼‰ã›ã¦issueã‚’ç«‹ã¦ã¦ãã ã•ã„ã€‚
 
-# English ‰pŒê
+# English è‹±èª
 # pygps2
 Feel free to use this library. It's OK in any case
 # Version information
@@ -132,7 +132,7 @@ Feel free to use this library. It's OK in any case
 
 2.6 Changed to allow processing of data with unknown patterns
 
-2.7 Fixed issues#2 using decimal function ¨ Use micropython-decimal-number. LAT and LON require conversion with str().
+2.7 Fixed issues#2 using decimal function â†’ Use micropython-decimal-number. LAT and LON require conversion with str().
 
 2.8 Added processing to maintain compatibility between cpython and micropython
 
@@ -215,7 +215,7 @@ If it doesn't work, try using main.py above.
 Change UART(0, baudrate=115200, tx=Pin(0), rx=Pin(1)) to match the connected pins.
 
 # Sample
-Example of output data (returned by analyze_nmea_data)
+Example of output data (returned by analyze)
 ```python
 {'GGA': [{'timestamp': '124311.000', 'latitude': '0.0', 'longitude': '0.0', 'gps_quality': '1', 'num_satellites': '57', 'hdop': '0.46', 'altitude': '52.981', 'altitude_units': 'M', 'geoid_height': '37.106', 'geoid_units': 'M', 'dgps_age': '', 'dgps_station_id': ''}], 'GLL': [{'latitude': '0.0', 'longitude': '0.0', 'timestamp': '124311.000', 'status': 'A', 'mode_indicator': 'A'}], 'RMC': [{'timestamp': '124311.000', 'status': 'A', 'latitude': '0.0', 'longitude': '0.0', 'speed_over_ground': '0.03', 'course_over_ground': '297.23', 'date': '020525', 'magnetic_variation': '0.0', 'mag_var_direction': '', 'mode_indicator': 'A', 'utc_datetime': '2025-05-02 12:43:11', 'local_datetime': '2025-05-02 21:43:11'}], 'VTG': [{'course_over_ground_t': '297.23', 'reference_t': 'T', 'course_over_ground_m': '0.0', 'reference_m': 'M', 'speed_knots': '0.03', 'units_knots': 'N', 'speed_kmh': '0.05', 'units_kmh': 'K', 'mode_indicator': 'A'}], 'GST': [{'timestamp': '124311.000', 'rms': '5.5', 'std_lat': '2.4', 'std_lon': '2.3', 'std_alt': '9.5'}], 'ZDA': [{'timestamp': '124311.000', 'day': '02', 'month': '05', 'year': '2025', 'timezone_offset_hour': '', 'timezone_offset_minute': ''}], 'GSA': [{'fix_select': 'A', 'fix_status': '3', 'satellites_used': [('15', '1'), ('24', '1'), ('199', '1'), ('05', '1'), ('18', '1'), ('23', '1'), ('13', '1'), ('195', '1'), ('22', '1'), ('194', '1'), ('14', '1'), ('67', '2'), ('68', '2'), ('77', '2'), ('78', '2'), ('76', '2'), ('82', '2'), ('06', '3'), ('09', '3'), ('04', '3'), ('11', '3'), ('23', '3'), ('10', '3'), ('21', '3'), ('12', '3'), ('36', '3'), ('19', '4'), ('39', '4'), ('16', '4'), ('36', '4'), ('20', '4'), ('22', '4'), ('06', '4'), ('09', '4'), ('35', '4'), ('44', '4'), ('38', '4'), ('37', '4')], 'pdop': '0.82', 'hdop': '0.46', 'vdop': '0.68'}], 'GSV': [{'num_messages': '21', 'message_num': '1', 'num_satellites': '20', 'satellites_info': [{'prn': '196', 'type': 'QZS', 'elevation': '86', 'azimuth': '228', 'snr': '18', 'band': [1, 8]}, {'prn': '15', 'type': 'GP', 'elevation': '70', 'azimuth': '009', 'snr': '18', 'band': [1]}, {'prn': '24', 'type': 'GP', 'elevation': '63', 'azimuth': '221', 'snr': '18', 'band': [1, 8]}, {'prn': '199', 'type': 'QZS', 'elevation': '43', 'azimuth': '202', 'snr': '22', 'band': [1, 8]}, {'prn': '05', 'type': 'GP', 'elevation': '43', 'azimuth': '135', 'snr': '29', 'band': [1]}, {'prn': '18', 'type': 'GP', 'elevation': '41', 'azimuth': '263', 'snr': '22', 'band': [1, 8]}, {'prn': '23', 'type': 'GP', 'elevation': '41', 'azimuth': '315', 'snr': '28', 'band': [1, 8]}, {'prn': '13', 'type': 'GP', 'elevation': '40', 'azimuth': '058', 'snr': '29', 'band': [1]}, {'prn': '195', 'type': 'QZS', 'elevation': '34', 'azimuth': '197', 'snr': '37', 'band': [1, 8]}, {'prn': '22', 'type': 'GP', 'elevation': '23', 'azimuth': '071', 'snr': '19', 'band': [1]}, {'prn': '14', 'type': 'GP', 'elevation': '17', 'azimuth': '053','snr': '0.0', 'band': [1, 8]}, {'prn': '194', 'type': 'QZS', 'elevation': '10', 'azimuth': '171', 'snr': '21', 'band': [1, 8]}, {'prn': '20', 'type': 'GP', 'elevation': '09', 'azimuth': '141', 'snr': '0.0', 'band': [1]}, {'prn': '12', 'type': 'GP', 'elevation': '03', 'azimuth': '172', 'snr': '17', 'band': [1]}, {'prn': '10', 'type': 'GP', 'elevation': '01', 'azimuth': '314', 'snr': '0.0', 'band': [1]}, {'prn': '67', 'type': 'GL', 'elevation': '50', 'azimuth': '054', 'snr': '17', 'band': [1]}, {'prn': '68', 'type': 'GL', 'elevation': '46', 'azimuth': '330', 'snr': '17', 'band': [1]}, {'prn': '77', 'type': 'GL', 'elevation': '45', 'azimuth': '057', 'snr': '16', 'band': [1]}, {'prn': '78', 'type': 'GL', 'elevation': '44', 'azimuth': '151', 'snr': '33', 'band': [1]}, {'prn': '84', 'type': 'GL', 'elevation': '18', 'azimuth': '322', 'snr': '0.0', 'band': [1]}, {'prn': '76', 'type': 'GL', 'elevation': '09', 'azimuth': '025', 'snr': '25', 'band': [1]}, {'prn': '82', 'type': 'GL', 'elevation': '09', 'azimuth': '216', 'snr': '30', 'band': [1]}, {'prn': '69', 'type': 'GL', 'elevation': '08', 'azimuth': '296', 'snr': '0.0', 'band': [1]}, {'prn': '06', 'type': 'GA', 'elevation': '70', 'azimuth': '353', 'snr': '20', 'band': [7, 1]}, {'prn': '09', 'type': 'GA', 'elevation': '57', 'azimuth': '299', 'snr': '18', 'band': [7, 1]}, {'prn': '04', 'type': 'GA', 'elevation': '55', 'azimuth': '048', 'snr': '21', 'band': [7, 1]}, {'prn': '36', 'type': 'GA', 'elevation': '44', 'azimuth': '282', 'snr': '0.0', 'band': [7, 1]}, {'prn': '11', 'type': 'GA', 'elevation': '39', 'azimuth': '211', 'snr': '22', 'band': [7, 1]}, {'prn': '23', 'type': 'GA', 'elevation': '28', 'azimuth': '088', 'snr': '25', 'band': [7, 1]}, {'prn': '10', 'type': 'GA', 'elevation': '21', 'azimuth': '187', 'snr': '31', 'band': [7, 1]}, {'prn': '31', 'type': 'GA', 'elevation': '20', 'azimuth': '142', 'snr': '0.0', 'band': [7]}, {'prn': '05', 'type': 'GA', 'elevation': '11', 'azimuth': '268', 'snr': '0.0', 'band': [7]}, {'prn': '34', 'type': 'GA', 'elevation': '10', 'azimuth': '326', 'snr': '0.0', 'band': [7]}, {'prn': '21', 'type': 'GA', 'elevation': '09', 'azimuth': '039', 'snr': '15', 'band': [7, 1]}, {'prn': '12', 'type': 'GA', 'elevation': '04', 'azimuth': '173', 'snr': '15', 'band': [7]}, {'prn': '19', 'type': 'GA', 'elevation': '04', 'azimuth': '076', 'snr': '08', 'band': [7]}, {'prn': '38', 'type': 'GB', 'elevation': '83', 'azimuth': '322', 'snr': '0.0', 'band': [1, 4]}, {'prn': '19', 'type': 'GB', 'elevation': '71', 'azimuth': '025', 'snr': '18', 'band': [1, 4]}, {'prn': '08', 'type': 'GB', 'elevation': '70', 'azimuth': '333', 'snr': '17', 'band': [1]}, {'prn': '57', 'type': 'GB', 'elevation': '59', 'azimuth': '243', 'snr': '0.0', 'band': [1]}, {'prn': '46', 'type': 'GB', 'elevation': '58', 'azimuth': '100', 'snr': '0.0', 'band': [1]}, {'prn': '13', 'type': 'GB', 'elevation': '53', 'azimuth': '321', 'snr': '0.0', 'band': [1]}, {'prn': '56', 'type': 'GB', 'elevation': '48', 'azimuth': '309', 'snr': '0.0', 'band': [1]}, {'prn': '01', 'type': 'GB', 'elevation': '47', 'azimuth': '174', 'snr': '28', 'band': [1]}, {'prn': '39', 'type': 'GB', 'elevation': '45', 'azimuth': '222', 'snr': '27', 'band': [1, 4]}]}]}
 ```
