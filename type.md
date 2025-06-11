@@ -126,7 +126,53 @@
 - std_lat: 緯度方向の標準偏差(メートル単位)
 - std_alt: 高度方向の標準偏差(メートル単位)
 
+**GNSデータ**
+```
+{'utc_time': '144530.000', 'latitude': '0.0'longitude': '0.0'mode_indicator': 'AAAA', 'use_sv': '36', 'hdop': '0.79', 'msl': '39.019', 'geoid_alt': '37.062', 'age_of_differential_data': '0.0', 'station_id': '0000'}
+```
+- utc_time: UTC時間
+- latitude: 緯度 (度で出力される) str型
+- longitude: 経度 (度で出力される) str型
+- mode_indicator: 各衛星のモード 
+
+例) A SPS , D DGPS ...
+- use_sv: 使用衛星数
+- hdop: 水平精度
+- msl: 平均海面上の高度
+- geoid_alt: ジオイド高さ
+- age_of_differential_data: DGPSデータについて
+- station_id: DGPS基地局ID
+
 # 入力データと内容
+
+# Version 3.5
+
+```
+import pygps2
+gps_module_ = pygps2.pygps2()
+analyzed_data = ag3335a.analyze(data)
+```
+
+dataにはデコードされたデータを入力する
+
+exampleのように処理するのが望ましい
+```
+while True:
+    raw = gps.read(8192)  # 8192バイト読み込み モジュールごとに調整
+    if raw is not None:
+        try:
+            raw = raw.replace(b'\r', b'').replace(b'\n', b'')
+            raw = raw.replace(b'/', b'')
+            data = raw.decode("utf-8", "ignore")
+            del raw
+        except Exception as e:
+            print(f"error: {e}")
+            continue
+        if data != '':
+            analyzed_data = gps_module_.analyze(data)
+```
+
+# OLD
 
 **analyze**
 使用例

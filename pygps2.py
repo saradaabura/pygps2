@@ -6,18 +6,18 @@ import sys
 from decimal import *
 import gc
 
-sts = []
-###CONFIG###
-OBTAIN_IDENTIFLER_FROM_GSA=True
-#Possibly useful for modules using two or more satellite systems
-
-IN_BAND_DATA_INTO_GSV=True
-
-#dev
-DETECT_CONVERT_QZS=True
-
 class pygps2:
-    def __init__(self):
+    def __init__(self, op0=True, op1=True, op2=True):
+        # Options
+        self.OBTAIN_IDENTIFLER_FROM_GSA = op0
+        #Possibly useful for modules using two or more satellite systems
+
+        self.IN_BAND_DATA_INTO_GSV = op1
+
+        #dev
+        self.DETECT_CONVERT_QZS = op2
+        
+        
         self.raw = ''
         self.GGA = []
         self.GLL = []
@@ -148,7 +148,7 @@ class pygps2:
         satellites_used = []
         for i in range(3, 15):
             if len(fields) > i and fields[i]:
-                if OBTAIN_IDENTIFLER_FROM_GSA == True:
+                if self.OBTAIN_IDENTIFLER_FROM_GSA == True:
                     satellites_used.append((fields[i], fields[18].split('*')[0]))
                 else:
                     satellites_used.append((fields[i]))
@@ -183,7 +183,7 @@ class pygps2:
             azimuth = fields[index+2].strip() if len(fields) > index+2 and fields[index+2] else '0.0'
             snr_field = fields[index+3].strip() if len(fields) > index+3 and fields[index+3] else '0.0'
             snr = snr_field.split('*')[0] if '*' in snr_field else snr_field
-            if IN_BAND_DATA_INTO_GSV == True:
+            if self.IN_BAND_DATA_INTO_GSV == True:
                 band = fields[len(fields) - 1].split('*')[0]
             else:
                 band = 0
@@ -279,7 +279,7 @@ class pygps2:
             else:
                 unique_satellites[key]['band'].append(int(sat['band']))
         merged['satellites_info'] = list(unique_satellites.values())
-        if DETECT_CONVERT_QZS == True:
+        if self.DETECT_CONVERT_QZS == True:
             merged['satellites_info'] = self.qzss_detect(merged['satellites_info'])
         return merged
     
@@ -465,5 +465,6 @@ class pygps2:
                 self.GSV = merged_gsv
         del parsed_data
         del data
+
 
 

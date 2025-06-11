@@ -1,3 +1,9 @@
+# Version History of pygps2
+
+# Version 3.5
+- class化され、複数のモジュールを同時に使用できるようになった。
+- class化に伴い、設定(QZS検知etc...)も個別でできるようになった。
+
 # Version 3.4
 - GNSセンテンス解析関数を追加
 
