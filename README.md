@@ -55,9 +55,11 @@ ZDA:$GNZDA, $GPZDA, $BDZDA
 TXT:$GNTXT, $GPTXT, $BDTXT
 ```
 POINT
-分類するセンテンスが6以上になるとmicropythonではエラーで実行が止まる。よって必要なセンテンスを選択することが好ましい。(特にGSV)
+
+**分類するセンテンスが6以上になるとmicropythonではエラーで実行が止まる。よって必要なセンテンスを選択することが好ましい。(特にGSV)
 デフォルト:($GPGSV,$BDGSV,$GQGSV,$GLGSV,$GAGSV,$GBGSV)
-上記から不要なセンテンスを消すことで、動作する。
+上記から不要なセンテンスを消すことで、動作する。**
+Raspberry Pi Picoなどでこのライブラリを動作させると、GSVの定義でエラーが起こります。        １
 
 # 機能
 - GSVのデータを解析でき、衛星の情報を取得できます。(不完全)
@@ -68,7 +70,7 @@ POINT
 - メモリ対策があります
 # 使い方
 
-/example.pyに環境にあったサンプルコードがあります。どうぞ好きに使ってください。
+/example.pyに環境にあったサンプルコード(Windows用)があります。どうぞ好きに使ってください。
 
 最新バージョン3.5での使い方
 **複雑ですので、とりあえずサンプルを実行することをおすすめします**
@@ -93,7 +95,8 @@ while True:
             print(f"error: {e}")
             continue
         if data != '':
-            analyzed_data = module.analyze(data)
+            module.analyze(data)
+            print(module.GGA)#GGAの解析結果を表示
 gps.close()
 
 ```
@@ -116,7 +119,8 @@ UARTの設定は接続されているピンに合わせて変更してくださ�
 - GPSモジュール: AT6668 (M5Stack GPSモジュールv1.1)
 - GPSモジュール: AT6558 (Air530Z)
 - GPS受信機: GT-505GGBL5-DR-N(秋月電子)
-モジュールによっては動作しな# Japanese Japanese
+モジュールによっては動作しないかもしれません
+# Japanese Japanese
 # pygps2
 Feel free to use this library. It's OK in any case
 # Version information

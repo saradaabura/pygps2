@@ -1,10 +1,9 @@
-#Version 3.5
+#Version 3.51
 import re
 import time
 import math
 import sys
 from decimal import *
-import gc
 
 class pygps2:
     def __init__(self, op0=True, op1=True, op2=True):
@@ -35,7 +34,7 @@ class pygps2:
         'GGA': re.compile(r'\$GNGGA,.*?\*..|\$GPGGA,.*?\*..|\$BDGGA,.*?\*..'),
         'GLL': re.compile(r'\$GNGLL,.*?\*..|\$GPGLL,.*?\*..|\$BDGLL,.*?\*..'),
         'GSA': re.compile(r'\$GNGSA,.*?\*..|\$GPGSA,.*?\*..|\$BDGSA,.*?\*..'),
-        'GSV': re.compile(r'\$GPGSV,.*?\*..|\$BDGSV,.*?\*..|\$GQGSV,.*?\*..|\$GLGSV,.*?\*..|\$GAGSV,.*?\*..|\$GBGSV,.*?\*..'),
+        'GSV': re.compile(r'\$GPGSV,.*?\*..|\$BDGSV,.*?\*..|\$GQGSV,.*?\*..|\$GLGSV,.*?\*..|\$GAGSV,.*?\*..'),
         'RMC': re.compile(r'\$GNRMC,.*?\*..|\$GPRMC,.*?\*..|\$BDRMC,.*?\*..'),
         'VTG': re.compile(r'\$GNVTG,.*?\*..|\$GPVTG,.*?\*..|\$BDVTG,.*?\*..'),
         'GST': re.compile(r'\$GNGST,.*?\*..|\$GPGST,.*?\*..|\$BDGST,.*?\*..'),
@@ -276,8 +275,10 @@ class pygps2:
             if key not in unique_satellites:
                 unique_satellites[key] = {k: sat[k] for k in ['prn', 'type', 'elevation', 'azimuth', 'snr']}
                 unique_satellites[key]['band'] = [int(sat['band'])]
+                unique_satellites[key]['snr'] = [float(sat["snr"])]
             else:
                 unique_satellites[key]['band'].append(int(sat['band']))
+                unique_satellites[key]['snr'].append(float(sat['snr']))
         merged['satellites_info'] = list(unique_satellites.values())
         if self.DETECT_CONVERT_QZS == True:
             merged['satellites_info'] = self.qzss_detect(merged['satellites_info'])
@@ -440,6 +441,20 @@ class pygps2:
             return data
         
     def analyze(self, data, enable_type=(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)):
+        self.raw = ''
+        self.GGA = []
+        self.GLL = []
+        self.GSA = []
+        self.GSV = []
+        self.RMC = []
+        self.VTG = []
+        self.GST = []
+        self.DHV = []
+        self.ZDA = []
+        self.GNS = []
+        self.TXT = []
+        self.parsed_data = {'GGA': [], 'GLL': [], 'GSA': [], 'GSV': [], 'RMC': [], 'VTG': [], 'GST': [], 'DHV': [], 'ZDA': [], 'GNS': [], 'TXT': [], 'Other': []}
+        
         data = str(data)
         data = self.tolist(data)
         self.parse_nmea_sentences(data)
@@ -465,6 +480,4 @@ class pygps2:
                 self.GSV = merged_gsv
         del parsed_data
         del data
-
-
 
