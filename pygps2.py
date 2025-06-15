@@ -4,7 +4,6 @@ import time
 import math
 import sys
 from decimal import *
-import gc
 
 class pygps2:
     def __init__(self, op0=True, op1=True, op2=True):
@@ -440,6 +439,20 @@ class pygps2:
             return data
         
     def analyze(self, data, enable_type=(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)):
+        self.raw = ''
+        self.GGA = []
+        self.GLL = []
+        self.GSA = []
+        self.GSV = []
+        self.RMC = []
+        self.VTG = []
+        self.GST = []
+        self.DHV = []
+        self.ZDA = []
+        self.GNS = []
+        self.TXT = []
+        self.parsed_data = {'GGA': [], 'GLL': [], 'GSA': [], 'GSV': [], 'RMC': [], 'VTG': [], 'GST': [], 'DHV': [], 'ZDA': [], 'GNS': [], 'TXT': [], 'Other': []}
+        
         data = str(data)
         data = self.tolist(data)
         self.parse_nmea_sentences(data)
@@ -465,6 +478,3 @@ class pygps2:
                 self.GSV = merged_gsv
         del parsed_data
         del data
-
-
-

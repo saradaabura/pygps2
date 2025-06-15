@@ -68,7 +68,7 @@ POINT
 - メモリ対策があります
 # 使い方
 
-/example.pyに環境にあったサンプルコードがあります。どうぞ好きに使ってください。
+/example.pyに環境にあったサンプルコード(Windows用)があります。どうぞ好きに使ってください。
 
 最新バージョン3.5での使い方
 **複雑ですので、とりあえずサンプルを実行することをおすすめします**
@@ -116,7 +116,8 @@ UARTの設定は接続されているピンに合わせて変更してくださ�
 - GPSモジュール: AT6668 (M5Stack GPSモジュールv1.1)
 - GPSモジュール: AT6558 (Air530Z)
 - GPS受信機: GT-505GGBL5-DR-N(秋月電子)
-モジュールによっては動作しな# Japanese Japanese
+モジュールによっては動作しないかもしれません
+# Japanese Japanese
 # pygps2
 Feel free to use this library. It's OK in any case
 # Version information
