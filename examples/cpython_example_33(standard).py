@@ -3,7 +3,7 @@ import serial
 import time
 
 ###
-gps = serial.Serial('COM8', 460800, timeout=0.01)
+gps = serial.Serial('COM8', 460800, timeout=1)
 ###
 
 while True:

@@ -3,7 +3,7 @@ import serial
 import time
 
 ###
-gps = serial.Serial('COM3', 115200, timeout=0.05)
+gps = serial.Serial('COM3', 115200, timeout=1)
 ###
 module = pygps2.pygps2()
 while True:

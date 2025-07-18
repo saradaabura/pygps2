@@ -1,5 +1,13 @@
 # Version History of pygps2
 
+# Version 3.52
+- GPGSV GNGSVセンテンス中に33から64のPRNが含まれる場合、typeの値が"SBAS"になるようになった。
+
+GNGSVがGLONNASなどを含んで出力する場合、この設定は無効にする。
+SBASを利用しないモジュールの場合、誤検出・軽量化のため無効にする。
+
+この設定は .pygps2(op3=False)で無効にすることができる。
+
 # Version 3.51
 - 2つ以上のバンドを使用時に、それらのバンドのSNR比を取得できるようにした。
 

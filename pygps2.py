@@ -1,12 +1,13 @@
-#Version 3.51
+#Version 3.52
 import re
+from ssl import OP_NO_SSLv3
 import time
 import math
 import sys
 from decimal import *
 
 class pygps2:
-    def __init__(self, op0=True, op1=True, op2=True):
+    def __init__(self, op0=True, op1=True, op2=True, op3=True, op4=True):
         # Options
         self.OBTAIN_IDENTIFLER_FROM_GSA = op0
         #Possibly useful for modules using two or more satellite systems
@@ -15,8 +16,10 @@ class pygps2:
 
         #dev
         self.DETECT_CONVERT_QZS = op2
-        
-        
+        self.DETECT_CONVERT_SBAS = op3
+
+        self.ENABLE_CHECKSUM = op4
+
         self.raw = ''
         self.GGA = []
         self.GLL = []
@@ -31,17 +34,17 @@ class pygps2:
         self.TXT = []
         self.parsed_data = {'GGA': [], 'GLL': [], 'GSA': [], 'GSV': [], 'RMC': [], 'VTG': [], 'GST': [], 'DHV': [], 'ZDA': [], 'GNS': [], 'TXT': [], 'Other': []}
         self.patterns = {
-        'GGA': re.compile(r'\$GNGGA,.*?\*..|\$GPGGA,.*?\*..|\$BDGGA,.*?\*..'),
-        'GLL': re.compile(r'\$GNGLL,.*?\*..|\$GPGLL,.*?\*..|\$BDGLL,.*?\*..'),
-        'GSA': re.compile(r'\$GNGSA,.*?\*..|\$GPGSA,.*?\*..|\$BDGSA,.*?\*..'),
-        'GSV': re.compile(r'\$GPGSV,.*?\*..|\$BDGSV,.*?\*..|\$GQGSV,.*?\*..|\$GLGSV,.*?\*..|\$GAGSV,.*?\*..'),
-        'RMC': re.compile(r'\$GNRMC,.*?\*..|\$GPRMC,.*?\*..|\$BDRMC,.*?\*..'),
-        'VTG': re.compile(r'\$GNVTG,.*?\*..|\$GPVTG,.*?\*..|\$BDVTG,.*?\*..'),
-        'GST': re.compile(r'\$GNGST,.*?\*..|\$GPGST,.*?\*..|\$BDGST,.*?\*..'),
-        'DHV': re.compile(r'\$GNDHV,.*?\*..|\$GPDHV,.*?\*..|\$BDDHV,.*?\*..'),
-        'ZDA': re.compile(r'\$GNZDA,.*?\*..|\$GPZDA,.*?\*..|\$BDZDA,.*?\*..'),
-        'GNS': re.compile(r'\$GNGNS,.*?\*..|\$GPGNS,.*?\*..'),
-        'TXT': re.compile(r'\$GNTXT,.*?\*..|\$GPTXT,.*?\*..|\$BDTXT,.*?\*..')
+            'GGA': re.compile(r'\$GNGGA,.*?\*..|\$GPGGA,.*?\*..|\$BDGGA,.*?\*..'),
+            'GLL': re.compile(r'\$GNGLL,.*?\*..|\$GPGLL,.*?\*..|\$BDGLL,.*?\*..'),
+            'GSA': re.compile(r'\$GNGSA,.*?\*..|\$GPGSA,.*?\*..|\$BDGSA,.*?\*..'),
+            'GSV': re.compile(r'\$GPGSV,.*?\*..|\$BDGSV,.*?\*..|\$GQGSV,.*?\*..|\$GLGSV,.*?\*..|\$GAGSV,.*?\*..'),
+            'RMC': re.compile(r'\$GNRMC,.*?\*..|\$GPRMC,.*?\*..|\$BDRMC,.*?\*..'),
+            'VTG': re.compile(r'\$GNVTG,.*?\*..|\$GPVTG,.*?\*..|\$BDVTG,.*?\*..'),
+            'GST': re.compile(r'\$GNGST,.*?\*..|\$GPGST,.*?\*..|\$BDGST,.*?\*..'),
+            'DHV': re.compile(r'\$GNDHV,.*?\*..|\$GPDHV,.*?\*..|\$BDDHV,.*?\*..'),
+            'ZDA': re.compile(r'\$GNZDA,.*?\*..|\$GPZDA,.*?\*..|\$BDZDA,.*?\*..'),
+            'GNS': re.compile(r'\$GNGNS,.*?\*..|\$GPGNS,.*?\*..'),
+            'TXT': re.compile(r'\$GNTXT,.*?\*..|\$GPTXT,.*?\*..|\$BDTXT,.*?\*..')
         }
 
     def convert_to_degrees(self, coord, direction):
@@ -89,15 +92,17 @@ class pygps2:
 
     def parse_nmea_sentences(self, nmea_data):
         sentences = nmea_data.split('\r\n')
-        parsed_data = {key: [] for key in self.patterns.keys()}
-        parsed_data['Other'] = []
+        # 2. self.parsed_dataのみを使用し、ローカル変数parsed_dataを削除
+        for key in self.parsed_data:
+            self.parsed_data[key] = []
         for sentence in sentences:
             sentence = sentence.strip()
-            if not self.verify_checksum(sentence):
+            if self.ENABLE_CHECKSUM and not self.verify_checksum(sentence):
                 continue
             matched = False
-            for key, self.pattern in self.patterns.items():
-                if self.pattern.match(sentence):
+            # 4. self.patternの上書きをやめ、ローカル変数patternを使う
+            for key, pattern in self.patterns.items():
+                if pattern.match(sentence):
                     self.parsed_data[key].append(sentence)
                     matched = True
                     break
@@ -282,6 +287,8 @@ class pygps2:
         merged['satellites_info'] = list(unique_satellites.values())
         if self.DETECT_CONVERT_QZS == True:
             merged['satellites_info'] = self.qzss_detect(merged['satellites_info'])
+        if self.DETECT_CONVERT_SBAS == True:
+            merged['satellites_info'] = self.sbas_detect(merged['satellites_info'])
         return merged
     
     def parse_rmc(self, sentence):
@@ -434,6 +441,21 @@ class pygps2:
             output.append(temp_s)
             nn += 1
         return output
+    
+    def sbas_detect(self, info):
+        n = len(info)
+        nn = 0
+        output = []
+        while n > nn:
+            temp_s = info[nn]
+            if temp_s['type'] == 'GP' or temp_s['type'] == 'GN':
+                if 33 <= int(temp_s['prn']) <= 64:
+                    temp_s['type'] = 'SBAS'
+                    temp_s['prn'] = int(temp_s['prn']) + 87 
+            output.append(temp_s)
+            nn += 1
+        return output
+    
     def tolist(self, data):
             sentences = data.split('$')
             sentences = ['$' + sentence for sentence in sentences if sentence]
@@ -453,8 +475,9 @@ class pygps2:
         self.ZDA = []
         self.GNS = []
         self.TXT = []
-        self.parsed_data = {'GGA': [], 'GLL': [], 'GSA': [], 'GSV': [], 'RMC': [], 'VTG': [], 'GST': [], 'DHV': [], 'ZDA': [], 'GNS': [], 'TXT': [], 'Other': []}
-        
+        for key in self.parsed_data:
+            self.parsed_data[key] = []
+
         data = str(data)
         data = self.tolist(data)
         self.parse_nmea_sentences(data)
@@ -478,6 +501,6 @@ class pygps2:
                 gsv_list = [self.parse_gsv(sentence) for sentence in parsed_data.get('GSV', [])]
                 merged_gsv = self.merge_gsv(gsv_list) if gsv_list else self.parse_gsv('')
                 self.GSV = merged_gsv
-        del parsed_data
-        del data
+        # 1. del parsed_data, del data は不要
+
 
