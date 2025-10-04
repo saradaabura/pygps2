@@ -1,6 +1,5 @@
-#Version 3.52
+#Version 3.6
 import re
-from ssl import OP_NO_SSLv3
 import time
 import math
 import sys
@@ -85,422 +84,325 @@ class pygps2:
         if '*' not in sentence:
             return False
         data, checksum = sentence.split('*')
-        calculated_checksum = 0
-        for char in data[1:]:
-            calculated_checksum ^= ord(char)
-        return f'{calculated_checksum:02X}' == checksum.strip().upper()
+        chk = 0
+        for c in data[1:]:
+            chk ^= ord(c)
+        return f'{chk:02X}' == checksum.strip().upper()
 
     def parse_nmea_sentences(self, nmea_data):
-        sentences = nmea_data.split('\r\n')
-        # 2. self.parsed_dataのみを使用し、ローカル変数parsed_dataを削除
-        for key in self.parsed_data:
-            self.parsed_data[key] = []
-        for sentence in sentences:
-            sentence = sentence.strip()
-            if self.ENABLE_CHECKSUM and not self.verify_checksum(sentence):
+        for k in self.parsed_data:
+            self.parsed_data[k] = []
+        for s in nmea_data.split('\r\n'):
+            s = s.strip()
+            if self.ENABLE_CHECKSUM and not self.verify_checksum(s):
                 continue
-            matched = False
-            # 4. self.patternの上書きをやめ、ローカル変数patternを使う
-            for key, pattern in self.patterns.items():
-                if pattern.match(sentence):
-                    self.parsed_data[key].append(sentence)
-                    matched = True
+            for k, p in self.patterns.items():
+                if p.match(s):
+                    self.parsed_data[k].append(s)
                     break
-            if not matched and sentence:
-                self.parsed_data['Other'].append(sentence)
-        del sentences
+            else:
+                if s:
+                    self.parsed_data['Other'].append(s)
 
     def parse_gga(self, sentence):
-        if sentence == []:
+        if not sentence:
             return
-        fields = sentence[0].split(',')
-        data = {
-            'timestamp': fields[1] if len(fields) > 1 and fields[1] else '000000.0',
-            'latitude': self.convert_to_degrees(fields[2], fields[3]) if len(fields) > 3 and fields[2] and fields[3] else 0.0,
-            'longitude': self.convert_to_degrees(fields[4], fields[5]) if len(fields) > 5 and fields[4] and fields[5] else 0.0,
-            'gps_quality': fields[6] if len(fields) > 6 and fields[6] else '0',
-            'num_satellites': fields[7] if len(fields) > 7 and fields[7] else '0',
-            'hdop': fields[8] if len(fields) > 8 and fields[8] else '0.0',
-            'altitude': fields[9] if len(fields) > 9 and fields[9] else '0.0',
-            'altitude_units': fields[10] if len(fields) > 10 and fields[10] else 'M',
-            'geoid_height': fields[11] if len(fields) > 11 and fields[11] else '0.0',
-            'geoid_units': fields[12] if len(fields) > 12 and fields[12] else 'M',
-            'dgps_age': fields[13] if len(fields) > 13 and fields[13] else '',
-            'dgps_station_id': fields[14].split('*')[0] if len(fields) > 14 and fields[14] else ''
+        f = sentence[0].split(',')
+        return {
+            'timestamp': f[1] if len(f) > 1 and f[1] else '000000.0',
+            'latitude': self.convert_to_degrees(f[2], f[3]) if len(f) > 3 and f[2] and f[3] else 0.0,
+            'longitude': self.convert_to_degrees(f[4], f[5]) if len(f) > 5 and f[4] and f[5] else 0.0,
+            'gps_quality': f[6] if len(f) > 6 and f[6] else '0',
+            'num_satellites': f[7] if len(f) > 7 and f[7] else '0',
+            'hdop': f[8] if len(f) > 8 and f[8] else '0.0',
+            'altitude': f[9] if len(f) > 9 and f[9] else '0.0',
+            'altitude_units': f[10] if len(f) > 10 and f[10] else 'M',
+            'geoid_height': f[11] if len(f) > 11 and f[11] else '0.0',
+            'geoid_units': f[12] if len(f) > 12 and f[12] else 'M',
+            'dgps_age': f[13] if len(f) > 13 and f[13] else '',
+            'dgps_station_id': f[14].split('*')[0] if len(f) > 14 and f[14] else ''
         }
-        del fields
-        return data
 
     def parse_gll(self, sentence):
-        if sentence == []:
+        if not sentence:
             return
-        fields = sentence[0].split(',')
-        data = {
-            'latitude': self.convert_to_degrees(fields[1], fields[2]) if len(fields) > 2 and fields[1] and fields[2] else 0.0,
-            'longitude': self.convert_to_degrees(fields[3], fields[4]) if len(fields) > 4 and fields[3] and fields[4] else 0.0,
-            'timestamp': fields[5] if len(fields) > 5 and fields[5] else '000000.0',
-            'status': fields[6] if len(fields) > 6 and fields[6] else 'V',
-            'mode_indicator': fields[7].split('*')[0] if len(fields) > 7 and fields[7] else ''
+        f = sentence[0].split(',')
+        return {
+            'latitude': self.convert_to_degrees(f[1], f[2]) if len(f) > 2 and f[1] and f[2] else 0.0,
+            'longitude': self.convert_to_degrees(f[3], f[4]) if len(f) > 4 and f[3] and f[4] else 0.0,
+            'timestamp': f[5] if len(f) > 5 and f[5] else '000000.0',
+            'status': f[6] if len(f) > 6 and f[6] else 'V',
+            'mode_indicator': f[7].split('*')[0] if len(f) > 7 and f[7] else ''
         }
-        del fields
-        return data
 
     def parse_gsa(self, sentence):
-        if sentence == []:
+        if not sentence:
             return
-        fields = sentence.split(',')
-        satellites_used = []
+        f = sentence.split(',')
+        sats = []
         for i in range(3, 15):
-            if len(fields) > i and fields[i]:
-                if self.OBTAIN_IDENTIFLER_FROM_GSA == True:
-                    satellites_used.append((fields[i], fields[18].split('*')[0]))
+            if len(f) > i and f[i]:
+                if self.OBTAIN_IDENTIFLER_FROM_GSA:
+                    sats.append((f[i], f[18].split('*')[0]))
                 else:
-                    satellites_used.append((fields[i]))
+                    sats.append(f[i])
             else:
-                satellites_used.append('0')
-        data = {
-            'fix_select': fields[1] if len(fields) > 1 and fields[1] else 'A',
-            'fix_status': fields[2] if len(fields) > 2 and fields[2] else '1',
-            'satellites_used': satellites_used,
-            'pdop': fields[15] if len(fields) > 15 and fields[15] else '0.0',
-            'hdop': fields[16] if len(fields) > 16 and fields[16] else '0.0',
-            'vdop': fields[17].split('*')[0] if len(fields) > 17 and fields[17] else '0.0'
+                sats.append('0')
+        return {
+            'fix_select': f[1] if len(f) > 1 and f[1] else 'A',
+            'fix_status': f[2] if len(f) > 2 and f[2] else '1',
+            'satellites_used': sats,
+            'pdop': f[15] if len(f) > 15 and f[15] else '0.0',
+            'hdop': f[16] if len(f) > 16 and f[16] else '0.0',
+            'vdop': f[17].split('*')[0] if len(f) > 17 and f[17] else '0.0'
         }
-        del fields
-        return data
+
+
     def parse_gsv(self, sentence):
-        if sentence == []:
+        if not sentence:
             return
-        fields = sentence.split(',')
-        system_type = sentence[1:3]
+        f = sentence.split(',')
+        sys_type = sentence[1:3]
         data = {
-            'system_type': system_type,
-            'num_messages': fields[1] if len(fields) > 1 and fields[1] else '1',
-            'message_num': fields[2] if len(fields) > 2 and fields[2] else '1',
-            'num_satellites': fields[3] if len(fields) > 3 and fields[3] else '0',
+            'system_type': sys_type,
+            'num_messages': f[1] if len(f) > 1 and f[1] else '1',
+            'message_num': f[2] if len(f) > 2 and f[2] else '1',
+            'num_satellites': f[3] if len(f) > 3 and f[3] else '0',
             'satellites_info': []
         }
-        index = 4
-        while index + 3 < len(fields) - 1:
-            prn = fields[index].strip() if len(fields) > index and fields[index] else '0'
-            elevation = fields[index+1].strip() if len(fields) > index+1 and fields[index+1] else '0.0'
-            azimuth = fields[index+2].strip() if len(fields) > index+2 and fields[index+2] else '0.0'
-            snr_field = fields[index+3].strip() if len(fields) > index+3 and fields[index+3] else '0.0'
-            snr = snr_field.split('*')[0] if '*' in snr_field else snr_field
-            if self.IN_BAND_DATA_INTO_GSV == True:
-                band = fields[len(fields) - 1].split('*')[0]
-            else:
-                band = 0
+        band = f[-1].split('*')[0] if self.IN_BAND_DATA_INTO_GSV else 0
+        for i in range(4, len(f) - 4, 4):
+            prn = f[i].strip() if f[i] else '0'
+            elev = f[i+1].strip() if f[i+1] else '0.0'
+            azim = f[i+2].strip() if f[i+2] else '0.0'
+            snr_raw = f[i+3].strip() if f[i+3] else '0.0'
+            snr = snr_raw.split('*')[0] if '*' in snr_raw else snr_raw
             data['satellites_info'].append({
                 'prn': prn,
-                'type': system_type,
-                'elevation': elevation,
-                'azimuth': azimuth,
+                'type': sys_type,
+                'elevation': elev,
+                'azimuth': azim,
                 'snr': snr,
                 'band': band
             })
-            index += 4
-        del fields
         return data
-
+        
     def parse_zda(self, sentence):
-        if sentence == []:
+        if not sentence:
             return
-        fields = sentence[0].split(',')
-        data = {
-            'timestamp': fields[1] if len(fields) > 1 else None,
-            'day': fields[2] if len(fields) > 2 else None,
-            'month': fields[3] if len(fields) > 3 else None,
-            'year': fields[4] if len(fields) > 4 else None,
-            'timezone_offset_hour': fields[5] if len(fields) > 5 else None,
-            'timezone_offset_minute': fields[6].split('*')[0] if len(fields) > 6 and '*' in fields[6] else None
+        f = sentence[0].split(',')
+        return {
+            'timestamp': f[1] if len(f) > 1 else None,
+            'day': f[2] if len(f) > 2 else None,
+            'month': f[3] if len(f) > 3 else None,
+            'year': f[4] if len(f) > 4 else None,
+            'timezone_offset_hour': f[5] if len(f) > 5 else None,
+            'timezone_offset_minute': f[6].split('*')[0] if len(f) > 6 and '*' in f[6] else None
         }
-        del fields
-        return data
-
-    def parse_gns(self, sentence):
-        if sentence == []:
-            return
-        fields = sentence[0].split(',')
-        data = {
-            'utc_time': fields[1] if len(fields) > 1 and fields[1] else '000000.0',
-            'latitude': self.convert_to_degrees(fields[2], fields[3]) if len(fields) > 3 and fields[2] and fields[3] else 0.0,
-            'longitude': self.convert_to_degrees(fields[4], fields[5]) if len(fields) > 5 and fields[4] and fields[5] else 0.0,
-            'mode_indicator': fields[6] if len(fields) > 6 and fields[6] else 'N',
-            'use_sv': fields[7] if len(fields) > 7 and fields[7] else '0',
-            'hdop': fields[8] if len(fields) > 8 and fields[8] else '0.0',
-            'msl': fields[9] if len(fields) > 9 and fields[9] else '0.0',
-            'geoid_alt': fields[11] if len(fields) > 11 and fields[11] else '0.0',
-            'age_of_differential_data': fields[13] if len(fields) > 13 and fields[13] else '0.0',
-            'station_id': fields[14] if len(fields) > 14 and fields[14] else '0000'
-        }
-        del fields
-        return data
 
     def merge_gsa(self, gsa_list):
         if not gsa_list:
-            return parse_gsa('')
-        merged = {}
-        merged['fix_select'] = gsa_list[0].get('fix_select', 'A')
-        merged['fix_status'] = gsa_list[0].get('fix_status', '1')
-        sats = []
-        for gsa in gsa_list:
-            sats.extend([s for s in gsa.get('satellites_used', []) if s != '0' and s != ''])
+            return self.parse_gsa('')
+        merged = {
+            'fix_select': gsa_list[0].get('fix_select', 'A'),
+            'fix_status': gsa_list[0].get('fix_status', '1')
+        }
+        sats = [s for gsa in gsa_list for s in gsa.get('satellites_used', []) if s not in ('0', '')]
         merged['satellites_used'] = list(dict.fromkeys(sats))
-        def average(lst):
-            try:
-                return str(sum(float(x) for x in lst) / len(lst))
-            except Exception:
-                return '0.0'
-        pdops = [gsa.get('pdop', '0.0') for gsa in gsa_list if gsa.get('pdop', '0.0') != '0.0']
-        hdops = [gsa.get('hdop', '0.0') for gsa in gsa_list if gsa.get('hdop', '0.0') != '0.0']
-        vdops = [gsa.get('vdop', '0.0') for gsa in gsa_list if gsa.get('vdop', '0.0') != '0.0']
-        merged['pdop'] = average(pdops) if pdops else '0.0'
-        merged['hdop'] = average(hdops) if hdops else '0.0'
-        merged['vdop'] = average(vdops) if vdops else '0.0'
-        return merged
 
+        def avg(lst):
+            try: return str(sum(map(float, lst)) / len(lst))
+            except: return '0.0'
+
+        merged['pdop'] = avg([g.get('pdop', '0.0') for g in gsa_list if g.get('pdop', '0.0') != '0.0']) or '0.0'
+        merged['hdop'] = avg([g.get('hdop', '0.0') for g in gsa_list if g.get('hdop', '0.0') != '0.0']) or '0.0'
+        merged['vdop'] = avg([g.get('vdop', '0.0') for g in gsa_list if g.get('vdop', '0.0') != '0.0']) or '0.0'
+        return merged
+        
     def merge_gsv(self, gsv_list):
         if not gsv_list:
-            return parse_gsv('')
-        merged = {}
-        merged['num_messages'] = str(len(gsv_list))
-        merged['message_num'] = '1'
-        nums = [gsv.get('num_satellites', '0') for gsv in gsv_list if gsv.get('num_satellites', '0')]
+            return self.parse_gsv('')
+        merged = {
+            'num_messages': str(len(gsv_list)),
+            'message_num': '1'
+        }
         try:
-            merged['num_satellites'] = str(max(int(n) for n in nums))
-        except Exception:
+            merged['num_satellites'] = str(max(int(g.get('num_satellites', '0')) for g in gsv_list))
+        except:
             merged['num_satellites'] = '0'
-        sats = []
-        for gsv in gsv_list:
-            sats.extend(gsv.get('satellites_info', []))
-        unique_satellites = {}
-        for sat in sats:
-            key = (sat['prn'], sat['type'], sat['elevation'], sat['azimuth'])
-            if key not in unique_satellites:
-                unique_satellites[key] = {k: sat[k] for k in ['prn', 'type', 'elevation', 'azimuth', 'snr']}
-                unique_satellites[key]['band'] = [int(sat['band'])]
-                unique_satellites[key]['snr'] = [float(sat["snr"])]
+
+        sats = [s for g in gsv_list for s in g.get('satellites_info', [])]
+        unique = {}
+        for s in sats:
+            key = (s['prn'], s['type'], s['elevation'], s['azimuth'])
+            if key not in unique:
+                unique[key] = {k: s[k] for k in ['prn', 'type', 'elevation', 'azimuth', 'snr']}
+                unique[key]['band'] = [int(s['band'])]
+                unique[key]['snr'] = [float(s['snr'])]
             else:
-                unique_satellites[key]['band'].append(int(sat['band']))
-                unique_satellites[key]['snr'].append(float(sat['snr']))
-        merged['satellites_info'] = list(unique_satellites.values())
-        if self.DETECT_CONVERT_QZS == True:
+                unique[key]['band'].append(int(s['band']))
+                unique[key]['snr'].append(float(s['snr']))
+        merged['satellites_info'] = list(unique.values())
+
+        if self.DETECT_CONVERT_QZS:
             merged['satellites_info'] = self.qzss_detect(merged['satellites_info'])
-        if self.DETECT_CONVERT_SBAS == True:
+        if self.DETECT_CONVERT_SBAS:
             merged['satellites_info'] = self.sbas_detect(merged['satellites_info'])
         return merged
-    
+
     def parse_rmc(self, sentence):
-        if sentence == []:
+        if not sentence:
             return
-        fields = sentence[0].split(',')
+        f = sentence[0].split(',')
         data = {
-            'timestamp': fields[1] if len(fields) > 1 and fields[1] else '000000.0',
-            'status': fields[2] if len(fields) > 2 and fields[2] else 'V',
-            'latitude': self.convert_to_degrees(fields[3], fields[4]) if len(fields) > 4 and fields[3] and fields[4] else 0.0,
-            'longitude': self.convert_to_degrees(fields[5], fields[6]) if len(fields) > 6 and fields[5] and fields[6] else 0.0,
-            'speed_over_ground': fields[7] if len(fields) > 7 and fields[7] else '0.0',
-            'course_over_ground': fields[8] if len(fields) > 8 and fields[8] else '0.0',
-            'date': fields[9] if len(fields) > 9 and fields[9] else '010100',
-            'magnetic_variation': fields[10] if len(fields) > 10 and fields[10] else '0.0',
-            'mag_var_direction': fields[11] if len(fields) > 11 and fields[11] else '',
-            'mode_indicator': fields[12].split('*')[0] if len(fields) > 12 and fields[12] else ''
+            'timestamp': f[1] if len(f) > 1 and f[1] else '000000.0',
+            'status': f[2] if len(f) > 2 and f[2] else 'V',
+            'latitude': self.convert_to_degrees(f[3], f[4]) if len(f) > 4 and f[3] and f[4] else 0.0,
+            'longitude': self.convert_to_degrees(f[5], f[6]) if len(f) > 6 and f[5] and f[6] else 0.0,
+            'speed_over_ground': f[7] if len(f) > 7 and f[7] else '0.0',
+            'course_over_ground': f[8] if len(f) > 8 and f[8] else '0.0',
+            'date': f[9] if len(f) > 9 and f[9] else '010100',
+            'magnetic_variation': f[10] if len(f) > 10 and f[10] else '0.0',
+            'mag_var_direction': f[11] if len(f) > 11 and f[11] else '',
+            'mode_indicator': f[12].split('*')[0] if len(f) > 12 and f[12] else ''
         }
         if data['timestamp'] and data['date']:
             try:
-                hours = int(data['timestamp'][0:2])
-                minutes = int(data['timestamp'][2:4])
-                seconds = int(data['timestamp'][4:6])
-                day = int(data['date'][0:2])
-                month = int(data['date'][2:4])
-                year = int(data['date'][4:6]) + 2000
+                h, m, s = int(data['timestamp'][0:2]), int(data['timestamp'][2:4]), int(data['timestamp'][4:6])
+                d, mo, y = int(data['date'][0:2]), int(data['date'][2:4]), int(data['date'][4:6]) + 2000
                 if sys.implementation.name == 'cpython':
-                    utc_seconds = time.mktime((year, month, day, hours, minutes, seconds, 0, 0, 0))
-                if sys.implementation.name == 'micropython':
-                    utc_seconds = time.mktime((year, month, day, hours, minutes, seconds, 0, 0))
-                localtime = math.floor(float(str(data['longitude'])) / 15)
-                local_seconds = utc_seconds + localtime * 3600
-                local_time = time.localtime(local_seconds)
-                data['utc_datetime'] = '{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}'.format(
-                    year, month, day, hours, minutes, seconds
-                )
-                data['local_datetime'] = '{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}'.format(
-                    local_time[0], local_time[1], local_time[2], local_time[3], local_time[4], local_time[5]
-                )
+                    utc = time.mktime((y, mo, d, h, m, s, 0, 0, 0))
+                else:
+                    utc = time.mktime((y, mo, d, h, m, s, 0, 0))
+                offset = math.floor(float(str(data['longitude'])) / 15)
+                local = time.localtime(utc + offset * 3600)
+                data['utc_datetime'] = f'{y:04d}-{mo:02d}-{d:02d} {h:02d}:{m:02d}:{s:02d}'
+                data['local_datetime'] = f'{local[0]:04d}-{local[1]:02d}-{local[2]:02d} {local[3]:02d}:{local[4]:02d}:{local[5]:02d}'
             except Exception as e:
                 print('Error parsing RMC data:', e)
                 data['utc_datetime'] = None
                 data['jst_datetime'] = None
-        del fields
         return data
 
     def parse_vtg(self, sentence):
-        if sentence == []:
+        if not sentence:
             return
-        fields = sentence[0].split(',')
-        data = {
-            'course_over_ground_t': fields[1] if len(fields) > 1 and fields[1] else '0.0',
-            'reference_t': fields[2] if len(fields) > 2 and fields[2] else 'T',
-            'course_over_ground_m': fields[3] if len(fields) > 3 and fields[3] else '0.0',
-            'reference_m': fields[4] if len(fields) > 4 and fields[4] else 'M',
-            'speed_knots': fields[5] if len(fields) > 5 and fields[5] else '0.0',
-            'units_knots': fields[6] if len(fields) > 6 and fields[6] else 'N',
-            'speed_kmh': fields[7] if len(fields) > 7 and fields[7] else '0.0',
-            'units_kmh': fields[8] if len(fields) > 8 and fields[8] else 'K',
-            'mode_indicator': fields[9].split('*')[0] if len(fields) > 9 and fields[9] else ''
+        f = sentence[0].split(',')
+        return {
+            'course_over_ground_t': f[1] if len(f) > 1 and f[1] else '0.0',
+            'reference_t': f[2] if len(f) > 2 and f[2] else 'T',
+            'course_over_ground_m': f[3] if len(f) > 3 and f[3] else '0.0',
+            'reference_m': f[4] if len(f) > 4 and f[4] else 'M',
+            'speed_knots': f[5] if len(f) > 5 and f[5] else '0.0',
+            'units_knots': f[6] if len(f) > 6 and f[6] else 'N',
+            'speed_kmh': f[7] if len(f) > 7 and f[7] else '0.0',
+            'units_kmh': f[8] if len(f) > 8 and f[8] else 'K',
+            'mode_indicator': f[9].split('*')[0] if len(f) > 9 and f[9] else ''
         }
-        del fields
-        return data
-
+    
     def parse_gst(self, sentence):
-        if sentence == []:
+        if not sentence:
             return
-        fields = sentence[0].split(',')
-        data = {
-            'timestamp': fields[1] if len(fields) > 1 and fields[1] else '000000.0',
-            'rms': fields[2] if len(fields) > 2 and fields[2] else '0.0',
-            'std_lat': fields[6] if len(fields) > 6 and fields[6] else '0.0',
-            'std_lon': fields[7] if len(fields) > 7 and fields[7] else '0.0',
-            'std_alt': fields[8].split('*')[0] if len(fields) > 8 and fields[8] else '0.0'
+        f = sentence[0].split(',')
+        return {
+            'timestamp': f[1] if len(f) > 1 and f[1] else '000000.0',
+            'rms': f[2] if len(f) > 2 and f[2] else '0.0',
+            'std_lat': f[6] if len(f) > 6 and f[6] else '0.0',
+            'std_lon': f[7] if len(f) > 7 and f[7] else '0.0',
+            'std_alt': f[8].split('*')[0] if len(f) > 8 and f[8] else '0.0'
         }
-        del fields
-        return data
     
     def parse_dhv(self, sentence):
-        if sentence == []:
+        if not sentence:
             return
-        fields = sentence[0].split(',')
-        data = {
-            'timestamp': fields[1] if len(fields) > 1 else None,
-            '3d_speed': fields[2] if len(fields) > 2 else None,
-            'ecef_x_speed': fields[3] if len(fields) > 3 else None,
-            'ecef_y_speed': fields[4] if len(fields) > 4 else None,
-            'ecef_z_speed': fields[5] if len(fields) > 5 else None,
-            'horizontal_ground_speed': fields[6].split('*')[0] if len(fields) > 6 and '*' in fields[6] else None
+        f = sentence[0].split(',')
+        return {
+            'timestamp': f[1] if len(f) > 1 else None,
+            '3d_speed': f[2] if len(f) > 2 else None,
+            'ecef_x_speed': f[3] if len(f) > 3 else None,
+            'ecef_y_speed': f[4] if len(f) > 4 else None,
+            'ecef_z_speed': f[5] if len(f) > 5 else None,
+            'horizontal_ground_speed': f[6].split('*')[0] if len(f) > 6 and '*' in f[6] else None
         }
-        del fields
-        return data
-
-    def parse_zda(self, sentence):
-        if sentence == []:
-            return
-        fields = sentence[0].split(',')
-        data = {
-            'timestamp': fields[1] if len(fields) > 1 else None,
-            'day': fields[2] if len(fields) > 2 else None,
-            'month': fields[3] if len(fields) > 3 else None,
-            'year': fields[4] if len(fields) > 4 else None,
-            'timezone_offset_hour': fields[5] if len(fields) > 5 else None,
-            'timezone_offset_minute': fields[6].split('*')[0] if len(fields) > 6 and '*' in fields[6] else None
-        }
-        del fields
-        return data
 
     def parse_gns(self, sentence):
-        if sentence == []:
+        if not sentence:
             return
-        fields = sentence[0].split(',')
-        data = {
-            'utc_time': fields[1] if len(fields) > 1 and fields[1] else '000000.0',
-            'latitude': self.convert_to_degrees(fields[2], fields[3]) if len(fields) > 3 and fields[2] and fields[3] else 0.0,
-            'longitude': self.convert_to_degrees(fields[4], fields[5]) if len(fields) > 5 and fields[4] and fields[5] else 0.0,
-            'mode_indicator': fields[6] if len(fields) > 6 and fields[6] else 'N',
-            'use_sv': fields[7] if len(fields) > 7 and fields[7] else '0',
-            'hdop': fields[8] if len(fields) > 8 and fields[8] else '0.0',
-            'msl': fields[9] if len(fields) > 9 and fields[9] else '0.0',
-            'geoid_alt': fields[11] if len(fields) > 11 and fields[11] else '0.0',
-            'age_of_differential_data': fields[13] if len(fields) > 13 and fields[13] else '0.0',
-            'station_id': fields[14] if len(fields) > 14 and fields[14] else '0000'
+        f = sentence[0].split(',')
+        return {
+            'utc_time': f[1] if len(f) > 1 and f[1] else '000000.0',
+            'latitude': self.convert_to_degrees(f[2], f[3]) if len(f) > 3 and f[2] and f[3] else 0.0,
+            'longitude': self.convert_to_degrees(f[4], f[5]) if len(f) > 5 and f[4] and f[5] else 0.0,
+            'mode_indicator': f[6] if len(f) > 6 and f[6] else 'N',
+            'use_sv': f[7] if len(f) > 7 and f[7] else '0',
+            'hdop': f[8] if len(f) > 8 and f[8] else '0.0',
+            'msl': f[9] if len(f) > 9 and f[9] else '0.0',
+            'geoid_alt': f[11] if len(f) > 11 and f[11] else '0.0',
+            'age_of_differential_data': f[13] if len(f) > 13 and f[13] else '0.0',
+            'station_id': f[14] if len(f) > 14 and f[14] else '0000'
         }
-        del fields
-        return data
 
     def parse_txt(self, sentence):
-        if sentence == []:
+        if not sentence:
             return
-        fields = sentence[0].split(',')
-        data = {
-            'several_lines': fields[1] if len(fields) > 1 else None,
-            'free': fields[2] if len(fields) > 2 else None,
-            'type': fields[3] if len(fields) > 3 else None,
-            'text': fields[4].split('*')[0] if len(fields) > 4 and '*' in fields[4] else None
+        f = sentence[0].split(',')
+        return {
+            'several_lines': f[1] if len(f) > 1 else None,
+            'free': f[2] if len(f) > 2 else None,
+            'type': f[3] if len(f) > 3 else None,
+            'text': f[4].split('*')[0] if len(f) > 4 and '*' in f[4] else None
         }
-        del fields
-        return data
+    
+    def detect_system(self, info, system='QZS'):
+        output = []
+        for temp_s in info:
+            if temp_s['type'] in ('GP', 'GN'):
+                prn = int(temp_s['prn'])
+                if system == 'QZS' and 193 <= prn <= 210:
+                    temp_s['type'] = 'QZS'
+                elif system == 'SBAS' and 33 <= prn <= 64:
+                    temp_s['type'] = 'SBAS'
+                    temp_s['prn'] = prn + 87
+            output.append(temp_s)
+        return output
 
     def qzss_detect(self, info):
-        n = len(info)
-        nn = 0
-        output = []
-        while n > nn:
-            temp_s = info[nn]
-            if temp_s['type'] == 'GP' or temp_s['type'] == 'GN':
-                if 193 <= int(temp_s['prn']) <= 210:
-                    temp_s['type'] = 'QZS'
-            output.append(temp_s)
-            nn += 1
-        return output
-    
+        return self.detect_system(info, 'QZS')
+
     def sbas_detect(self, info):
-        n = len(info)
-        nn = 0
-        output = []
-        while n > nn:
-            temp_s = info[nn]
-            if temp_s['type'] == 'GP' or temp_s['type'] == 'GN':
-                if 33 <= int(temp_s['prn']) <= 64:
-                    temp_s['type'] = 'SBAS'
-                    temp_s['prn'] = int(temp_s['prn']) + 87 
-            output.append(temp_s)
-            nn += 1
-        return output
+        return self.detect_system(info, 'SBAS')
     
     def tolist(self, data):
-            sentences = data.split('$')
-            sentences = ['$' + sentence for sentence in sentences if sentence]
-            data = '\r\n'.join(sentences) + '\r\n'
-            return data
-        
+        return '\r\n'.join(['$' + s for s in str(data).split('$') if s]) + '\r\n'
+
     def analyze(self, data, enable_type=(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)):
         self.raw = ''
-        self.GGA = []
-        self.GLL = []
-        self.GSA = []
-        self.GSV = []
-        self.RMC = []
-        self.VTG = []
-        self.GST = []
-        self.DHV = []
-        self.ZDA = []
-        self.GNS = []
-        self.TXT = []
-        for key in self.parsed_data:
+        keys = ['GGA', 'GLL', 'GSA', 'GSV', 'RMC', 'VTG', 'GST', 'DHV', 'ZDA', 'GNS', 'TXT']
+        for key in keys:
+            setattr(self, key, [])
             self.parsed_data[key] = []
-
-        data = str(data)
-        data = self.tolist(data)
-        self.parse_nmea_sentences(data)
+        try:
+            data = str(data)
+            data = self.tolist(data)
+            self.parse_nmea_sentences(data)
+        except Exception as e:
+            print(f"Error during parsing sentences: {e}")
         parsed_data = self.parsed_data
-        self.GGA = self.parse_gga(parsed_data.get('GGA', []))
-        self.GLL = self.parse_gll(parsed_data.get('GLL', []))
-        self.RMC = self.parse_rmc(parsed_data.get('RMC', []))
-        self.VTG = self.parse_vtg(parsed_data.get('VTG', []))
-        self.GST = self.parse_gst(parsed_data.get('GST', []))
-        self.DHV = self.parse_dhv(parsed_data.get('DHV', []))
-        self.ZDA = self.parse_zda(parsed_data.get('ZDA', []))
-        self.TXT = self.parse_txt(parsed_data.get('TXT', []))
-        self.GNS = self.parse_gns(parsed_data.get('GNS', []))
-        if parsed_data['GSA'] != []:
-            if enable_type[8] == 1:
-                gsa_list = [self.parse_gsa(sentence) for sentence in parsed_data.get('GSA', [])]
-                merged_gsa = self.merge_gsa(gsa_list) if gsa_list else self.parse_gsa('')
-                self.GSA = merged_gsa
-        if parsed_data['GSV'] != []:
-            if enable_type[9] == 1:
-                gsv_list = [self.parse_gsv(sentence) for sentence in parsed_data.get('GSV', [])]
-                merged_gsv = self.merge_gsv(gsv_list) if gsv_list else self.parse_gsv('')
-                self.GSV = merged_gsv
-        # 1. del parsed_data, del data は不要
-
-
+        for key in ['GGA', 'GLL', 'RMC', 'VTG', 'GST', 'DHV', 'ZDA', 'TXT', 'GNS']:
+            try:
+                parse_func = getattr(self, f'parse_{key.lower()}')
+                setattr(self, key, parse_func(parsed_data.get(key, [])))
+            except Exception as e:
+                print(f"Error parsing {key}: {e}")
+        if parsed_data.get('GSA', []) and enable_type[8]:
+            try:
+                gsa_list = [self.parse_gsa(s) for s in parsed_data['GSA']]
+                self.GSA = self.merge_gsa(gsa_list) if gsa_list else self.parse_gsa('')
+            except Exception as e:
+                print(f"Error parsing/merging GSA: {e}")
+        if parsed_data.get('GSV', []) and enable_type[9]:
+            try:
+                gsv_list = [self.parse_gsv(s) for s in parsed_data['GSV']]
+                self.GSV = self.merge_gsv(gsv_list) if gsv_list else self.parse_gsv('')
+            except Exception as e:
+                print(f"Error parsing/merging GSV: {e}")
