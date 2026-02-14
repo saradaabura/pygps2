@@ -1,5 +1,8 @@
 ﻿# Version History of pygps2
 
+# Version 3.71(Only CPython)
+- GSVセンテンスよりあとのセンテンスの解析ができないバグを修正した。
+
 # Version 3.7(Only CPython)
 - GSVセンテンスの解析方法を変更し、GSVを正しく解析するようにした。
 - 1センテンスごとに解析するようにした。
