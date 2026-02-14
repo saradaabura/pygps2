@@ -1,4 +1,4 @@
-# Japanese 日本語
+﻿# Japanese 日本語
 # pygps2
 このライブラリは自由に使用してください。どんな場合でもOKです
 # バージョン情報
@@ -33,6 +33,8 @@
 
 3.5 class化をし、利便性を向上させた。
 
+3.7 GSVを正しく解析できない問題をとりあえずCpython向けで解消。micropython向けは今後の課題。
+
 (詳細はVersion.mdに記載)
 
 # 依存ライブラリ (micropython)
@@ -42,6 +44,7 @@
 ### 通常のPythonにも対応しているため、pyserialなどと併用することで直接解析することができます
 # 対応センテンス
 基本的にすべてのセンテンスに対応していますが、使用する受信機に合わせてください。
+特に、北斗のGSVセンテンスであるBDGSVとGBGSVは受信機によって異なるので注意してください。
 ```
 GGA:$GNGGA, $GPGGA, $BDGGA
 GLL:$GNGLL, $GPGLL, $BDGLL
@@ -111,11 +114,11 @@ timeoutは1Hzで出力されるGPSモジュールの場合は1にしてくださ
 **まとまりのセンテンス一つを受信し終わる時間(だいたい)+0.1 ぐらいがちょうどいいです。**
 
 # 動作確認済み環境
-- CPython
+- CPython (Python3.14)
 - Raspberry Pi Pico 2
 - MicroPython v1.24.1 on 2024-11-29; Raspberry Pi Pico2 with RP2350
 - GPSモジュール: AT6668 (M5Stack GPSモジュールv1.1)
 - GPSモジュール: AT6558 (Air530Z)
 - GPS受信機: GT-505GGBL5-DR-N(秋月電子)
 
-- モジュールによっては動作しないかもしれません
+- モジュールによってはGSVやGSAなどのセンテンスを正しく解析できないかもしれません。GGAなどは解析できると思います。

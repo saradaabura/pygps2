@@ -1,135 +1,141 @@
-# Version History of pygps2
+﻿# Version History of pygps2
+
+# Version 3.7(Only CPython)
+- GSVセンテンスの解析方法を変更し、GSVを正しく解析するようにした。
+- 1センテンスごとに解析するようにした。
+- CPythonのみサポートしたバージョンである。
+(どうでも良いことですが、新しいPCで開発を始めました。)
 
 # Version 3.52
-- GPGSV GNGSV�Z���e���X����33����64��PRN���܂܂��ꍇ�Atype�̒l��"SBAS"�ɂȂ�悤�ɂȂ����B
+- GPGSV GNGSVセンテンス中に33から64のPRNが含まれる場合、typeの値が"SBAS"になるようになった。
 
-GNGSV��GLONNAS�Ȃǂ��܂�ŏo�͂���ꍇ�A���̐ݒ�͖����ɂ���B
-SBAS�𗘗p���Ȃ����W���[���̏ꍇ�A�댟�o�E�y�ʉ��̂��ߖ����ɂ���B
+GNGSVがGLONNASなどを含んで出力する場合、この設定は無効にする。
+SBASを利用しないモジュールの場合、誤検出・軽量化のため無効にする。
 
-���̐ݒ�� .pygps2(op3=False)�Ŗ����ɂ��邱�Ƃ��ł���B
+この設定は .pygps2(op3=False)で無効にすることができる。
 
 # Version 3.51
-- 2�ȏ�̃o���h���g�p���ɁA�����̃o���h��SNR����擾�ł���悤�ɂ����B
+- 2つ以上のバンドを使用時に、それらのバンドのSNR比を取得できるようにした。
 
 # Version 3.5
-- class������A�����̃��W���[���𓯎��Ɏg�p�ł���悤�ɂȂ����B
-- class���ɔ����A�ݒ�(QZS���metc...)���ʂłł���悤�ɂȂ����B
+- class化され、複数のモジュールを同時に使用できるようになった。
+- class化に伴い、設定(QZS検知etc...)も個別でできるようになった。
 
 # Version 3.4
-- GNS�Z���e���X��͊֐���ǉ�
+- GNSセンテンス解析関数を追加
 
 # DEV 3.3
-- GN��GP���b�Z�[�W�Ɋ܂܂��QZSS��PRN�����o�����ނ����邱�Ƃ��ł���悤�ɂȂ����B
-- CONFIG���ڂ��������B
+- GNやGPメッセージに含まれるQZSSのPRNを検出し分類させることができるようになった。
+- CONFIG項目が増えた。
 
-�������A���̋@�\��GQ���b�Z�[�W�ł͌��ʂ��Ȃ��B�����GQ���b�Z�[�W���o�͂����M�@�͐ݒ�𖳌��ɂ��邱�Ƃ��������߂���B
+ただし、この機能はGQメッセージでは効果がない。よってGQメッセージが出力する受信機は設定を無効にすることをおすすめする。
 
-- GN,GP�̒���193~210(�݂��т������@����6���@)�����o�����ꍇ�̂݁AQZS�����ďo�͂����B
+- GN,GPの中で193~210(みちびき初号機から6号機)を検出した場合のみ、QZSをして出力される。
 
-�����SBAS�������悤�ɂ���悤�ɂ���\��B(GQ��2,3,4,7�\�L������)
+今後はSBASも同じようにするようにする予定。(GQの2,3,4,7表記も検討)
 
 
 # Version 3.22
-- GSA�Z���e���X�̉�͕��@��ύX
-- ��L�ɔ����Đݒ�ł���悤�ϐ���ǉ�
-**NMEA�̃t�B�[���h�ɂ͏������Ă��Ȃ�**
+- GSAセンテンスの解析方法を変更
+- 上記に伴って設定できるよう変数を追加
+**NMEAのフィールドには準拠していない**
 
-����ɂ��A��萳�m��GSA�f�[�^���擾�ł���悤�ɂȂ����B(�q��PRN,����)
-(�ȑO��PRN�̂ݎ擾���������A����PRN���������Ă������ߕs���m������)
+これにより、より正確なGSAデータを取得できるようになった。(衛星PRN,識別)
+(以前はPRNのみ取得したうえ、同じPRNを除去していたため不正確だった)
 
 # Version 3.2
-**�y�ʉ�#2**
-- ��x�ɂ��ׂẴZ���e���X�����Ȃ��Ă��A��͂ł���悤�ɂ����B
-- ��̓f�[�^�̕ϐ���init����������悤�ɂ����B
+**軽量化#2**
+- 一度にすべてのセンテンスを入れなくても、解析できるようにした。
+- 解析データの変数をinit処理させるようにした。
 
-���ʂƂ��āA�������������ł����삵�₷���Ȃ����B
+結果として、小さいメモリでも動作しやすくなった。
 
-�g�p���@�͕ς���Ă��܂��̂ŁA�T���v���R�[�h�Ƃ���examples/pico_example_32.py���Q��
+使用方法は変わってしまうので、サンプルコードとしてexamples/pico_example_32.pyを参照
 
 # Version 3.1
-**���s�֐��̕ύX**
-- analyze�Ƀf�R�[�h�����f�[�^�𒼐ڂ���邱�Ƃ��ł���悤�ɂ����B
-����ɂ��A�ȗ������ꂽ�v���O�������쐬�ł���悤�ɂȂ����B
+**実行関数の変更**
+- analyzeにデコードしたデータを直接いれることができるようにした。
+これにより、簡略化されたプログラムを作成できるようになった。
 
-### �ڍׂ�examples/pico_example_31.py���Q��
+### 詳細はexamples/pico_example_31.pyを参照
 
 # Version 3.01
-gc���Ȃ������B
-���R��gc���g�p����Ə������Ԃ������Ȃ邽�߁B���s�͊e���s���Ăق����B
+gcをなくした。
+理由はgcを使用すると処理時間が長くなるため。実行は各自行ってほしい。
 # Version 3.0
-**���������[�N�����Ȃ�����**
-- del���g�p���Ċ֐��̏������I�������Ƃ��ɕϐ����Ȃ����悤�ɂ����B
-- gc���W���[�����g�p���ă������̉�����s���悤�ɂ����B
-- ToDo�ɂ�������͋@�\��؂�ւ��ł���悤�ɂ����B
-**������analyze_nmea_date�����s����Ə��������**
+**メモリリークを少なくした**
+- delを使用して関数の処理が終了したときに変数をなくすようにした。
+- gcモジュールを使用してメモリの解放を行うようにした。
+- ToDoにあった解析機能を切り替えできるようにした。
+**これらはanalyze_nmea_dateを実行すると処理される**
 
-���\�[�X�����Ȃ��f�o�C�X�ł��g�p���₷���Ȃ����B
+リソースが少ないデバイスでも使用しやすくなった。
 
 # Version 2.9
-**�`�F�b�N�T���̋@�\��ǉ�**
-- �e�Z���e���X���`�F�b�N�T���ɂ�茟�؂���@�\��ǉ�
-��parse_nmea_sentences�ŏ��������ہA�`�F�b�N�T�������؂���悤�ɂȂ����B
+**チェックサムの機能を追加**
+- 各センテンスをチェックサムにより検証する機能を追加
+→parse_nmea_sentencesで処理される際、チェックサムを検証するようになった。
 
-����̓`�F�b�N�T�����؂�L���ɂ��邩�ǂ�����I���ł���悤�ɂ���\��B
+今後はチェックサム検証を有効にするかどうかを選択できるようにする予定。
 
 # Version 2.8
-**RMC��o�ܓx�ϊ��֐��̕ύX**
+**RMCや経緯度変換関数の変更**
 ### RMC
-- cpython������mktime�̃G���[����@cpython�ł�micropython�Ɠ����悤�Ɏg�p�\
-### �o�ܓx�ϊ��֐�
-- cpython��Decimal���g�p����悤�ɕύX�B
+- cpython環境下でmktimeのエラー回避　cpythonではmicropythonと同じように使用可能
+### 経緯度変換関数
+- cpythonでDecimalを使用するように変更。
 
-## �ǂ�������������micropython��cpython�ŏ�����ύX����悤�ɂ��Ă���B
-����ɂ��Acpython���ł����肵�ē��삷��悤�ɂȂ����B
+## どちらも条件分岐でmicropythonとcpythonで処理を変更するようにしている。
+これにより、cpython環境でも安定して動作するようになった。
 # Version 2.7
-**decimal�֐���p����issues#2������**
-�g�p�������C�u����
+**decimal関数を用いてissues#2を解消**
+使用したライブラリ
 - micropython-decimal-number
 https://github.com/mpy-dev/micropython-decimal-number/tree/main
 THANK YOU!
-lat��lon�͏�������O��str()�ŕ�����ɕϊ�����K�v������B����͂��̏������֐��ɑg�ݍ��ޗ\��B
+latはlonは処理する前にstr()で文字列に変換する必要がある。今後はこの処理を関数に組み込む予定。
 
-float(str())�ɂ��ĉ��Z���s���ƁA���x�������邽�߂Ȃ�ׂ��Astr�ŕێ�����悤�ɂ���B
+float(str())にして演算を行うと、精度が落ちるためなるべく、strで保持するようにする。
 
 # Version 2.6
 
-**�p�^�[���ɂȂ��f�[�^�̏���**
+**パターンにないデータの処理**
 
-2.5�ȑO��patterns�ɂȂ��f�[�^�͏�������Ȃ��������A2.6�ȍ~�͏��������悤�ɂȂ����B
+2.5以前はpatternsにないデータは処理されなかったが、2.6以降は処理されるようになった。
 
-�������ꂽ�f�[�^��pygps2.parse_nmea_sentences()��Other�ɕ��ނ����Bpygps2.analyze_nmea_data()�ł͏�������Ȃ��B
+処理されたデータはpygps2.parse_nmea_sentences()でOtherに分類される。pygps2.analyze_nmea_data()では処理されない。
 
 # Version 2.5
-**DHV ZDA TXT�ǉ�**
-- ��̓Z���e���X�̒ǉ�
-**FIX���Ă��Ȃ��Ƃ��̎�����2000/01/01�ɂȂ�܂���**
-- time��mktime�G���[����̂���
+**DHV ZDA TXT追加**
+- 解析センテンスの追加
+**FIXしていないときの時刻は2000/01/01になりました**
+- timeのmktimeエラー回避のため
 # Version 2.4
-**RMC�ύX**
-- RMC�Ɍo�x����v�Z�������[�J��������ǉ�
-���t�̕ύX�ɑΉ�
+**RMC変更**
+- RMCに経度から計算したローカル時刻を追加
+日付の変更に対応
 
 # Version 2.3
-**GST��͊֐��ǉ�**
-- GST�Z���e���X�̉�͊֐���ǉ�
+**GST解析関数追加**
+- GSTセンテンスの解析関数を追加
 # Version 2.2
-**�q���̃f���A���o���h�ɂ��J�E���g�d���̉���**
-GNSS�̃Z���e���X����2��ȏ㓯��PRN�����o����Ă��J�E���g���Ȃ��悤�ɂ����B
+**衛星のデュアルバンドによるカウント重複の解消**
+GNSSのセンテンスから2回以上同じPRNが検出されてもカウントしないようにした。
 
-�܂����S�ł͂Ȃ����A�ꕔ�̃Z���e���X�ɑ΂��Ă͑Ή����Ă���B
+まだ完全ではないが、一部のセンテンスに対しては対応している。
 
-����m�F
+動作確認
 - AT6668
 - AT6558
 # Version 2.1
-**GSV��͊֐��ύX**
-- �q�����ʎq��ǉ�
+**GSV解析関数変更**
+- 衛星識別子を追加
 
-GSV�Z���e���X�̐擪2�����ڂ���4�����ڂ��擾
+GSVセンテンスの先頭2文字目から4文字目を取得
 
-��������ʎq�Ƃ��Ď�����"type"�ɒǉ�����悤�ɂ���
+それを識別子として辞書の"type"に追加するようにした
 
-```��
+```例
 $BDGSV "type":"BD"
 $GPGSV "type":"GP"
 $GAGSV "type":"GA"
@@ -138,11 +144,11 @@ $GNGSV "type":"GN"
 $GQGSV "type":"GQ"
 $GBGSV "type":"GB"
 ```
-SBAS�ɂ��Ă͑Ή����Ă��Ȃ�
+SBASについては対応していない
 
-$GPGSV�̒��ɂ���QZSS���̃f�[�^��GP�Ƃ��ď��������B
+$GPGSVの中にあるQZSS等のデータはGPとして処理される。
 
-���̂܂܂̏o�͂ł��邽�߁A�g�p���郂�W���[���ɂ���ăv���O������ύX����K�v������B
+そのままの出力であるため、使用するモジュールによってプログラムを変更する必要がある。
 
 # Version 2.0
-�쐬
+作成
