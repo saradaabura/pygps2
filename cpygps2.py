@@ -1,4 +1,4 @@
-﻿# Version 3.71
+﻿# Version 3.72
 import re
 import time
 import math
@@ -13,7 +13,11 @@ class pygps2:
         self.DETECT_CONVERT_QZS = op2
         self.DETECT_CONVERT_SBAS = op3
         self.ENABLE_CHECKSUM = op4
-        
+
+        impl = sys.implementation.name
+        self._is_cpython = (impl == "cpython")
+        self._is_micropython = (impl == "micropython")
+
         self.raw = ''
         self.GGA = []
         self.GLL = []
@@ -42,7 +46,7 @@ class pygps2:
             'GGA': re.compile(r'\$GNGGA,.*?\*..|\$GPGGA,.*?\*..|\$BDGGA,.*?\*..'),
             'GLL': re.compile(r'\$GNGLL,.*?\*..|\$GPGLL,.*?\*..|\$BDGLL,.*?\*..'),
             'GSA': re.compile(r'\$GNGSA,.*?\*..|\$GPGSA,.*?\*..|\$BDGSA,.*?\*..'),
-            'GSV': re.compile(r'\$GPGSV,.*?\*..|\$BDGSV,.*?\*..|\$GQGSV,.*?\*..|\$GLGSV,.*?\*..|\$GAGSV,.*?\*..'),
+            'GSV': re.compile(r'\$GPGSV,.*?\*..|\$BDGSV,.*?\*..|\$GQGSV,.*?\*..|\$GLGSV,.*?\*..|\$GAGSV,.*?\*..|\$GBGSV,.*?\*..'),
             'RMC': re.compile(r'\$GNRMC,.*?\*..|\$GPRMC,.*?\*..|\$BDRMC,.*?\*..'),
             'VTG': re.compile(r'\$GNVTG,.*?\*..|\$GPVTG,.*?\*..|\$BDVTG,.*?\*..'),
             'GST': re.compile(r'\$GNGST,.*?\*..|\$GPGST,.*?\*..|\$BDGST,.*?\*..'),
@@ -51,7 +55,6 @@ class pygps2:
             'GNS': re.compile(r'\$GNGNS,.*?\*..|\$GPGNS,.*?\*..'),
             'TXT': re.compile(r'\$GNTXT,.*?\*..|\$GPTXT,.*?\*..|\$BDTXT,.*?\*..')
         }
-
         self._gsv_buffer = {
             "GP": [], "GL": [], "GA": [], "GB": [], "GQ": [], "GN": []
         }
@@ -63,7 +66,7 @@ class pygps2:
         }
 
     def convert_to_degrees(self, coord, direction):
-        if sys.implementation.name == 'cpython':
+        if self._is_cpython:
             try:
                 if not coord:
                     return str(Decimal('0.0'))
@@ -79,7 +82,8 @@ class pygps2:
             except Exception as e:
                 print(f'Error in coordinate conversion: {e}')
                 return str(Decimal('0.0'))
-        if sys.implementation.name == 'micropython':
+
+        if self._is_micropython:
             try:
                 if not coord:
                     return str(DecimalNumber('0.0'))
@@ -95,11 +99,12 @@ class pygps2:
             except Exception as e:
                 print(f'Error in coordinate conversion: {e}')
                 return str(DecimalNumber('0.0'))
+        return '0.0'
 
     def verify_checksum(self, sentence):
         if '*' not in sentence:
             return False
-        data, checksum = sentence.split('*')
+        data, checksum = sentence.split('*', 1)
         chk = 0
         for c in data[1:]:
             chk ^= ord(c)
@@ -107,21 +112,26 @@ class pygps2:
 
     # Analyze NMEA
     def parse_nmea_sentences(self, nmea_data):
-        for k in self.parsed_data:
-            self.parsed_data[k] = []
+        pd = self.parsed_data
+        for k in pd:
+            pd[k].clear()
+
+        enable_checksum = self.ENABLE_CHECKSUM
+        verify_checksum = self.verify_checksum
+        patterns = self.patterns
+
         for s in nmea_data.split('\r\n'):
             s = s.strip()
             if not s:
                 continue
-            if self.ENABLE_CHECKSUM and not self.verify_checksum(s):
+            if enable_checksum and not verify_checksum(s):
                 continue
-            for k, p in self.patterns.items():
+            for k, p in patterns.items():
                 if p.match(s):
-                    self.parsed_data[k].append(s)
+                    pd[k].append(s)
                     break
             else:
-                if s:
-                    self.parsed_data['Other'].append(s)
+                pd['Other'].append(s)
 
     # Only Stream
     def _parse_single_sentence(self, s):
@@ -130,11 +140,13 @@ class pygps2:
             return
         if self.ENABLE_CHECKSUM and not self.verify_checksum(s):
             return
-        for k, p in self.patterns.items():
+        pd = self.parsed_data
+        patterns = self.patterns
+        for k, p in patterns.items():
             if p.match(s):
-                self.parsed_data[k] = [s]
+                pd[k] = [s]
                 return
-        self.parsed_data["Other"] = [s]
+        pd["Other"] = [s]
 
     def parse_gga(self, sentence):
         if not sentence:
@@ -172,9 +184,10 @@ class pygps2:
             return
         f = sentence.split(',')
         sats = []
+        obtain_id = self.OBTAIN_IDENTIFLER_FROM_GSA
         for i in range(3, 15):
             if len(f) > i and f[i]:
-                if self.OBTAIN_IDENTIFLER_FROM_GSA:
+                if obtain_id:
                     sats.append((f[i], f[18].split('*')[0]))
                 else:
                     sats.append(f[i])
@@ -194,21 +207,25 @@ class pygps2:
             return
         f = sentence.split(',')
         sys_type = sentence[1:3]
+        num_messages = f[1] if len(f) > 1 and f[1] else '1'
+        message_num = f[2] if len(f) > 2 and f[2] else '1'
+        num_satellites = f[3] if len(f) > 3 and f[3] else '0'
         data = {
             'system_type': sys_type,
-            'num_messages': f[1] if len(f) > 1 and f[1] else '1',
-            'message_num': f[2] if len(f) > 2 and f[2] else '1',
-            'num_satellites': f[3] if len(f) > 3 and f[3] else '0',
+            'num_messages': num_messages,
+            'message_num': message_num,
+            'num_satellites': num_satellites,
             'satellites_info': []
         }
         band = f[-1].split('*')[0] if self.IN_BAND_DATA_INTO_GSV else 0
+        sats_info = data['satellites_info']
         for i in range(4, len(f) - 4, 4):
             prn = f[i].strip() if f[i] else '0'
             elev = f[i+1].strip() if f[i+1] else '0.0'
             azim = f[i+2].strip() if f[i+2] else '0.0'
             snr_raw = f[i+3].strip() if f[i+3] else '0.0'
             snr = snr_raw.split('*')[0] if '*' in snr_raw else snr_raw
-            data['satellites_info'].append({
+            sats_info.append({
                 'prn': prn,
                 'type': sys_type,
                 'elevation': elev,
@@ -244,7 +261,7 @@ class pygps2:
         def avg(lst):
             try:
                 return str(sum(map(float, lst)) / len(lst))
-            except:
+            except Exception:
                 return '0.0'
 
         merged['pdop'] = avg([g.get('pdop', '0.0') for g in gsa_list if g.get('pdop', '0.0') != '0.0']) or '0.0'
@@ -261,7 +278,7 @@ class pygps2:
         }
         try:
             merged['num_satellites'] = str(max(int(g.get('num_satellites', '0')) for g in gsv_list))
-        except:
+        except Exception:
             merged['num_satellites'] = '0'
 
         sats = [s for g in gsv_list for s in g.get('satellites_info', [])]
@@ -269,9 +286,15 @@ class pygps2:
         for s in sats:
             key = (s['prn'], s['type'], s['elevation'], s['azimuth'])
             if key not in unique:
-                unique[key] = {k: s[k] for k in ['prn', 'type', 'elevation', 'azimuth', 'snr']}
-                unique[key]['band'] = [int(s['band'])]
-                unique[key]['snr'] = [float(s['snr'])]
+                u = {
+                    'prn': s['prn'],
+                    'type': s['type'],
+                    'elevation': s['elevation'],
+                    'azimuth': s['azimuth'],
+                    'snr': [float(s['snr'])],
+                    'band': [int(s['band'])]
+                }
+                unique[key] = u
             else:
                 unique[key]['band'].append(int(s['band']))
                 unique[key]['snr'].append(float(s['snr']))
@@ -299,11 +322,13 @@ class pygps2:
             'mag_var_direction': f[11] if len(f) > 11 and f[11] else '',
             'mode_indicator': f[12].split('*')[0] if len(f) > 12 and f[12] else ''
         }
-        if data['timestamp'] and data['date']:
+        ts = data['timestamp']
+        dt = data['date']
+        if ts and dt:
             try:
-                h, m, s = int(data['timestamp'][0:2]), int(data['timestamp'][2:4]), int(data['timestamp'][4:6])
-                d, mo, y = int(data['date'][0:2]), int(data['date'][2:4]), int(data['date'][4:6]) + 2000
-                if sys.implementation.name == 'cpython':
+                h, m, s = int(ts[0:2]), int(ts[2:4]), int(ts[4:6])
+                d, mo, y = int(dt[0:2]), int(dt[2:4]), int(dt[4:6]) + 2000
+                if self._is_cpython:
                     utc = time.mktime((y, mo, d, h, m, s, 0, 0, 0))
                 else:
                     utc = time.mktime((y, mo, d, h, m, s, 0, 0))
@@ -410,41 +435,51 @@ class pygps2:
 
     def analyze(self, data, enable_type=(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)):
         self.raw = ''
-        keys = ['GGA', 'GLL', 'GSA', 'GSV', 'RMC', 'VTG', 'GST', 'DHV', 'ZDA', 'GNS', 'TXT']
-        for key in keys:
-            if key == 'GSV':
-                self.GSV = {"GP": None, "GL": None, "GA": None, "GB": None, "GQ": None, "GN": None}
-            else:
-                setattr(self, key, [])
-            self.parsed_data[key] = []
+        self.GSV = {"GP": None, "GL": None, "GA": None, "GB": None, "GQ": None, "GN": None}
+        self.GGA = []
+        self.GLL = []
+        self.GSA = []
+        self.RMC = []
+        self.VTG = []
+        self.GST = []
+        self.DHV = []
+        self.ZDA = []
+        self.GNS = []
+        self.TXT = []
+
+        pd = self.parsed_data
+        for key in pd:
+            pd[key].clear()
+
         try:
             data = str(data)
             data = self.tolist(data)
             self.parse_nmea_sentences(data)
         except Exception as e:
             print(f"Error during parsing sentences: {e}")
-        parsed_data = self.parsed_data
         for key in ['GGA', 'GLL', 'RMC', 'VTG', 'GST', 'DHV', 'ZDA', 'TXT', 'GNS']:
             try:
                 parse_func = getattr(self, f'parse_{key.lower()}')
-                setattr(self, key, parse_func(parsed_data.get(key, [])))
+                setattr(self, key, parse_func(pd.get(key, [])))
             except Exception as e:
                 print(f"Error parsing {key}: {e}")
-        if parsed_data.get('GSA', []) and enable_type[8]:
+
+        if pd.get('GSA', []) and enable_type[8]:
             try:
-                gsa_list = [self.parse_gsa(s) for s in parsed_data['GSA']]
+                gsa_list = [self.parse_gsa(s) for s in pd['GSA']]
                 self.GSA = self.merge_gsa(gsa_list) if gsa_list else self.parse_gsa('')
             except Exception as e:
                 print(f"Error parsing/merging GSA: {e}")
-        if parsed_data.get('GSV', []) and enable_type[9]:
+
+        if pd.get('GSV', []) and enable_type[9]:
             try:
-                gsv_list = [self.parse_gsv(s) for s in parsed_data['GSV']]
+                gsv_list = [self.parse_gsv(s) for s in pd['GSV']]
                 merged = self.merge_gsv(gsv_list) if gsv_list else self.parse_gsv('')
                 self.GSV["GN"] = merged
             except Exception as e:
                 print(f"Error parsing/merging GSV: {e}")
-    
-    #For Stream Analyze
+
+    # For Stream Analyze
     def _handle_gsv_sentence(self, sentence):
         talker = sentence[1:3]  # "GP", "GB", "GL", "GA", "GN", etc.
         if talker == "BD":
@@ -455,19 +490,17 @@ class pygps2:
             num = int(f[2])
         except Exception:
             return
-        if talker not in self._gsv_buffer:
-            self._gsv_buffer[talker] = []
-        if talker not in self._gsv_sets:
-            self._gsv_sets[talker] = []
 
-        self._gsv_buffer[talker].append(sentence)
+        buf = self._gsv_buffer[talker]
+        buf.append(sentence)
+
         if num == total:
             try:
-                gsv_list = [self.parse_gsv(s) for s in self._gsv_buffer[talker]]
+                gsv_list = [self.parse_gsv(s) for s in buf]
                 self._gsv_sets[talker].append(gsv_list)
             except Exception as e:
                 print("Error in GSV set parse:", e)
-            self._gsv_buffer[talker] = []
+            buf.clear()
             try:
                 all_gsv = []
                 for gsv_set in self._gsv_sets[talker]:
@@ -480,11 +513,10 @@ class pygps2:
 
     def _handle_gsa_sentence(self, sentence):
         talker = sentence[1:3]
-        if talker not in self._gsa_buffer:
-            self._gsa_buffer[talker] = []
-        self._gsa_buffer[talker].append(sentence)
+        buf = self._gsa_buffer[talker]
+        buf.append(sentence)
         try:
-            gsa_list = [self.parse_gsa(s) for s in self._gsa_buffer[talker]]
+            gsa_list = [self.parse_gsa(s) for s in buf]
             self.GSA = self.merge_gsa(gsa_list)
         except Exception as e:
             print("Error in GSA merge:", e)

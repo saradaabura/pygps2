@@ -4,7 +4,7 @@
 - AT6558 Grove - GPSモジュール（Air530） Seeed Studio
 # 確認済みのマイコン・Python環境
 ### CPython
-- Windows 11 Python 3.14 Python 3.10.11hgh
+- Windows 11 Python 3.14 Python 3.10.11(Thonny)
 ### MicroPython
 GSVデータを取得できなかった。
 - Raspberry Pi Pico 1 MicroPython v1.25.0 on 2025-04-15; Raspberry Pi Pico with RP2040
