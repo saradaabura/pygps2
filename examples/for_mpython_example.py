@@ -1,49 +1,64 @@
-﻿from machine import UART, Pin, I2C
+﻿import _thread
+from machine import UART, Pin
 import time
 from pygps2 import pygps2
 
-# GNSS parser
+# GNSS parser instance
 gnss = pygps2()
 
-# open serial port
-ser = UART(0, baudrate=460800, tx=Pin(0), rx=Pin(1))
+# UART setting
+uart = UART(
+    1,
+    baudrate=460800,
+    tx=Pin(26),
+    rx=Pin(27),
+    timeout=1
+)
+running = True
+# reading...
+def gps_thread():
+    global running
+    print("[GPS] Thread started")
 
-print("[GPS] Reading COM6 @ 460800")
-
-while True:
-    try:
-        raw = ser.readline()
-        if raw is not None:
+    while running:
+        raw = uart.readline()
+        if raw:
             try:
+
                 raw = raw.replace(b'\r', b'').replace(b'\n', b'')
                 raw = raw.replace(b'/', b'')
                 data = raw.decode("utf-8", "ignore")
-                del raw
+
+                if data.startswith("$"):
+                    gnss.analyze_sentence(data)
+
             except Exception as e:
-                print(f"error: {e}")
-                continue
-            if data.startswith("$"):
-                gnss.analyze_sentence(data)
+                print("GPS thread error:", e)
 
-            # RMC
-            rmc = gnss.RMC
-            # GSV
-            gsv = gnss.GSV
+    print("[GPS] Thread stopped")
 
-            if rmc:
-                print("Lat:", rmc["latitude"], "Lon:", rmc["longitude"])
+# Thread starts
+_thread.start_new_thread(gps_thread, ())
 
-            if gsv:
-                print(
-                    "GPS:", gsv["GP"]["num_satellites"] if gsv["GP"] else 0,
-                    "BD:",  gsv["GB"]["num_satellites"] if gsv["GB"] else 0,
-                    "GA:",  gsv["GA"]["num_satellites"] if gsv["GA"] else 0
-                )
+# MAIN LOOP
+try:
+    while True:
+        rmc = gnss.GGA
+        gsv = gnss.GSV
 
-            time.sleep(1)
+        if rmc:
+            print("Lat:", rmc["latitude"], "Lon:", rmc["longitude"])
 
-    except KeyboardInterrupt:
-        print("Stopping...")
-        break
+        if gsv:
+            print(
+                "GPS:", gsv["GP"]["num_satellites"] if gsv["GP"] else 0,
+                "BD:",  gsv["GB"]["num_satellites"] if gsv["GB"] else 0,
+                "GA:",  gsv["GA"]["num_satellites"] if gsv["GA"] else 0
+            )
 
+        time.sleep(1)
 
+except KeyboardInterrupt:
+    print("Stopping...")
+    running = False
+    time.sleep(0.5)

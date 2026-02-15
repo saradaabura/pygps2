@@ -1,7 +1,7 @@
 ﻿import threading
 import serial
 import time
-from pygps2 import pygps2
+from cpygps2 import pygps2
 
 class GPSReader:
     def __init__(self, port="COM6", baud=460800):
