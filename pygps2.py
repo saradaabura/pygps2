@@ -135,7 +135,7 @@ class pygps2:
                 self.parsed_data['Other'].append(s)
 
     def _parse_single_sentence(self, s):
-        # ストリーム解析用（analyze_sentence で使用）
+        # For Stream
         s = s.strip()
         if not s:
             return
@@ -453,12 +453,11 @@ class pygps2:
                 self.GSV["GN"] = merged
             except Exception as e:
                 print(f"Error parsing/merging GSV: {e}")
-    # ─────────────────────────────
-    # ストリーム（1文ずつ）解析用
-    # ─────────────────────────────
 
     def _handle_gsv_sentence(self, sentence):
-        talker = sentence[1:3]  # "GP", "GB", "GL", "GA", "GN", etc.
+        talker = sentence[1:3]  # "GP", "GB", "GL", "GA", "GN", etc.]
+        if talker == "BD":
+            talker = "GB"  # BDGSV as GBGSV
         f = sentence.split(',')
         try:
             total = int(f[1])
@@ -472,19 +471,16 @@ class pygps2:
             self._gsv_sets[talker] = []
 
         self._gsv_buffer[talker].append(sentence)
-
-        # 1セット分が揃った
         if num == total:
             try:
                 gsv_list = [self.parse_gsv(s) for s in self._gsv_buffer[talker]]
-                # このセットを talker ごとのセットリストに追加
                 self._gsv_sets[talker].append(gsv_list)
             except Exception as e:
                 print("Error in GSV set parse:", e)
 
             self._gsv_buffer[talker] = []
 
-            # すべてのセットを統合して 1 つの GSV にする
+            # compile all sets for this talker and merge
             try:
                 all_gsv = []
                 for gsv_set in self._gsv_sets[talker]:
@@ -507,9 +503,6 @@ class pygps2:
             print("Error in GSA merge:", e)
 
     def analyze_sentence(self, sentence):
-        """
-        ストリーム用：1文だけを解析して内部状態を更新する。
-        """
         try:
             self._parse_single_sentence(sentence)
         except Exception as e:

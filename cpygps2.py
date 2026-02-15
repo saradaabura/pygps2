@@ -447,6 +447,8 @@ class pygps2:
     #For Stream Analyze
     def _handle_gsv_sentence(self, sentence):
         talker = sentence[1:3]  # "GP", "GB", "GL", "GA", "GN", etc.
+        if talker == "BD":
+            talker = "GB"
         f = sentence.split(',')
         try:
             total = int(f[1])
