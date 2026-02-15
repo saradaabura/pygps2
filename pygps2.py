@@ -1,5 +1,4 @@
-﻿# Version 3.7 (Only MicroPython)
-
+﻿# Version 3.71
 import re
 import time
 import math
@@ -14,7 +13,7 @@ class pygps2:
         self.DETECT_CONVERT_QZS = op2
         self.DETECT_CONVERT_SBAS = op3
         self.ENABLE_CHECKSUM = op4
-
+        
         self.raw = ''
         self.GGA = []
         self.GLL = []
@@ -34,13 +33,11 @@ class pygps2:
         self.ZDA = []
         self.GNS = []
         self.TXT = []
-
         self.parsed_data = {
             'GGA': [], 'GLL': [], 'GSA': [], 'GSV': [],
             'RMC': [], 'VTG': [], 'GST': [], 'DHV': [],
             'ZDA': [], 'GNS': [], 'TXT': [], 'Other': []
         }
-
         self.patterns = {
             'GGA': re.compile(r'\$GNGGA,.*?\*..|\$GPGGA,.*?\*..|\$BDGGA,.*?\*..'),
             'GLL': re.compile(r'\$GNGLL,.*?\*..|\$GPGLL,.*?\*..|\$BDGLL,.*?\*..'),
@@ -55,7 +52,6 @@ class pygps2:
             'TXT': re.compile(r'\$GNTXT,.*?\*..|\$GPTXT,.*?\*..|\$BDTXT,.*?\*..')
         }
 
-        # Stream buffers
         self._gsv_buffer = {
             "GP": [], "GL": [], "GA": [], "GB": [], "GQ": [], "GN": []
         }
@@ -65,26 +61,8 @@ class pygps2:
         self._gsa_buffer = {
             "GP": [], "GL": [], "GA": [], "GB": [], "GQ": [], "GN": []
         }
-    def convert_to_degrees(self, coord, direction):
-        # CPython / MicroPython 両対応
-        if sys.implementation.name == 'cpython':
-            try:
-                if not coord:
-                    return str(Decimal('0.0'))
-                degree_len = 2 if direction in ('N', 'S') else 3 if direction in ('E', 'W') else 0
-                if degree_len == 0:
-                    return str(Decimal('0.0'))
-                degrees = Decimal(coord[:degree_len])
-                minutes = Decimal(coord[degree_len:]) if len(coord) > degree_len else Decimal('0.0')
-                decimal_degrees = degrees + minutes / Decimal('60.0')
-                if direction in ('S', 'W'):
-                    decimal_degrees = -decimal_degrees
-                return str(decimal_degrees)
-            except Exception as e:
-                print(f'Error in coordinate conversion: {e}')
-                return str(Decimal('0.0'))
 
-        # ★ MicroPython 用 DecimalNumber 版（あなたの指定どおり）
+    def convert_to_degrees(self, coord, direction):
         if sys.implementation.name == 'micropython':
             try:
                 if not coord:
@@ -111,47 +89,36 @@ class pygps2:
             chk ^= ord(c)
         return f'{chk:02X}' == checksum.strip().upper()
 
+    # Analyze NMEA
     def parse_nmea_sentences(self, nmea_data):
-        # バッチ解析用（analyze() で使用）
         for k in self.parsed_data:
             self.parsed_data[k] = []
-
         for s in nmea_data.split('\r\n'):
             s = s.strip()
             if not s:
                 continue
-
             if self.ENABLE_CHECKSUM and not self.verify_checksum(s):
                 continue
-
-            matched = False
             for k, p in self.patterns.items():
                 if p.match(s):
                     self.parsed_data[k].append(s)
-                    matched = True
                     break
+            else:
+                if s:
+                    self.parsed_data['Other'].append(s)
 
-            if not matched:
-                self.parsed_data['Other'].append(s)
-
+    # Only Stream
     def _parse_single_sentence(self, s):
-        # For Stream
         s = s.strip()
         if not s:
             return
-
         if self.ENABLE_CHECKSUM and not self.verify_checksum(s):
             return
-
-        matched = False
         for k, p in self.patterns.items():
             if p.match(s):
                 self.parsed_data[k] = [s]
-                matched = True
-                break
-
-        if not matched:
-            self.parsed_data["Other"] = [s]
+                return
+        self.parsed_data["Other"] = [s]
 
     def parse_gga(self, sentence):
         if not sentence:
@@ -299,6 +266,7 @@ class pygps2:
         if self.DETECT_CONVERT_SBAS:
             merged['satellites_info'] = self.sbas_detect(merged['satellites_info'])
         return merged
+
     def parse_rmc(self, sentence):
         if not sentence:
             return
@@ -315,11 +283,22 @@ class pygps2:
             'mag_var_direction': f[11] if len(f) > 11 and f[11] else '',
             'mode_indicator': f[12].split('*')[0] if len(f) > 12 and f[12] else ''
         }
-
-        # MicroPython では mktime/localtime が不安定なので日時計算は省略
-        data['utc_datetime'] = None
-        data['local_datetime'] = None
-
+        if data['timestamp'] and data['date']:
+            try:
+                h, m, s = int(data['timestamp'][0:2]), int(data['timestamp'][2:4]), int(data['timestamp'][4:6])
+                d, mo, y = int(data['date'][0:2]), int(data['date'][2:4]), int(data['date'][4:6]) + 2000
+                if sys.implementation.name == 'cpython':
+                    utc = time.mktime((y, mo, d, h, m, s, 0, 0, 0))
+                else:
+                    utc = time.mktime((y, mo, d, h, m, s, 0, 0))
+                offset = math.floor(float(str(data['longitude'])) / 15)
+                local = time.localtime(utc + offset * 3600)
+                data['utc_datetime'] = f'{y:04d}-{mo:02d}-{d:02d} {h:02d}:{m:02d}:{s:02d}'
+                data['local_datetime'] = f'{local[0]:04d}-{local[1]:02d}-{local[2]:02d} {local[3]:02d}:{local[4]:02d}:{local[5]:02d}'
+            except Exception as e:
+                print('Error parsing RMC data:', e)
+                data['utc_datetime'] = None
+                data['jst_datetime'] = None
         return data
 
     def parse_vtg(self, sentence):
@@ -422,30 +401,25 @@ class pygps2:
             else:
                 setattr(self, key, [])
             self.parsed_data[key] = []
-
         try:
             data = str(data)
             data = self.tolist(data)
             self.parse_nmea_sentences(data)
         except Exception as e:
             print(f"Error during parsing sentences: {e}")
-
         parsed_data = self.parsed_data
-
         for key in ['GGA', 'GLL', 'RMC', 'VTG', 'GST', 'DHV', 'ZDA', 'TXT', 'GNS']:
             try:
                 parse_func = getattr(self, f'parse_{key.lower()}')
                 setattr(self, key, parse_func(parsed_data.get(key, [])))
             except Exception as e:
                 print(f"Error parsing {key}: {e}")
-
         if parsed_data.get('GSA', []) and enable_type[8]:
             try:
                 gsa_list = [self.parse_gsa(s) for s in parsed_data['GSA']]
                 self.GSA = self.merge_gsa(gsa_list) if gsa_list else self.parse_gsa('')
             except Exception as e:
                 print(f"Error parsing/merging GSA: {e}")
-
         if parsed_data.get('GSV', []) and enable_type[9]:
             try:
                 gsv_list = [self.parse_gsv(s) for s in parsed_data['GSV']]
@@ -453,18 +427,18 @@ class pygps2:
                 self.GSV["GN"] = merged
             except Exception as e:
                 print(f"Error parsing/merging GSV: {e}")
-
+    
+    #For Stream Analyze
     def _handle_gsv_sentence(self, sentence):
-        talker = sentence[1:3]  # "GP", "GB", "GL", "GA", "GN", etc.]
+        talker = sentence[1:3]  # "GP", "GB", "GL", "GA", "GN", etc.
         if talker == "BD":
-            talker = "GB"  # BDGSV as GBGSV
+            talker = "GB"
         f = sentence.split(',')
         try:
             total = int(f[1])
             num = int(f[2])
         except Exception:
             return
-
         if talker not in self._gsv_buffer:
             self._gsv_buffer[talker] = []
         if talker not in self._gsv_sets:
@@ -477,10 +451,7 @@ class pygps2:
                 self._gsv_sets[talker].append(gsv_list)
             except Exception as e:
                 print("Error in GSV set parse:", e)
-
             self._gsv_buffer[talker] = []
-
-            # compile all sets for this talker and merge
             try:
                 all_gsv = []
                 for gsv_set in self._gsv_sets[talker]:
@@ -503,12 +474,7 @@ class pygps2:
             print("Error in GSA merge:", e)
 
     def analyze_sentence(self, sentence):
-        try:
-            self._parse_single_sentence(sentence)
-        except Exception as e:
-            print("Error during parsing single sentence:", e)
-            return
-
+        self._parse_single_sentence(sentence)
         pd = self.parsed_data
 
         if pd['GGA']:
@@ -572,3 +538,4 @@ class pygps2:
         if pd['GSV']:
             for s in pd['GSV']:
                 self._handle_gsv_sentence(s)
+
