@@ -1,41 +1,11 @@
 ﻿# Japanese 日本語
 # pygps2
 このライブラリは自由に使用してください。どんな場合でもOKです
+
+![IMG_20260215_113919721 (1)](https://github.com/user-attachments/assets/5637aa1f-178d-46ff-b375-fa0fd419bc30)
+
 # バージョン情報
-
-2.0 作成
-
-2.1 GSV解析に対し、衛星の種類を取得できるように変更
-
-2.2 衛星のデュアルバンドによるカウント重複の解消
-
-2.3 GST解析関数追加
-
-2.4 RMCに経度から計算したローカル時刻を追加
-
-2.5 DHV ZDA TXT追加 RMC日付初期値 2000/01/01へ変更
-
-2.6 未知のパターンのデータを処理できるように変更
-
-2.7 decimal関数を用いてissues#2を解消→micropython-decimal-numberを使用　LATやLONにはstr()で変換する必要がある。
-
-2.8 cpythonとmicropythonで互換性を保つ処理を追加
-
-2.9 チェックサムの機能を追加
-
-3.0 軽量化
-
-3.1 analyzeで解析できるようになった。
-
-3.2 メモリ対策のため以前のデータを保持する機能を追加(差分方式)
-
-3.22~3.3 詳細な設定ができるよう、CONFIGを追加した。
-
-3.5 class化をし、利便性を向上させた。
-
-3.7 GSVを正しく解析できない問題をとりあえずCpython向けで解消。micropython向けは今後の課題。
-
-(詳細はVersion.mdに記載)
+Version.md
 
 # 依存ライブラリ (micropython)
 - micropython-decimal-number
