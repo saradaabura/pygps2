@@ -1,17 +1,17 @@
 ﻿# Japanese 日本語
 # pygps2
-このライブラリは自由に使用してください。どんな場合でもOKです
+このライブラリは自由に使用してください。
 
 ![IMG_20260215_113919721 (1)](https://github.com/user-attachments/assets/5637aa1f-178d-46ff-b375-fa0fd419bc30)
 
 # バージョン情報
-Version.md
+https://github.com/saradaabura/pygps2/blob/master/Version.md
 
 # 依存ライブラリ (micropython)
 - micropython-decimal-number
 
-### Raspberry Pi Pico 1/2向けのGPS解析ライブラリです。
-### 通常のPythonにも対応しているため、pyserialなどと併用することで直接解析することができます
+### Raspberry Pi PicoやESP32・RPi4などのMicroPython・CPython向けのGPS/NMEA解析ライブラリです。
+### 通常のPythonに対応(CPython)しているため、WindowsやLinuxなどの環境でも使用できます。
 # 対応センテンス
 基本的にすべてのセンテンスに対応していますが、使用する受信機に合わせてください。
 特に、北斗のGSVセンテンスであるBDGSVとGBGSVは受信機によって異なるので注意してください。
@@ -27,11 +27,6 @@ DHV:$GNDHV, $GPDHV, $BDDHV
 ZDA:$GNZDA, $GPZDA, $BDZDA
 TXT:$GNTXT, $GPTXT, $BDTXT
 ```
-POINT
-
-**分類するセンテンスが6以上になるとmicropythonではエラーで実行が止まる。よって必要なセンテンスを選択することが好ましい。(特にGSV)
-デフォルト:($GPGSV,$BDGSV,$GQGSV,$GLGSV,$GAGSV,$GBGSV)
-上記から不要なセンテンスを消すことで、解消する。**
 
 # 機能
 - GSVのデータを解析でき、衛星の情報を取得できます。
