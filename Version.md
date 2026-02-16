@@ -1,6 +1,11 @@
 ﻿# Version History of pygps2
 
-# Version 3.7(Only MicroPython) Ver3.71(CPy)
+# Version 3.72(Only CPython)
+- 軽量化(Copilot)
+<img width="3047" height="1852" alt="time" src="https://github.com/user-attachments/assets/65b825b7-aeb0-4e14-b3c2-8b530ead760b" />
+
+
+# Version 3.7(Only MicroPython)
 - 3.7 CPyをMpyに移植した。
 - いずれにせよ、MicroPythonではmicropython-decimal-numberが必要。
 - BDGSVをGBGSVとして処理するようにした。(共通)
