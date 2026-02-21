@@ -3,7 +3,7 @@
 このライブラリは自由に使用してください。
 
 ![IMG_20260215_113919721 (1)](https://github.com/user-attachments/assets/5637aa1f-178d-46ff-b375-fa0fd419bc30)
-
+最初はmicropython向けに開発してたんですが、CPythonがメインになっちゃいましたね。ちゃんと目標決めないから...
 # バージョン情報
 https://github.com/saradaabura/pygps2/blob/master/Version.md
 
