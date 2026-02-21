@@ -252,39 +252,50 @@ class pygps2:
                 elif system == 'SBAS' and 33 <= prn <= 64: s['type'] = 'SBAS'; s['prn'] = str(prn + 87)
         return info
 
-    def analyze_sentence(self, sentence):
+    def analyze_sentence(self, sentence, just="gga gll rmc vtg gst dhv zda gns txt gsa gsv"):
         self._parse_single_sentence(sentence)
         pd = self.parsed_data
-        if pd['GGA']: self.GGA = self.parse_gga(pd['GGA'])
-        if pd['GLL']: self.GLL = self.parse_gll(pd['GLL'])
-        if pd['RMC']: self.RMC = self.parse_rmc(pd['RMC'])
-        if pd['VTG']: self.VTG = self.parse_vtg(pd['VTG'])
-        if pd['GST']: self.GST = self.parse_gst(pd['GST'])
-        if pd['DHV']: self.DHV = self.parse_dhv(pd['DHV'])
-        if pd['ZDA']: self.ZDA = self.parse_zda(pd['ZDA'])
-        if pd['GNS']: self.GNS = self.parse_gns(pd['GNS'])
-        if pd['TXT']: self.TXT = self.parse_txt(pd['TXT'])
-        if pd['GSA']:
-            for s in pd['GSA']:
-                talker = s[1:3]
-                if talker in self._gsa_buffer:
-                    self._gsa_buffer[talker].append(s)
-                    self.GSA = self.merge_gsa([self.parse_gsa(x) for x in self._gsa_buffer[talker]])
-        if pd['GSV']:
-            for s in pd['GSV']:
-                t = s[1:3]
-                talker = "GB" if t == "BD" else t
-                if talker not in self._gsv_sets: continue
-                f = s.split(',')
-                try:
-                    if int(f[2]) == int(f[1]):
-                        self._gsv_sets[talker].append([self.parse_gsv(x) for x in self._gsv_buffer[talker] + [s]])
-                        self._gsv_buffer[talker].clear()
-                        all_gsv = [item for sub in self._gsv_sets[talker] for item in sub]
-                        if all_gsv: self.GSV[talker] = self.merge_gsv(all_gsv)
-                    else:
-                        self._gsv_buffer[talker].append(s)
-                except: pass
+        if 'gga' in just:
+            if pd['GGA']: self.GGA = self.parse_gga(pd['GGA'])
+        if 'gll' in just:
+            if pd['GLL']: self.GLL = self.parse_gll(pd['GLL'])
+        if 'rmc' in just:
+            if pd['RMC']: self.RMC = self.parse_rmc(pd['RMC'])
+        if 'vtg' in just:
+            if pd['VTG']: self.VTG = self.parse_vtg(pd['VTG'])
+        if 'gst' in just:
+            if pd['GST']: self.GST = self.parse_gst(pd['GST'])
+        if 'dhv' in just:
+            if pd['DHV']: self.DHV = self.parse_dhv(pd['DHV'])
+        if 'zda' in just:
+            if pd['ZDA']: self.ZDA = self.parse_zda(pd['ZDA'])
+        if 'gns' in just:
+            if pd['GNS']: self.GNS = self.parse_gns(pd['GNS'])
+        if 'txt' in just:
+            if pd['TXT']: self.TXT = self.parse_txt(pd['TXT'])
+        if 'gsa' in just:
+            if pd['GSA']:
+                for s in pd['GSA']:
+                    talker = s[1:3]
+                    if talker in self._gsa_buffer:
+                        self._gsa_buffer[talker].append(s)
+                        self.GSA = self.merge_gsa([self.parse_gsa(x) for x in self._gsa_buffer[talker]])
+        if 'gsv' in just:
+            if pd['GSV']:
+                for s in pd['GSV']:
+                    t = s[1:3]
+                    talker = "GB" if t == "BD" else t
+                    if talker not in self._gsv_sets: continue
+                    f = s.split(',')
+                    try:
+                        if int(f[2]) == int(f[1]):
+                            self._gsv_sets[talker].append([self.parse_gsv(x) for x in self._gsv_buffer[talker] + [s]])
+                            self._gsv_buffer[talker].clear()
+                            all_gsv = [item for sub in self._gsv_sets[talker] for item in sub]
+                            if all_gsv: self.GSV[talker] = self.merge_gsv(all_gsv)
+                        else:
+                            self._gsv_buffer[talker].append(s)
+                    except: pass
 
     def analyze(self, data):
         self.reset_data()
