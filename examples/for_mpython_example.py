@@ -2,16 +2,17 @@
 from machine import UART, Pin
 import time
 from pygps2 import pygps2
+import gc
 
 # GNSS parser instance
 gnss = pygps2()
 
 # UART setting
 uart = UART(
-    1,
+    0,
     baudrate=460800,
-    tx=Pin(26),
-    rx=Pin(27),
+    tx=Pin(0),
+    rx=Pin(1),
     timeout=1
 )
 running = True
@@ -30,7 +31,11 @@ def gps_thread():
                 data = raw.decode("utf-8", "ignore")
 
                 if data.startswith("$"):
+                    #st = time.ticks_ms()
                     gnss.analyze_sentence(data)
+                    #print(data)
+                    #print(time.ticks_ms() - st, ",", gc.mem_free())
+                    #print(gc.mem_free())
 
             except Exception as e:
                 print("GPS thread error:", e)
@@ -43,6 +48,7 @@ _thread.start_new_thread(gps_thread, ())
 # MAIN LOOP
 try:
     while True:
+        
         rmc = gnss.GGA
         gsv = gnss.GSV
 
@@ -55,10 +61,12 @@ try:
                 "BD:",  gsv["GB"]["num_satellites"] if gsv["GB"] else 0,
                 "GA:",  gsv["GA"]["num_satellites"] if gsv["GA"] else 0
             )
-
+        
         time.sleep(1)
 
 except KeyboardInterrupt:
     print("Stopping...")
     running = False
     time.sleep(0.5)
+
+

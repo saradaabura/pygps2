@@ -1,5 +1,9 @@
 ﻿# Version History of pygps2
 
+# Version 3.85
+- MicroPythonとCPython 両対応化
+- Geminiによる軽量化
+
 # Version 3.8
 - Geminiを使って大幅な軽量化。
 
