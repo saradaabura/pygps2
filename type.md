@@ -12,6 +12,7 @@
 - fix_select : 測距モード(A:オート M:マニュアル)
 
 ## GSVデータ
+
 ```
 'GSV': [{'num_messages': '21', 'message_num': '1', 'num_satellites': '24', 'satellites_info': [{'prn': '194', 'type': 'QZS', 'elevation': '89', 'azimuth': '332', 'snr': '18', 'band': [1, 8]}]}]}
 ```
@@ -182,7 +183,7 @@ analyze_sentence(a_sentence, just="gga gll rmc vtg gst dhv zda gns txt gsa gsv")
 - justはオプション
  - 解析するセンテンスをスペース区切りで指定する。指定しない場合はすべてのセンテンスを解析する。
 
-## analyze
+## analyze ここあてにするな
 使用例
 ```
 analyze(data, just="gga gll rmc vtg gst dhv zda gns txt gsa gsv")

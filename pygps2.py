@@ -245,12 +245,26 @@ class pygps2:
         return {k: self._safe_get(f, i+1, None) for i, k in enumerate(['several_lines', 'free', 'type', 'text'])}
 
     def detect_system(self, info, system='QZS'):
-        for s in info:
-            if s['type'] in ('GP', 'GN'):
-                prn = int(s['prn'])
-                if system == 'QZS' and 193 <= prn <= 210: s['type'] = 'QZS'
-                elif system == 'SBAS' and 33 <= prn <= 64: s['type'] = 'SBAS'; s['prn'] = str(prn + 87)
-        return info
+        output = []
+        for temp_s in info:
+            if temp_s['type'] in ('GP', 'GN'):
+                prn = int(temp_s['prn'])
+                if system == 'QZS' and 193 <= prn <= 210:
+                    temp_s['type'] = 'QZS'
+                elif system == 'SBAS' and 33 <= prn <= 64:
+                    temp_s['type'] = 'SBAS'
+                    temp_s['prn'] = prn + 87
+            output.append(temp_s)
+        return output
+
+    def qzss_detect(self, info):
+        return self.detect_system(info, 'QZS')
+
+    def sbas_detect(self, info):
+        return self.detect_system(info, 'SBAS')
+    
+    def tolist(self, data):
+        return '\r\n'.join(['$' + s for s in str(data).split('$') if s]) + '\r\n'
 
     def analyze_sentence(self, sentence, just="gga gll rmc vtg gst dhv zda gns txt gsa gsv"):
         self._parse_single_sentence(sentence)
@@ -297,9 +311,34 @@ class pygps2:
                             self._gsv_buffer[talker].append(s)
                     except: pass
 
-    def analyze(self, data, just="gga gll rmc vtg gst dhv zda gns txt gsa gsv"):
-        self.reset_data()
-        lines = str(data).split('$')
-        for line in lines:
-            if not line: continue
-            self.analyze_sentence('$' + line, just)
+    def analyze(self, data, enable_type=(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1)):
+        self.raw = ''
+        keys = ['GGA', 'GLL', 'GSA', 'GSV', 'RMC', 'VTG', 'GST', 'DHV', 'ZDA', 'GNS', 'TXT']
+        for key in keys:
+            setattr(self, key, [])
+            self.parsed_data[key] = []
+        try:
+            data = str(data)
+            data = self.tolist(data)
+            self.parse_nmea_sentences(data)
+        except Exception as e:
+            print(f"Error during parsing sentences: {e}")
+        parsed_data = self.parsed_data
+        for key in ['GGA', 'GLL', 'RMC', 'VTG', 'GST', 'DHV', 'ZDA', 'TXT', 'GNS']:
+            try:
+                parse_func = getattr(self, f'parse_{key.lower()}')
+                setattr(self, key, parse_func(parsed_data.get(key, [])))
+            except Exception as e:
+                print(f"Error parsing {key}: {e}")
+        if parsed_data.get('GSA', []) and enable_type[8]:
+            try:
+                gsa_list = [self.parse_gsa(s) for s in parsed_data['GSA']]
+                self.GSA = self.merge_gsa(gsa_list) if gsa_list else self.parse_gsa('')
+            except Exception as e:
+                print(f"Error parsing/merging GSA: {e}")
+        if parsed_data.get('GSV', []) and enable_type[9]:
+            try:
+                gsv_list = [self.parse_gsv(s) for s in parsed_data['GSV']]
+                self.GSV = self.merge_gsv(gsv_list) if gsv_list else self.parse_gsv('')
+            except Exception as e:
+                print(f"Error parsing/merging GSV: {e}")
