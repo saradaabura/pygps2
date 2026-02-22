@@ -1,6 +1,6 @@
 ﻿# 出力データと内容
 
-**GSAデータ**
+## GSAデータ
 ```
 'GSA': [{'fix_select': 'A', 'fix_status': '3', 'satellites_used': [('194', '1'), ('08', '1'), ('27', '1'), ('195', '1'), ('16', '1'), ('02', '1'), ('199', '1')], 'pdop': '0.8', 'hdop': '0.55', 'vdop': '0.58'}]
 ```
@@ -11,7 +11,7 @@
 - pdop : PDOP
 - fix_select : 測距モード(A:オート M:マニュアル)
 
-**GSVデータ**
+## GSVデータ
 ```
 'GSV': [{'num_messages': '21', 'message_num': '1', 'num_satellites': '24', 'satellites_info': [{'prn': '194', 'type': 'QZS', 'elevation': '89', 'azimuth': '332', 'snr': '18', 'band': [1, 8]}]}]}
 ```
@@ -26,7 +26,7 @@
   - band : 周波数帯(オプション)
 - message_num : メッセージ番号
 
-**GGAデータ**
+## GGAデータ
 ```
 {'GGA': [{'timestamp': '298893.000', 'latitude': '0.0', 'longitude': '0.0', 'gps_quality': '1', 'num_satellites': '52', 'hdop': '0.55', 'altitude': '76.219', 'altitude_units': 'M', 'geoid_height': '37.106', 'geoid_units': 'M', 'dgps_age': '', 'dgps_station_id': ''}]
 ```
@@ -43,7 +43,7 @@
 - longitude : 経度　(度で出力される) str型
 - timestamp : タイムスタンプ (生データ)
 
-**RMCデータ**
+## RMCデータ
 ```
 [{'mode_indicator': 'N', 'date': '170325', 'mag_var_direction': '', 'utc_datetime': '2025-03-17 07:57:01', 'local_datetime': '2025-03-17 16:57:01', 'status': 'V', 'magnetic_variation': '0.0', 'course_over_ground': '0.0', 'speed_over_ground': '0.0', 'latitude': 0.0, 'longitude': 0.0, 'timestamp': '075701.00'}]
 ```
@@ -60,7 +60,7 @@
 - local_datetime : 経度から算出されたローカル時刻
 - utc_datetime : UTC時刻
 
-**GLLデータ**
+## GLLデータ
 ```
 {'longitude': 0.0, 'latitude': 0.0, 'timestamp': '094023.00', 'status': 'A', 'mode_indicator': 'A'}
 ```
@@ -70,7 +70,7 @@
 - status : ステータス
 - mode_indicator : モードインジケータ
 
-**VTGデータ**
+## VTGデータ
 ```
 {'reference_t': 'T', 'mode_indicator': 'A', 'speed_kmh': '0.92', 'course_over_ground_m': '0.0', 'reference_m': 'M', 'speed_knots': '0.50', 'units_knots': 'N', 'units_kmh': 'K', 'course_over_ground_t': '0.0'}
 ```
@@ -84,7 +84,7 @@
 - units_kmh : 単位を示す
 - course_over_ground_t : 真北を基準とした進路の角度
 
-**ZDAデータ**
+## ZDAデータ
 ```
 [{'message': '18', 'additional_field1': '2025', 'timestamp': '063801.00', 'status': '03', 'additional_field2': None}]
 ```
@@ -94,7 +94,7 @@
 - status : ステータス
 - additional_field2 : カスタム(モジュールによって異なる)
 
-**TXTデータ**
+## TXTデータ
 ```
 [{'message': '01', 'additional_field1': 'JS=0', 'timestamp': '01', 'status': '02', 'additional_field2': None}]
 ```
@@ -105,7 +105,7 @@
 - status : ステータス
 - additional_field2 : カスタム(モジュールによって異なる)
 
-**DHVデータ**
+## DHVデータ
 ```
 {'ecef_x_speed': '-0.294', 'ecef_z_speed': '-0.315', '3d_speed': '0.43', 'ecef_y_speed': '0.033', 'horizontal_ground_speed': None, 'timestamp': '052745.00'}
 ```
@@ -116,7 +116,7 @@
 - horizontal_ground_speed : 水平地上速度
 - timestamp : タイムスタンプ(生データとしてのUTC時間)
 
-**GSTデータ**
+## GSTデータ
 ```
 {'rms': '30.9', 'std_lon': '32.9', 'timestamp': '052745.00', 'std_lat': '39.6', 'std_alt': '37.5'}
 ```
@@ -126,7 +126,7 @@
 - std_lat: 緯度方向の標準偏差(メートル単位)
 - std_alt: 高度方向の標準偏差(メートル単位)
 
-**GNSデータ**
+## GNSデータ
 ```
 {'utc_time': '144530.000', 'latitude': '0.0'longitude': '0.0'mode_indicator': 'AAAA', 'use_sv': '36', 'hdop': '0.79', 'msl': '39.019', 'geoid_alt': '37.062', 'age_of_differential_data': '0.0', 'station_id': '0000'}
 ```
@@ -172,52 +172,23 @@ while True:
             analyzed_data = gps_module_.analyze(data)
 ```
 
-# OLD
-
-**analyze**
+## analyze_sentence
 使用例
-```analyze(data, just="gga gll rmc vtg gst dhv zda gns txt gsa gsv")```
+```
+analyze_sentence(a_sentence, just="gga gll rmc vtg gst dhv zda gns txt gsa gsv")
+```
+- a_sentenceは必須
+ - デコードされた1センテンスを入力(一行のみ)
+- justはオプション
+ - 解析するセンテンスをスペース区切りで指定する。指定しない場合はすべてのセンテンスを解析する。
+
+## analyze
+使用例
+```
+analyze(data, just="gga gll rmc vtg gst dhv zda gns txt gsa gsv")
+```
 複数のセンテンスを解析することができる。RAMが少ないMPyボードで使用する際に使う。
 - dataは必須
  - デコードされたセンテンスを入力
 - justはオプション
  - 解析するセンテンスをスペース区切りで指定する。指定しない場合はすべてのセンテンスを解析する。
-
-## 以下はVer3.1以前のpygps2.pyを使用した際の入力データと内容
-**analyze_nmea_date**
-
-使用例
-pygps2.analyze_nmea_data(parsed_data, [1, 1,1 ,1 ,1, 0, 0, 0, 1, 1])
-
-- parsed_data : parse_nmea_sentencesで解析されたデータ
-- [1,1,1,1,1,0,0,0,1,1] : 解析するデータの種類を指定するリスト
-必須の項目ではない デフォルト値はすべて有効になっている([1, 1, 1, 1, 1, 1, 1 , 1, 1, 1])
-  - 0 : 解析しない
-  - 1 : 解析する
-どれがどこに対応しているかは以下の通りである
-```
-enable_type:
-[0]: GGA
-[1]: GLL
-[2]: RMC
-[3]: VTG
-[4]: GST
-[5]: DHV
-[6]: ZDA
-[7]: TXT
-[8]: GSA
-[9]: GSV
-```
-
-機能
-センテンス解析を行う関数
-
-**parse_nmea_sentences**
-
-使用例
-pygps2.parse_nmea_sentences(data)
-
-- data : 改行などを含んだ生データ
-
-機能
-生のセンテンスをリスト化

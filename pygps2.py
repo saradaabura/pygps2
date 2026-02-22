@@ -297,9 +297,9 @@ class pygps2:
                             self._gsv_buffer[talker].append(s)
                     except: pass
 
-    def analyze(self, data):
+    def analyze(self, data, just="gga gll rmc vtg gst dhv zda gns txt gsa gsv"):
         self.reset_data()
         lines = str(data).split('$')
         for line in lines:
             if not line: continue
-            self.analyze_sentence('$' + line)
+            self.analyze_sentence('$' + line, just)
