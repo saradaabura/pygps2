@@ -38,11 +38,14 @@ TXT:$GNTXT, $GPTXT, $BDTXT
 examples/for_micropython.py環境にあったサンプルコード(Raspberry Pi Pico用)があります。
 **サンプルを実行し、環境で動作を確認してからプログラムを制作することをおすすめします。**
 ### 問題
-**3.85の時点で、Pico2やESP32などのMicroPythonの環境ではメモリリークが発生します。**
+**3.85の時点で、```analyze_sentence()```を使うとメモリリークが発生します。**
 **また、NMEAを完全にパースすることができません。これは1センテンスごとに解析するプログラムによるものです。1センテンスの解析にかかる時間が長く、次のセンテンスを受信しそびれるためです。**
 **MPyでは制約があります。Mpy(CPyにも)向けに解析するセンテンスを選択できるようにしたいと思います。**
+### 解決策
+- analyze()を使って、複数のセンテンスをまとめて解析する。
+- 解析するセンテンスを選択する。（効果無かった）
 
-<details><summary>サンプルの表示</summary>
+<details><summary>サンプル analyze()を使用Version</summary>
 
 ```python
 import _thread
@@ -51,10 +54,7 @@ import time
 from pygps2 import pygps2
 import gc
 
-# GNSS parser instance
 gnss = pygps2()
-
-# UART setting
 uart = UART(
     0,
     baudrate=460800,
@@ -63,13 +63,13 @@ uart = UART(
     timeout=1
 )
 running = True
-# reading...
+# Reader thread
 def gps_thread():
     global running
     print("[GPS] Thread started")
 
     while running:
-        raw = uart.readline()
+        raw = uart.read(32768)
         if raw:
             try:
 
@@ -78,24 +78,20 @@ def gps_thread():
                 data = raw.decode("utf-8", "ignore")
 
                 if data.startswith("$"):
-                    #st = time.ticks_ms()
-                    gnss.analyze_sentence(data)
-                    #print(data)
-                    #print(time.ticks_ms() - st, ",", gc.mem_free())
-                    #print(gc.mem_free())
-
+                    st = time.ticks_ms()
+                    gnss.analyze(data)
+                    print(time.ticks_ms() - st, ",", gc.mem_free())
             except Exception as e:
                 print("GPS thread error:", e)
 
     print("[GPS] Thread stopped")
 
-# Thread starts
+# Start
 _thread.start_new_thread(gps_thread, ())
 
-# MAIN LOOP
+# main loop
 try:
     while True:
-        
         rmc = gnss.GGA
         gsv = gnss.GSV
 
@@ -108,14 +104,12 @@ try:
                 "BD:",  gsv["GB"]["num_satellites"] if gsv["GB"] else 0,
                 "GA:",  gsv["GA"]["num_satellites"] if gsv["GA"] else 0
             )
-        
         time.sleep(1)
 
 except KeyboardInterrupt:
     print("Stopping...")
     running = False
     time.sleep(0.5)
-
 ```
 </details>
 
