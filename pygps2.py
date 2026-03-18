@@ -263,7 +263,7 @@ class pygps2:
         return "\r\n".join(["$" + s for s in str(data).split("$") if s]) + "\r\n"
 
     def analyze_sentence(self, sentence):
-        ### Set up zone...
+        ### Set up & analyze
         temp = sentence.split(",")
         stype = temp[0][3:6] # sentence type
         sttype = temp[0][1:3] # satellite type
@@ -279,6 +279,16 @@ class pygps2:
             if temp[2] == "1":
                 self.parsed_data["GSV"][sttype][band] = []
             self.parsed_data["GSV"][sttype][band].append(sentence)
+            
+            check_temp = self.parsed_data["GSV"][sttype][band][len(self.parsed_data["GSV"][sttype][band]) - 1]
+            check_temp = check_temp.split(",")
+            if check_temp[1] == check_temp[2]:
+                sentences = self.parsed_data["GSV"][sttype][band]
+                gsv = []
+                for s in sentences:
+                    gsv.append(self.parse_gsv(s))
+                    print(gsv)
+        
         elif stype == "GSA":
             if "*" in temp[len(temp) - 1]:# this if is not working...
                 num = temp[len(temp) - 1]
@@ -287,7 +297,10 @@ class pygps2:
                 if num == "1":
                     self.parsed_data["GSA"] = []
             self.parsed_data["GSA"].append(sentence)
+        
         else:
             self.parsed_data["Other"].append(sentence)
         ### Done
-        ### Analyze program
+        
+        
+        
