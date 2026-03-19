@@ -39,14 +39,14 @@ class pygps2:
 
     def reset_data(self):
         self.raw = ""
-        for k in ["GGA","GLL","GSA","RMC","VTG","GST","DHV","ZDA","GNS","TXT"]:
-            if k == "GSA":
-                setattr(self, k, self.parse_gsa(""))
-            else:
-                setattr(self, k, [])
-        self.GSV = {k: None for k in ["GP", "GL", "GA", "GB", "GQ", "GN"]}
+        for k in ["GGA","GLL","GSA","GSV", "RMC","VTG","GST","DHV","ZDA","GNS","TXT"]:
+            setattr(self, k, [])
+        #self.GSV = {k: None for k in ["GP", "GL", "GA", "GB", "GQ", "GN"]}
         self.parsed_data = {k: [] for k in ["GGA","GLL","GSA","GSV","RMC","VTG","GST","DHV","ZDA","GNS","TXT","Other"]}
         self.parsed_data["GSV"] = {k: {} for k in ["GP","GL","GA","GB","GQ"]}
+        
+        self.temp_gsv = []
+        self.temp_gsa = []
 
     def convert_to_degrees(self, coord, direction):
         if not coord or not direction: return "0.0"
@@ -265,10 +265,14 @@ class pygps2:
     def analyze_sentence(self, sentence):
         ### Set up & analyze
         temp = sentence.split(",")
+        print(self.GSA)
         stype = temp[0][3:6] # sentence type
         sttype = temp[0][1:3] # satellite type
         if stype in self.parsed_data and stype != "GSV" and stype != "GSA":
             self.parsed_data[stype] = sentence
+            if stype == "GGA":
+                for k in ["GGA","GLL","GSA","GSV", "RMC","VTG","GST","DHV","ZDA","GNS","TXT"]:
+                    setattr(self, k, [])
         elif stype == "GSV":
             if "*" in temp[len(temp) - 1]:# this if is not working...
                 band = temp[len(temp) - 1]
@@ -282,21 +286,24 @@ class pygps2:
             
             check_temp = self.parsed_data["GSV"][sttype][band][len(self.parsed_data["GSV"][sttype][band]) - 1]
             check_temp = check_temp.split(",")
-            if check_temp[1] == check_temp[2]:
+            if check_temp[1] == check_temp[2]: # 最後のセンテンスになったら解析する(同BAND&同衛星)
                 sentences = self.parsed_data["GSV"][sttype][band]
-                gsv = []
                 for s in sentences:
-                    gsv.append(self.parse_gsv(s))
-                    print(gsv)
+                    self.temp_gsv.append(self.parse_gsv(s))
+                    self.GSV = self.merge_gsv(self.temp_gsv)
+                    #print(self.GSV)
+                    #GSVもこれでおｋ
         
         elif stype == "GSA":
-            if "*" in temp[len(temp) - 1]:# this if is not working...
+            if "*" in temp[len(temp) - 1]:# うごかないかもー 絶対最後にアスタリスク入ってるからね
                 num = temp[len(temp) - 1]
                 num = str(num.split("*")[0])
-                print(num)
                 if num == "1":
                     self.parsed_data["GSA"] = []
             self.parsed_data["GSA"].append(sentence)
+            self.temp_gsa.append(self.parse_gsa(sentence))
+            self.GSA = self.merge_gsa(self.temp_gsa)
+            #GSAはこれでおｋ 記念すべき１つ目!
         
         else:
             self.parsed_data["Other"].append(sentence)
@@ -304,3 +311,4 @@ class pygps2:
         
         
         
+
