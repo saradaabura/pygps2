@@ -1,5 +1,11 @@
 ﻿# Version History of pygps2
 
+# Version 3.9
+- Analyze関数を一から作り直し、1センテンスごとに解析するようにした。
+- 従来のバグ(GSVが解析できない・スワップ発生)を修正した。
+- MicroPython環境ではテストしていないため、不明。
+- CPython環境では、安定して動作する。(サンプル ```for_cpython_example.pyを参照```)
+
 # Version 3.85
 - MicroPythonとCPython 両対応化
 - Geminiによる軽量化

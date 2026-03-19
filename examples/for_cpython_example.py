@@ -1,10 +1,10 @@
 ﻿import threading
 import serial
 import time
-from cpygps2 import pygps2
+from pygps2 import pygps2
 
 class GPSReader:
-    def __init__(self, port="COM6", baud=460800):
+    def __init__(self, port="COM3", baud=460800):
         self.port = port
         self.baud = baud
         self.running = False
@@ -49,29 +49,23 @@ class GPSReader:
         print("[GPSReader] Stopped")
 
     def get(self, key):
-        """最新データを取得（スレッドセーフ）"""
         with self.lock:
             return getattr(self.gps, key, None)
 # MAIN PROGRAM
 if __name__ == "__main__":
-    gps_reader = GPSReader("COM6", 460800)
+    gps_reader = GPSReader("COM3", 460800)
     gps_reader.start()
 
     try:
         while True:
             rmc = gps_reader.get("RMC")
             gsv = gps_reader.get("GSV")
-
-            if rmc:
-                print("Lat:", rmc["latitude"], "Lon:", rmc["longitude"])
-
-            if gsv:
-                print("GPS:", gsv["GP"]["num_satellites"] if gsv["GP"] else 0,
-                      "BD:", gsv["GB"]["num_satellites"] if gsv["GB"] else 0,
-                      "GA:", gsv["GA"]["num_satellites"] if gsv["GA"] else 0)
+            print(rmc)
+            print(gsv)
 
             time.sleep(1)
 
     except KeyboardInterrupt:
         print("Stopping...")
         gps_reader.stop()
+

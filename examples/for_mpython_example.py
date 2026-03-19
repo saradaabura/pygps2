@@ -1,4 +1,6 @@
-﻿import _thread
+﻿# Micro Python向けはまだやっていない。　今後テストする。(3/19 ver3.9)
+
+import _thread
 from machine import UART, Pin
 import time
 from pygps2 import pygps2

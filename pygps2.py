@@ -1,7 +1,4 @@
-﻿
-#todo #1 衛生識別子を含めてバッファを作成。→GSVとかGSAのやつ向け→何行中何行か確認プログラム
-#todo #2 RMCとかの一行のやつは全部GNGSVで統合
-# Version 3.85
+﻿# Version 3.9
 import time
 import math
 import sys
@@ -272,6 +269,8 @@ class pygps2:
             if stype == "GGA": #GGAセンテンスにより全ての解析箱をリセット
                 for k in ["GGA", "GLL", "GSA", "GSV", "RMC", "VTG", "GST", "DHV", "ZDA", "GNS", "TXT"]:
                     setattr(self, k, [])
+                    self.temp_gsv = []
+                    self.temp_gsa = []
                     #上書きしてリセット
                     #あとは本来のGGA解析
                 self.GGA = self.parse_gga(sentence)
@@ -327,7 +326,3 @@ class pygps2:
         else:
             self.parsed_data["Other"].append(sentence)
         ### これで...オッケー牧場!!!!!!
-        
-        
-        
-
