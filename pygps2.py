@@ -1,4 +1,4 @@
-﻿# Version 3.9
+﻿# Version3.9
 import time
 import math
 import sys
@@ -249,17 +249,11 @@ class pygps2:
                     temp_s["prn"] = prn + 87
             output.append(temp_s)
         return output
-
-    def qzss_detect(self, info):
-        return self.detect_system(info, "QZS")
-
-    def sbas_detect(self, info):
-        return self.detect_system(info, "SBAS")
     
     def tolist(self, data):
         return "\r\n".join(["$" + s for s in str(data).split("$") if s]) + "\r\n"
 
-    def analyze_sentence(self, sentence):
+    def analyze_sentence(self, sentence, en_gsa=True, en_gsv=True, en_txt=True):
         ### Set up & analyze
         temp = sentence.split(",")
         stype = temp[0][3:6] # sentence type
@@ -288,10 +282,10 @@ class pygps2:
                 self.ZDA = self.parse_zda(sentence)
             if stype == "GNS":
                 self.GNS = self.parse_gns(sentence)
-            if stype == "TXT":
+            if stype == "TXT" and en_txt:
                 self.TXT = self.parse_txt(sentence)
         # 複数のセンテンスになりうるGSV GSAだけ特別処理
-        elif stype == "GSV":
+        elif stype == "GSV" and en_gsv:
             if "*" in temp[len(temp) - 1]:# this if is not working...
                 band = temp[len(temp) - 1]
                 band = str(band.split("*")[0])
@@ -312,7 +306,7 @@ class pygps2:
                     #print(self.GSV)
                     #GSVもこれでおｋ
         
-        elif stype == "GSA":
+        elif stype == "GSA" and en_gsa:
             if "*" in temp[len(temp) - 1]:# うごかないかもー 絶対最後にアスタリスク入ってるからね
                 num = temp[len(temp) - 1]
                 num = str(num.split("*")[0])
@@ -322,7 +316,9 @@ class pygps2:
             self.temp_gsa.append(self.parse_gsa(sentence))
             self.GSA = self.merge_gsa(self.temp_gsa)
             #GSAはこれでおｋ 記念すべき１つ目!
-        
+        # ここ問題
         else:
-            self.parsed_data["Other"].append(sentence)
+            pass#今後検討
+            #self.parsed_data["Other"].append(sentence)
+            
         ### これで...オッケー牧場!!!!!!
