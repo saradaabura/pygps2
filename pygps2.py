@@ -86,7 +86,7 @@ class pygps2:
 
     def parse_gga(self, sentence_list):
         if not sentence_list: return
-        f = sentence_list[0].split(",")
+        f = sentence_list.split(",")
         return {
             "timestamp": self._safe_get(f, 1, "000000.0"),
             "latitude": self.convert_to_degrees(self._safe_get(f, 2), self._safe_get(f, 3)),
@@ -104,7 +104,7 @@ class pygps2:
 
     def parse_gll(self, sentence_list):
         if not sentence_list: return
-        f = sentence_list[0].split(",")
+        f = sentence_list.split(",")
         return {
             "latitude": self.convert_to_degrees(self._safe_get(f, 1), self._safe_get(f, 2)),
             "longitude": self.convert_to_degrees(self._safe_get(f, 3), self._safe_get(f, 4)),
@@ -143,7 +143,7 @@ class pygps2:
 
     def parse_zda(self, sentence_list):
         if not sentence_list: return
-        f = sentence_list[0].split(",")
+        f = sentence_list.split(",")
         return {k: self._safe_get(f, i, None) for i, k in enumerate(["_","timestamp","day","month","year","timezone_offset_hour","timezone_offset_minute"])}
 
     def merge_gsa(self, gsa_list):
@@ -186,7 +186,7 @@ class pygps2:
 
     def parse_rmc(self, sentence_list):
         if not sentence_list: return
-        f = sentence_list[0].split(",")
+        f = sentence_list.split(",")
         data = {
             "timestamp": self._safe_get(f, 1, "000000.0"), "status": self._safe_get(f, 2, "V"),
             "latitude": self.convert_to_degrees(self._safe_get(f, 3), self._safe_get(f, 4)),
@@ -210,24 +210,24 @@ class pygps2:
 
     def parse_vtg(self, sentence_list):
         if not sentence_list: return
-        f = sentence_list[0].split(",")
+        f = sentence_list.split(",")
         keys = ["course_over_ground_t", "reference_t", "course_over_ground_m", "reference_m", "speed_knots", "units_knots", "speed_kmh", "units_kmh", "mode_indicator"]
         defaults = ["0.0", "T", "0.0", "M", "0.0", "N", "0.0", "K", ""]
         return {k: self._safe_get(f, i+1, defaults[i]) for i, k in enumerate(keys)}
 
     def parse_gst(self, sentence_list):
         if not sentence_list: return
-        f = sentence_list[0].split(",")
+        f = sentence_list.split(",")
         return {"timestamp": self._safe_get(f, 1, "000000.0"), "rms": self._safe_get(f, 2, "0.0"), "std_lat": self._safe_get(f, 6, "0.0"), "std_lon": self._safe_get(f, 7, "0.0"), "std_alt": self._safe_get(f, 8, "0.0")}
 
     def parse_dhv(self, sentence_list):
         if not sentence_list: return
-        f = sentence_list[0].split(",")
+        f = sentence_list.split(",")
         return {k: self._safe_get(f, i+1, None) for i, k in enumerate(["timestamp", "3d_speed", "ecef_x_speed", "ecef_y_speed", "ecef_z_speed", "horizontal_ground_speed"])}
 
     def parse_gns(self, sentence_list):
         if not sentence_list: return
-        f = sentence_list[0].split(",")
+        f = sentence_list.split(",")
         keys = ["utc_time","latitude","longitude","mode_indicator","use_sv","hdop","msl","geoid_alt","age_of_differential_data","station_id"]
         map_idx = [1, 2, 4, 6, 7, 8, 9, 11, 13, 14]
         res = {k: self._safe_get(f, map_idx[i], "0.0") for i, k in enumerate(keys)}
@@ -237,7 +237,7 @@ class pygps2:
 
     def parse_txt(self, sentence_list):
         if not sentence_list: return
-        f = sentence_list[0].split(",")
+        f = sentence_list.split(",")
         return {k: self._safe_get(f, i+1, None) for i, k in enumerate(["several_lines", "free", "type", "text"])}
 
     def detect_system(self, info, system="QZS"):
@@ -265,14 +265,33 @@ class pygps2:
     def analyze_sentence(self, sentence):
         ### Set up & analyze
         temp = sentence.split(",")
-        print(self.GSA)
         stype = temp[0][3:6] # sentence type
         sttype = temp[0][1:3] # satellite type
         if stype in self.parsed_data and stype != "GSV" and stype != "GSA":
             self.parsed_data[stype] = sentence
-            if stype == "GGA":
-                for k in ["GGA","GLL","GSA","GSV", "RMC","VTG","GST","DHV","ZDA","GNS","TXT"]:
+            if stype == "GGA": #GGAセンテンスにより全ての解析箱をリセット
+                for k in ["GGA", "GLL", "GSA", "GSV", "RMC", "VTG", "GST", "DHV", "ZDA", "GNS", "TXT"]:
                     setattr(self, k, [])
+                    #上書きしてリセット
+                    #あとは本来のGGA解析
+                self.GGA = self.parse_gga(sentence)
+            if stype == "GLL":
+                self.GLL = self.parse_gll(sentence)
+            if stype == "RMC":
+                self.RMC = self.parse_rmc(sentence)
+            if stype == "VTG":
+                self.VTG = self.parse_vtg(sentence)
+            if stype == "GST":
+                self.GST = self.parse_gst(sentence)
+            if stype == "DHV":
+                self.DHV = self.parse_dhv(sentence)
+            if stype == "ZDA":
+                self.ZDA = self.parse_zda(sentence)
+            if stype == "GNS":
+                self.GNS = self.parse_gns(sentence)
+            if stype == "TXT":
+                self.TXT = self.parse_txt(sentence)
+        # 複数のセンテンスになりうるGSV GSAだけ特別処理
         elif stype == "GSV":
             if "*" in temp[len(temp) - 1]:# this if is not working...
                 band = temp[len(temp) - 1]
@@ -307,7 +326,7 @@ class pygps2:
         
         else:
             self.parsed_data["Other"].append(sentence)
-        ### Done
+        ### これで...オッケー牧場!!!!!!
         
         
         
