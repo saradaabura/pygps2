@@ -1,4 +1,4 @@
-﻿# Japanese 日本語
+﻿# Japanese
 # pygps2
 このライブラリは自由に使用してください。
 
@@ -183,6 +183,7 @@ Linuxでは/dev/ttyUSB0や/dev/serial0など、環境に合わせて変更して
 
 # 動作確認済み環境
 - CPython (Python3.14)
+- Windows Linux(Raspberry Pi Zero 2W with DietPi)
 - Raspberry Pi Pico 2
 - MicroPython v1.24.1 on 2024-11-29; Raspberry Pi Pico2 with RP2350
 - GPSモジュール: AT6668 (M5Stack GPSモジュールv1.1)

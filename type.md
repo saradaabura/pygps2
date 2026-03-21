@@ -2,7 +2,7 @@
 
 ## GSAデータ
 ```
-'GSA': [{'fix_select': 'A', 'fix_status': '3', 'satellites_used': [('194', '1'), ('08', '1'), ('27', '1'), ('195', '1'), ('16', '1'), ('02', '1'), ('199', '1')], 'pdop': '0.8', 'hdop': '0.55', 'vdop': '0.58'}]
+{'fix_select': 'A', 'fix_status': '3', 'satellites_used': [('24', '1'), ('23', '1'), ('199', '1'), ('20', '1'), ('195', '1'), ('18', '1'), ('12', '1'), ('05', '1'), ('194', '1'), ('74', '2'), ('75', '2'), ('23', '4'), ('16', '4'), ('37', '4'), ('06', '4'), ('20', '4')], 'self.parsed_dataop': '1.12', 'hdop': '0.8', 'vdop': '0.79'}
 ```
 - hdop : HDOP
 - vdop : VDOP
@@ -14,7 +14,7 @@
 ## GSVデータ
 
 ```
-'GSV': [{'num_messages': '21', 'message_num': '1', 'num_satellites': '24', 'satellites_info': [{'prn': '194', 'type': 'QZS', 'elevation': '89', 'azimuth': '332', 'snr': '18', 'band': [1, 8]}]}]}
+{'num_messages': '8', 'message_num': '1', 'num_satellites': '6', 'satellites_info': [{'prn': '05', 'type': 'GP', 'elevation': '0.0', 'azimuth': '0.0', 'snr': [26.0], 'band': [1]}, {'prn': '195', 'type': 'QZS', 'elevation': '0.0', 'azimuth': '0.0', 'snr': [35.0, 29.0], 'band': [1, 8]}, {'prn': '59', 'type': 'GB', 'elevation': '0.0', 'azimuth': '0.0', 'snr': [37.0], 'band': [1]}, {'prn': '39', 'type': 'GB', 'elevation': '0.0', 'azimuth': '0.0', 'snr': [39.0, 25.0], 'band': [1, 4]}, {'prn': '03', 'type': 'GB', 'elevation': '0.0', 'azimuth': '0.0', 'snr': [29.0], 'band': [1]}, {'prn': '16', 'type': 'GB', 'elevation': '0.0', 'azimuth': '0.0', 'snr': [33.0], 'band': [1]}, {'prn': '01', 'type': 'GB', 'elevation': '0.0', 'azimuth': '0.0', 'snr': [33.0], 'band': [1]}, {'prn': '37', 'type': 'GB', 'elevation': '0.0', 'azimuth': '0.0', 'snr': [33.0], 'band': [1]}]}
 ```
 - num_messages : メッセージ数
 - num_satellites : 衛星数(lenから取得する　修正)
@@ -29,7 +29,7 @@
 
 ## GGAデータ
 ```
-{'GGA': [{'timestamp': '298893.000', 'latitude': '0.0', 'longitude': '0.0', 'gps_quality': '1', 'num_satellites': '52', 'hdop': '0.55', 'altitude': '76.219', 'altitude_units': 'M', 'geoid_height': '37.106', 'geoid_units': 'M', 'dgps_age': '', 'dgps_station_id': ''}]
+{'timestamp': '000007.230', 'latitude': '0.0', 'longitude': '0.0', 'gps_quality': '0', 'num_satellites': '0', 'hdop': '0.0', 'altitude': '0.0', 'altitude_units': 'M', 'geoid_height': '0.0', 'geoid_units': 'M', 'dgps_age': '', 'dgps_station_id': ''}
 ```
 - gps_quality : GPS品質
 - hdop : HDOP
@@ -46,7 +46,7 @@
 
 ## RMCデータ
 ```
-[{'mode_indicator': 'N', 'date': '170325', 'mag_var_direction': '', 'utc_datetime': '2025-03-17 07:57:01', 'local_datetime': '2025-03-17 16:57:01', 'status': 'V', 'magnetic_variation': '0.0', 'course_over_ground': '0.0', 'speed_over_ground': '0.0', 'latitude': 0.0, 'longitude': 0.0, 'timestamp': '075701.00'}]
+{'timestamp': '000007.230', 'status': 'V', 'latitude': '0.0', 'longitude': '0.0', 'speed_over_ground': '0.0', 'course_over_ground': '0.0', 'date': '150326', 'magnetic_variation': '0.0', 'mag_var_direction': '', 'mode_indicator': 'N', 'utc_datetime': '2026-03-15 00:00:07', 'local_datetime': '2026-03-15 00:00:07'}
 ```
 - longitude : 経度 (度で出力される) str型
 - latitude : 緯度 (度で出力される) str型
@@ -146,50 +146,12 @@
 
 # 入力データと内容
 
-# Version 3.5
-
-```
-import pygps2
-gps_module_ = pygps2.pygps2()
-analyzed_data = ag3335a.analyze(data)
-```
-
-dataにはデコードされたデータを入力する
-
-exampleのように処理するのが望ましい
-```
-while True:
-    raw = gps.read(8192)  # 8192バイト読み込み モジュールごとに調整
-    if raw is not None:
-        try:
-            raw = raw.replace(b'\r', b'').replace(b'\n', b'')
-            raw = raw.replace(b'/', b'')
-            data = raw.decode("utf-8", "ignore")
-            del raw
-        except Exception as e:
-            print(f"error: {e}")
-            continue
-        if data != '':
-            analyzed_data = gps_module_.analyze(data)
-```
-
 ## analyze_sentence
 使用例
 ```
-analyze_sentence(a_sentence, just="gga gll rmc vtg gst dhv zda gns txt gsa gsv")
+analyze_sentence(a_sentence, en_gsv=True, en_gsa=True)
 ```
 - a_sentenceは必須
  - デコードされた1センテンスを入力(一行のみ)
-- justはオプション
- - 解析するセンテンスをスペース区切りで指定する。指定しない場合はすべてのセンテンスを解析する。
-
-## analyze ここあてにするな
-使用例
-```
-analyze(data, just="gga gll rmc vtg gst dhv zda gns txt gsa gsv")
-```
-複数のセンテンスを解析することができる。RAMが少ないMPyボードで使用する際に使う。
-- dataは必須
- - デコードされたセンテンスを入力
-- justはオプション
- - 解析するセンテンスをスペース区切りで指定する。指定しない場合はすべてのセンテンスを解析する。
+- ```en_gsv```,```en_gsa```はオプション
+ - GSV,GSAセンテンスの解析を有効にするかどうか指定できる。
