@@ -1,4 +1,4 @@
-﻿# Version3.9
+﻿# Version3.91(=3.9)
 import time
 import math
 import sys
@@ -170,15 +170,11 @@ class pygps2:
             else:
                 unique[key]["snr"].append(float(s["snr"]))
                 unique[key]["band"].append(int(s["band"]))
-        
-        mx_s = 0
-        for g in gsv_list:
-            n = int(g.get("num_satellites", 0))
-            if n > mx_s: mx_s = n
             
-        res = {"num_messages": str(len(gsv_list)), "message_num": "1", "num_satellites": str(mx_s), "satellites_info": list(unique.values())}
+        res = {"num_messages": str(len(gsv_list)), "message_num": "1", "num_satellites": "0", "satellites_info": list(unique.values())}
         if self.DETECT_CONVERT_QZS: res["satellites_info"] = self.detect_system(res["satellites_info"], "QZS")
         if self.DETECT_CONVERT_SBAS: res["satellites_info"] = self.detect_system(res["satellites_info"], "SBAS")
+        res["num_satellites"] = len(res["satellites_info"])
         return res
 
     def parse_rmc(self, sentence_list):
@@ -254,18 +250,17 @@ class pygps2:
         return "\r\n".join(["$" + s for s in str(data).split("$") if s]) + "\r\n"
 
     def analyze_sentence(self, sentence, en_gsa=True, en_gsv=True, en_txt=True):
-        ### Set up & analyze
         temp = sentence.split(",")
         stype = temp[0][3:6] # sentence type
         sttype = temp[0][1:3] # satellite type
         if stype in self.parsed_data and stype != "GSV" and stype != "GSA":
             self.parsed_data[stype] = sentence
-            if stype == "GGA": #GGAセンテンスにより全ての解析箱をリセット
+            if stype == "GGA":
                 for k in ["GGA", "GLL", "GSA", "GSV", "RMC", "VTG", "GST", "DHV", "ZDA", "GNS", "TXT"]:
                     setattr(self, k, [])
                     self.temp_gsv = []
                     self.temp_gsa = []
-                    #上書きしてリセット
+                    #上書きリセット
                     #あとは本来のGGA解析
                 self.GGA = self.parse_gga(sentence)
             if stype == "GLL":
@@ -286,7 +281,7 @@ class pygps2:
                 self.TXT = self.parse_txt(sentence)
         # 複数のセンテンスになりうるGSV GSAだけ特別処理
         elif stype == "GSV" and en_gsv:
-            if "*" in temp[len(temp) - 1]:# this if is not working...
+            if "*" in temp[len(temp) - 1]:# this is not working...
                 band = temp[len(temp) - 1]
                 band = str(band.split("*")[0])
             else:
@@ -303,11 +298,9 @@ class pygps2:
                 for s in sentences:
                     self.temp_gsv.append(self.parse_gsv(s))
                     self.GSV = self.merge_gsv(self.temp_gsv)
-                    #print(self.GSV)
-                    #GSVもこれでおｋ
-        
+            
         elif stype == "GSA" and en_gsa:
-            if "*" in temp[len(temp) - 1]:# うごかないかもー 絶対最後にアスタリスク入ってるからね
+            if "*" in temp[len(temp) - 1]:# this is not working...
                 num = temp[len(temp) - 1]
                 num = str(num.split("*")[0])
                 if num == "1":
@@ -315,10 +308,7 @@ class pygps2:
             self.parsed_data["GSA"].append(sentence)
             self.temp_gsa.append(self.parse_gsa(sentence))
             self.GSA = self.merge_gsa(self.temp_gsa)
-            #GSAはこれでおｋ 記念すべき１つ目!
-        # ここ問題
+
         else:
             pass#今後検討
             #self.parsed_data["Other"].append(sentence)
-            
-        ### これで...オッケー牧場!!!!!!
