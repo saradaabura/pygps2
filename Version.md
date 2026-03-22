@@ -1,5 +1,9 @@
 ﻿# Version History of pygps2
 
+# Version 3.92
+- 解析関数でつくられる変数をGSV,GSAを除く各センテンス解析関数で再利用するようにした。(parse_XXXでsplit(",")をしない)
+- option5を追加し、経緯度を十進数に変換する際、decimalを使うかfloatを使うか選択できるようにした。
+
 # Version 3.9
 - Analyze関数を一から作り直し、1センテンスごとに解析するようにした。
 - 従来のバグ(GSVが解析できない・スワップ発生)を修正した。
