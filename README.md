@@ -7,13 +7,12 @@
 https://github.com/saradaabura/pygps2/blob/master/Version.md
 
 # 依存ライブラリ (micropython)
-- micropython-decimal-number
+- micropython-decimal-number (設定により依存)
 
 ### Raspberry Pi PicoやESP32・RPi4などのMicroPython・CPython向けのGPS/NMEA解析ライブラリです。
 ### 通常のPythonに対応(CPython)しているため、WindowsやLinuxなどの環境でも使用できます。
 # 対応センテンス
-基本的にすべてのセンテンスに対応していますが、使用する受信機に合わせてください。
-特に、北斗のGSVセンテンスであるBDGSVとGBGSVは受信機によって異なるので注意してください。
+基本的にすべてのセンテンスに対応しています。
 ```
 GGA:$GNGGA, $GPGGA, $BDGGA
 GLL:$GNGLL, $GPGLL, $BDGLL
@@ -26,12 +25,6 @@ DHV:$GNDHV, $GPDHV, $BDDHV
 ZDA:$GNZDA, $GPZDA, $BDZDA
 TXT:$GNTXT, $GPTXT, $BDTXT
 ```
-
-# 機能
-- GSVのデータを解析でき、衛星の情報を取得できます。
-- GGAのデータを解析でき、緯度、経度、高度、UTC時刻、測位精度、DGPS情報を取得できます。
-- RMCのデータを解析でき、UTC時刻、緯度、経度、速度、進行方向、日付、磁気偏角、磁気偏角方向を取得できます。
-- RMCの解析ではLocaltimeを出力し、経度と連携した時刻を取得できます。(サマータイムや0.5時間単位での時刻の取得はできません。）
 
 # MicroPythonでの使い方
 examples/for_micropython.py環境にあったサンプルコード(Raspberry Pi Pico用)があります。
@@ -103,15 +96,16 @@ if __name__ == "__main__":
         print("Stopping...")
         gps_reader.stop()
 ```
-WindowsではCOMの番号と速度をUSBシリアル変換器やRS232の設定に合わせて変更してください。
-Linuxでは/dev/ttyUSB0や/dev/serial0など、環境に合わせて変更してください。
+Serialのポートとボーレートは環境に合わせて変更してください。
 
 # 動作確認済み環境
 - CPython (Python3.14)
-- Windows Linux(Raspberry Pi Zero 2W with DietPi)
+- Windows11 Linux(Raspberry Pi Zero 2W with DietPi)
 - Raspberry Pi Pico 2
 - MicroPython v1.24.1 on 2024-11-29; Raspberry Pi Pico2 with RP2350
 - MicroPython v1.27.0 on 2025-12-09; Raspberry Pi Pico2 with RP2350
+- ESP32-DevKitC-VE ESP32-WROVER-E開発ボード 8MB
+- MicroPython v1.27.0 on 2025-12-09; Generic ESP32 module with SPIRAM with ESP32
 - GPSモジュール: AT6668 (M5Stack GPSモジュールv1.1)
 - GPSモジュール: AT6558 (Air530Z)
 - GPS受信機: GT-505GGBL5-DR-N(秋月電子)
@@ -123,3 +117,4 @@ Linuxでは/dev/ttyUSB0や/dev/serial0など、環境に合わせて変更して
 **マシンパワーがあまりにも低いと解析できないおそれはある。(マイコンでは動くのでCpyでも大丈夫だと思う)**
 # 問題
 - 速いボーレートでは処理が追いつかず、すべて解析できないことがある。推奨は115200bps
+- ESP32だと処理が追いつかず、センテンスを解析できない。たまに解析できる。bufの問題だと思う。
