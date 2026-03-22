@@ -35,82 +35,7 @@ TXT:$GNTXT, $GPTXT, $BDTXT
 
 # MicroPythonでの使い方
 examples/for_micropython.py環境にあったサンプルコード(Raspberry Pi Pico用)があります。
-**サンプルを実行し、環境で動作を確認してからプログラムを制作することをおすすめします。**
-### 問題
-**3.85の時点で、```analyze_sentence()```を使うとメモリリークが発生します。**
-**また、NMEAを完全にパースすることができません。これは1センテンスごとに解析するプログラムによるものです。1センテンスの解析にかかる時間が長く、次のセンテンスを受信しそびれるためです。**
-**MPyでは制約があります。Mpy(CPyにも)向けに解析するセンテンスを選択できるようにしたいと思います。**
-### 解決策
-- analyze()を使って、複数のセンテンスをまとめて解析する。
-- 解析するセンテンスを選択する。（効果無かった）
-
-<details><summary>サンプル analyze()を使用Version</summary>
-
-```python
-import _thread
-from machine import UART, Pin
-import time
-from pygps2 import pygps2
-import gc
-
-gnss = pygps2()
-uart = UART(
-    0,
-    baudrate=460800,
-    tx=Pin(0),
-    rx=Pin(1),
-    timeout=1
-)
-running = True
-# Reader thread
-def gps_thread():
-    global running
-    print("[GPS] Thread started")
-
-    while running:
-        raw = uart.read(32768)
-        if raw:
-            try:
-
-                raw = raw.replace(b'\r', b'').replace(b'\n', b'')
-                raw = raw.replace(b'/', b'')
-                data = raw.decode("utf-8", "ignore")
-
-                if data.startswith("$"):
-                    st = time.ticks_ms()
-                    gnss.analyze(data)
-                    print(time.ticks_ms() - st, ",", gc.mem_free())
-            except Exception as e:
-                print("GPS thread error:", e)
-
-    print("[GPS] Thread stopped")
-
-# Start
-_thread.start_new_thread(gps_thread, ())
-
-# main loop
-try:
-    while True:
-        rmc = gnss.GGA
-        gsv = gnss.GSV
-
-        if rmc:
-            print("Lat:", rmc["latitude"], "Lon:", rmc["longitude"])
-
-        if gsv:
-            print(
-                "GPS:", gsv["GP"]["num_satellites"] if gsv["GP"] else 0,
-                "BD:",  gsv["GB"]["num_satellites"] if gsv["GB"] else 0,
-                "GA:",  gsv["GA"]["num_satellites"] if gsv["GA"] else 0
-            )
-        time.sleep(1)
-
-except KeyboardInterrupt:
-    print("Stopping...")
-    running = False
-    time.sleep(0.5)
-```
-</details>
+**サンプルを実行し、環境で動作を確認してからプログラムをつくることをおすすめします。**
 
 # CPythonでの使い方
 examples/for_cpython_example.pyというサンプルコード(Windows用)を使います。
@@ -186,7 +111,15 @@ Linuxでは/dev/ttyUSB0や/dev/serial0など、環境に合わせて変更して
 - Windows Linux(Raspberry Pi Zero 2W with DietPi)
 - Raspberry Pi Pico 2
 - MicroPython v1.24.1 on 2024-11-29; Raspberry Pi Pico2 with RP2350
+- MicroPython v1.27.0 on 2025-12-09; Raspberry Pi Pico2 with RP2350
 - GPSモジュール: AT6668 (M5Stack GPSモジュールv1.1)
 - GPSモジュール: AT6558 (Air530Z)
 - GPS受信機: GT-505GGBL5-DR-N(秋月電子)
+
+ジェネリック
+- Python3 serialが使えること
+- NMEA0183をUARTで受信できること
+
 **マシンパワーがあまりにも低いと解析できないおそれはある。(マイコンでは動くのでCpyでも大丈夫だと思う)**
+# 問題
+- 速いボーレートでは処理が追いつかず、すべて解析できないことがある。推奨は115200bps
