@@ -1,4 +1,4 @@
-﻿# Version3.91(=3.9)
+﻿# Version3.92
 import time
 import math
 import sys
@@ -21,12 +21,13 @@ except ImportError:
             def __float__(self): return float(self.v)
 
 class pygps2:
-    def __init__(self, op0=True, op1=True, op2=True, op3=True, op4=True):
+    def __init__(self, op0=True, op1=True, op2=True, op3=True, op4=True, op5=True):
         self.OBTAIN_IDENTIFLER_FROM_GSA = op0
         self.IN_BAND_DATA_INTO_GSV = op1
         self.DETECT_CONVERT_QZS = op2
         self.DETECT_CONVERT_SBAS = op3
         self.ENABLE_CHECKSUM = op4
+        self.USE_DECIMAL = op5
         
         self.D = DecimalCls
         impl = sys.implementation.name
@@ -47,14 +48,26 @@ class pygps2:
 
     def convert_to_degrees(self, coord, direction):
         if not coord or not direction: return "0.0"
-        try:
-            d_len = 2 if direction in "NS" else 3
-            deg = self.D(coord[:d_len])
-            minutes = self.D(coord[d_len:])
-            res = deg + minutes / self.D("60.0")
-            if direction in "SW": res = -res
-            return str(res)
-        except: return "0.0"
+        
+        if self.USE_DECIMAL == True:
+            try:
+                d_len = 2 if direction in "NS" else 3
+                deg = self.D(coord[:d_len])
+                minutes = self.D(coord[d_len:])
+                res = deg + minutes / self.D("60.0")
+                if direction in "SW": res = -res
+                return str(res)
+            except: return "0.0"
+        else:
+            try:
+                d_len = 2 if direction in "NS" else 3
+                deg = float(coord[:d_len])
+                minutes = float(coord[d_len:])
+                res = deg + (minutes / 60.0)
+                if direction in "SW":
+                    res = -res
+                return str(res)
+            except: return "0.0"
 
     def verify_checksum(self, sentence):
         if "*" not in sentence: return False
@@ -81,9 +94,8 @@ class pygps2:
         if not s: return
         if self.ENABLE_CHECKSUM and not self.verify_checksum(s): return
 
-    def parse_gga(self, sentence_list):
-        if not sentence_list: return
-        f = sentence_list.split(",")
+    def parse_gga(self, f):
+        if not f: return
         return {
             "timestamp": self._safe_get(f, 1, "000000.0"),
             "latitude": self.convert_to_degrees(self._safe_get(f, 2), self._safe_get(f, 3)),
@@ -99,9 +111,8 @@ class pygps2:
             "dgps_station_id": self._safe_get(f, 14)
         }
 
-    def parse_gll(self, sentence_list):
-        if not sentence_list: return
-        f = sentence_list.split(",")
+    def parse_gll(self, f):
+        if not f: return
         return {
             "latitude": self.convert_to_degrees(self._safe_get(f, 1), self._safe_get(f, 2)),
             "longitude": self.convert_to_degrees(self._safe_get(f, 3), self._safe_get(f, 4)),
@@ -125,22 +136,21 @@ class pygps2:
         }
 
     def parse_gsv(self, sentence):
-        if not sentence: return
-        f = sentence.split(",")
-        sys_type = sentence[1:3]
-        band = self._safe_get(f, -1, "0") if self.IN_BAND_DATA_INTO_GSV else 0
-        sats_info = []
-        for i in range(4, len(f) - 3, 4):
-            sats_info.append({
-                "prn": self._safe_get(f, i, "0"), "type": sys_type,
-                "elevation": self._safe_get(f, i+1, "0.0"), "azimuth": self._safe_get(f, i+2, "0.0"),
-                "snr": self._safe_get(f, i+3, "0.0"), "band": band
-            })
-        return {"system_type": sys_type, "num_messages": self._safe_get(f, 1, "1"), "message_num": self._safe_get(f, 2, "1"), "num_satellites": self._safe_get(f, 3, "0"), "satellites_info": sats_info}
+         if not sentence: return
+         f = sentence.split(",")
+         sys_type = sentence[1:3]
+         band = self._safe_get(f, -1, "0") if self.IN_BAND_DATA_INTO_GSV else 0
+         sats_info = []
+         for i in range(4, len(f) - 3, 4):
+             sats_info.append({
+                 "prn": self._safe_get(f, i, "0"), "type": sys_type,
+                 "elevation": self._safe_get(f, i+1, "0.0"), "azimuth": self._safe_get(f, i+2, "0.0"),
+                 "snr": self._safe_get(f, i+3, "0.0"), "band": band
+             })
+         return {"system_type": sys_type, "num_messages": self._safe_get(f, 1, "1"), "message_num": self._safe_get(f, 2, "1"), "num_satellites": self._safe_get(f, 3, "0"), "satellites_info": sats_info}
 
-    def parse_zda(self, sentence_list):
-        if not sentence_list: return
-        f = sentence_list.split(",")
+    def parse_zda(self, f):
+        if not f: return
         return {k: self._safe_get(f, i, None) for i, k in enumerate(["_","timestamp","day","month","year","timezone_offset_hour","timezone_offset_minute"])}
 
     def merge_gsa(self, gsa_list):
@@ -177,9 +187,8 @@ class pygps2:
         res["num_satellites"] = len(res["satellites_info"])
         return res
 
-    def parse_rmc(self, sentence_list):
-        if not sentence_list: return
-        f = sentence_list.split(",")
+    def parse_rmc(self, f):
+        if not f: return
         data = {
             "timestamp": self._safe_get(f, 1, "000000.0"), "status": self._safe_get(f, 2, "V"),
             "latitude": self.convert_to_degrees(self._safe_get(f, 3), self._safe_get(f, 4)),
@@ -201,26 +210,22 @@ class pygps2:
         except: data["utc_datetime"] = data["local_datetime"] = None
         return data
 
-    def parse_vtg(self, sentence_list):
-        if not sentence_list: return
-        f = sentence_list.split(",")
+    def parse_vtg(self, f):
+        if not f: return
         keys = ["course_over_ground_t", "reference_t", "course_over_ground_m", "reference_m", "speed_knots", "units_knots", "speed_kmh", "units_kmh", "mode_indicator"]
         defaults = ["0.0", "T", "0.0", "M", "0.0", "N", "0.0", "K", ""]
         return {k: self._safe_get(f, i+1, defaults[i]) for i, k in enumerate(keys)}
 
-    def parse_gst(self, sentence_list):
-        if not sentence_list: return
-        f = sentence_list.split(",")
+    def parse_gst(self, f):
+        if not f: return
         return {"timestamp": self._safe_get(f, 1, "000000.0"), "rms": self._safe_get(f, 2, "0.0"), "std_lat": self._safe_get(f, 6, "0.0"), "std_lon": self._safe_get(f, 7, "0.0"), "std_alt": self._safe_get(f, 8, "0.0")}
 
-    def parse_dhv(self, sentence_list):
-        if not sentence_list: return
-        f = sentence_list.split(",")
+    def parse_dhv(self, f):
+        if not f: return
         return {k: self._safe_get(f, i+1, None) for i, k in enumerate(["timestamp", "3d_speed", "ecef_x_speed", "ecef_y_speed", "ecef_z_speed", "horizontal_ground_speed"])}
 
-    def parse_gns(self, sentence_list):
-        if not sentence_list: return
-        f = sentence_list.split(",")
+    def parse_gns(self, f):
+        if not f: return
         keys = ["utc_time","latitude","longitude","mode_indicator","use_sv","hdop","msl","geoid_alt","age_of_differential_data","station_id"]
         map_idx = [1, 2, 4, 6, 7, 8, 9, 11, 13, 14]
         res = {k: self._safe_get(f, map_idx[i], "0.0") for i, k in enumerate(keys)}
@@ -228,9 +233,8 @@ class pygps2:
         res["longitude"] = self.convert_to_degrees(self._safe_get(f, 4), self._safe_get(f, 5))
         return res
 
-    def parse_txt(self, sentence_list):
-        if not sentence_list: return
-        f = sentence_list.split(",")
+    def parse_txt(self, f):
+        if not f: return
         return {k: self._safe_get(f, i+1, None) for i, k in enumerate(["several_lines", "free", "type", "text"])}
 
     def detect_system(self, info, system="QZS"):
@@ -262,23 +266,23 @@ class pygps2:
                     self.temp_gsa = []
                     #上書きリセット
                     #あとは本来のGGA解析
-                self.GGA = self.parse_gga(sentence)
+                self.GGA = self.parse_gga(temp)
             if stype == "GLL":
-                self.GLL = self.parse_gll(sentence)
+                self.GLL = self.parse_gll(temp)
             if stype == "RMC":
-                self.RMC = self.parse_rmc(sentence)
+                self.RMC = self.parse_rmc(temp)
             if stype == "VTG":
-                self.VTG = self.parse_vtg(sentence)
+                self.VTG = self.parse_vtg(temp)
             if stype == "GST":
-                self.GST = self.parse_gst(sentence)
+                self.GST = self.parse_gst(temp)
             if stype == "DHV":
-                self.DHV = self.parse_dhv(sentence)
+                self.DHV = self.parse_dhv(temp)
             if stype == "ZDA":
-                self.ZDA = self.parse_zda(sentence)
+                self.ZDA = self.parse_zda(temp)
             if stype == "GNS":
-                self.GNS = self.parse_gns(sentence)
+                self.GNS = self.parse_gns(temp)
             if stype == "TXT" and en_txt:
-                self.TXT = self.parse_txt(sentence)
+                self.TXT = self.parse_txt(temp)
         # 複数のセンテンスになりうるGSV GSAだけ特別処理
         elif stype == "GSV" and en_gsv:
             if "*" in temp[len(temp) - 1]:# this is not working...
