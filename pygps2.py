@@ -1,4 +1,4 @@
-﻿# Version3.92
+﻿# Version3.95
 import time
 import math
 import sys
@@ -21,13 +21,15 @@ except ImportError:
             def __float__(self): return float(self.v)
 
 class pygps2:
-    def __init__(self, op0=True, op1=True, op2=True, op3=True, op4=True, op5=True):
+    def __init__(self, op0=True, op1=True, op2=True, op3=True, op4=True, op5=True, op6="GGA"):
+        # オプション デフォではすべて有効
         self.OBTAIN_IDENTIFLER_FROM_GSA = op0
         self.IN_BAND_DATA_INTO_GSV = op1
         self.DETECT_CONVERT_QZS = op2
         self.DETECT_CONVERT_SBAS = op3
         self.ENABLE_CHECKSUM = op4
         self.USE_DECIMAL = op5
+        self.FIRST_SENTENCE = op6
         
         self.D = DecimalCls
         impl = sys.implementation.name
@@ -84,16 +86,7 @@ class pygps2:
             return val.split("*")[0] if "*" in val else val
         return default
 
-    def parse_nmea_sentences(self, nmea_data):
-        for k in self.parsed_data: self.parsed_data[k].clear()
-        for s in nmea_data.split("\r\n"):
-            self._parse_single_sentence(s)
-
-    def _parse_single_sentence(self, s):
-        s = s.strip()
-        if not s: return
-        if self.ENABLE_CHECKSUM and not self.verify_checksum(s): return
-
+    # XXGGAセンテンス
     def parse_gga(self, f):
         if not f: return
         return {
@@ -111,6 +104,7 @@ class pygps2:
             "dgps_station_id": self._safe_get(f, 14)
         }
 
+    # XXGLLセンテンス
     def parse_gll(self, f):
         if not f: return
         return {
@@ -121,6 +115,7 @@ class pygps2:
             "mode_indicator": self._safe_get(f, 7)
         }
 
+    # XXGSAセンテンス
     def parse_gsa(self, sentence):
         if not sentence: return {"fix_select":"A","fix_status":"1","satellites_used":["0"]*12,"self.parsed_dataop":"0.0","hdop":"0.0","vdop":"0.0"}
         f = sentence.split(",")
@@ -135,6 +130,7 @@ class pygps2:
             "vdop": self._safe_get(f, 17, "0.0")
         }
 
+    # XXGSVセンテンス
     def parse_gsv(self, sentence):
          if not sentence: return
          f = sentence.split(",")
@@ -149,10 +145,12 @@ class pygps2:
              })
          return {"system_type": sys_type, "num_messages": self._safe_get(f, 1, "1"), "message_num": self._safe_get(f, 2, "1"), "num_satellites": self._safe_get(f, 3, "0"), "satellites_info": sats_info}
 
+    # XXZDAセンテンス
     def parse_zda(self, f):
         if not f: return
         return {k: self._safe_get(f, i, None) for i, k in enumerate(["_","timestamp","day","month","year","timezone_offset_hour","timezone_offset_minute"])}
 
+    # XXGSAの結果をマージ analyze_sentenceから呼び出される。
     def merge_gsa(self, gsa_list):
         if not gsa_list: return self.parse_gsa("")
         merged = {"fix_select": gsa_list[0].get("fix_select", "A"), "fix_status": gsa_list[0].get("fix_status", "1")}
@@ -168,6 +166,7 @@ class pygps2:
             merged[k] = str(sum(vals)/len(vals)) if vals else "0.0"
         return merged
 
+    # XXGSVの結果をマージ analyze_sentenceから呼び出される。
     def merge_gsv(self, gsv_list):
         if not gsv_list: return self.parse_gsv("")
         unique = {}
@@ -187,6 +186,7 @@ class pygps2:
         res["num_satellites"] = len(res["satellites_info"])
         return res
 
+    # RMCセンテンス
     def parse_rmc(self, f):
         if not f: return
         data = {
@@ -197,7 +197,7 @@ class pygps2:
             "date": self._safe_get(f, 9, "010100"), "magnetic_variation": self._safe_get(f, 10, "0.0"),
             "mag_var_direction": self._safe_get(f, 11), "mode_indicator": self._safe_get(f, 12)
         }
-        try:
+        try:# 時差処理
             ts, dt = data["timestamp"], data["date"]
             h, m, s = int(ts[0:2]), int(ts[2:4]), int(ts[4:6])
             day, mo, y = int(dt[0:2]), int(dt[2:4]), int(dt[4:6]) + 2000
@@ -210,20 +210,24 @@ class pygps2:
         except: data["utc_datetime"] = data["local_datetime"] = None
         return data
 
+    # XXVTGセンテンス
     def parse_vtg(self, f):
         if not f: return
         keys = ["course_over_ground_t", "reference_t", "course_over_ground_m", "reference_m", "speed_knots", "units_knots", "speed_kmh", "units_kmh", "mode_indicator"]
         defaults = ["0.0", "T", "0.0", "M", "0.0", "N", "0.0", "K", ""]
         return {k: self._safe_get(f, i+1, defaults[i]) for i, k in enumerate(keys)}
 
+    # XXGSTセンテンス
     def parse_gst(self, f):
         if not f: return
         return {"timestamp": self._safe_get(f, 1, "000000.0"), "rms": self._safe_get(f, 2, "0.0"), "std_lat": self._safe_get(f, 6, "0.0"), "std_lon": self._safe_get(f, 7, "0.0"), "std_alt": self._safe_get(f, 8, "0.0")}
-
+   
+   # XXDHVセンテンス
     def parse_dhv(self, f):
         if not f: return
         return {k: self._safe_get(f, i+1, None) for i, k in enumerate(["timestamp", "3d_speed", "ecef_x_speed", "ecef_y_speed", "ecef_z_speed", "horizontal_ground_speed"])}
 
+    # XXGNSセンテンス
     def parse_gns(self, f):
         if not f: return
         keys = ["utc_time","latitude","longitude","mode_indicator","use_sv","hdop","msl","geoid_alt","age_of_differential_data","station_id"]
@@ -233,10 +237,11 @@ class pygps2:
         res["longitude"] = self.convert_to_degrees(self._safe_get(f, 4), self._safe_get(f, 5))
         return res
 
+    # XXTXTセンテンス
     def parse_txt(self, f):
         if not f: return
         return {k: self._safe_get(f, i+1, None) for i, k in enumerate(["several_lines", "free", "type", "text"])}
-
+    # GP,GN GSVからQZSとSBASを検出し、タイプやPRNを変換する。QZSは193-210、SBASは33-64(補正後120-151)。
     def detect_system(self, info, system="QZS"):
         output = []
         for temp_s in info:
@@ -252,20 +257,23 @@ class pygps2:
     
     def tolist(self, data):
         return "\r\n".join(["$" + s for s in str(data).split("$") if s]) + "\r\n"
-
+    # analyze_sentenceからそれぞれのパーサーにわたす。
+    # 各パーサーで結果(Return)を代入するようにしてもいいかもしれない。
     def analyze_sentence(self, sentence, en_gsa=True, en_gsv=True, en_txt=True):
+        if self.ENABLE_CHECKSUM == True:
+            if self.verify_checksum(sentence) == False:
+                return
+        # チェックサム検証
         temp = sentence.split(",")
         stype = temp[0][3:6] # sentence type
         sttype = temp[0][1:3] # satellite type
         if stype in self.parsed_data and stype != "GSV" and stype != "GSA":
             self.parsed_data[stype] = sentence
+            if stype == self.FIRST_SENTENCE:
+                self.temp_gsv = []
+                self.temp_gsa = []
+                # GSV/GSA用の一時変数をリセット
             if stype == "GGA":
-                for k in ["GGA", "GLL", "GSA", "GSV", "RMC", "VTG", "GST", "DHV", "ZDA", "GNS", "TXT"]:
-                    setattr(self, k, [])
-                    self.temp_gsv = []
-                    self.temp_gsa = []
-                    #上書きリセット
-                    #あとは本来のGGA解析
                 self.GGA = self.parse_gga(temp)
             if stype == "GLL":
                 self.GLL = self.parse_gll(temp)
@@ -316,3 +324,4 @@ class pygps2:
         else:
             pass#今後検討
             #self.parsed_data["Other"].append(sentence)
+            # 保持しなくていいかもしれない。

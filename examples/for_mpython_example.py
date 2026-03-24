@@ -4,8 +4,8 @@ from machine import UART, Pin
 import time
 from pygps2 import pygps2
 import gc
-# machine.freq(285_000_000)
 
+# machine.freq(285_000_000)
 #For RPi Pico2
 
 # GNSS parser instance

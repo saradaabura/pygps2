@@ -149,15 +149,16 @@
 ## pygps2() クラス
 使用例
 ```
-gps = pygps2(op0=True, op1=True, op2=True, op3=True, op4=True, op5=True)
+gps = pygps2(op0=True, op1=True, op2=True, op3=True, op4=True, op5=True, op6="GGA")
 ```
-op0~5はオプションである。
+op0~6はオプションである。
 - op0はGSAに衛星識別子を取得するかどうかを設定できる
 - op1はGSV解析時にバンド情報("band": [1, 8])を追加するかどうか指定できる
 - op2はGSV解析時にQZSSを認識し、typeを"QZS"にするかどうか設定できる
 - op3はGSV解析時にSBASを認識し、typeを"SBAS"にし、PRNを変換するかどうか設定できる
 - op4はチェックサムを使ってセンテンスを解析するかどうか設定できる
 - op5は経緯度を十進数に変換する際、decimalを使うかfloatを使うか選択できるようにするオプションである。
+- op6はセンテンスのループの始まりを選択できるオプションである。(起点)
 
 ## analyze_sentence
 使用例
