@@ -9,8 +9,9 @@ class GPSReader:
         self.baud = baud
         self.running = False
         self.thread = None
-        self.gps = pygps2()
-        self.lock = threading.Lock()
+        self.gps = pygps2(op4=True, op6="ZDA", op7=printtime)
+        #self.lock = threading.Lock()
+        self.lock = threading.RLock()
 
     def start(self):
         # background thread starts
@@ -53,6 +54,9 @@ class GPSReader:
             return getattr(self.gps, key, None)
 # MAIN PROGRAM
 if __name__ == "__main__":
+    def printtime():
+        i = gps_reader.get("ZDA")["timestamp"]
+        print(f"{i}をお知らせします")
     gps_reader = GPSReader("COM3", 460800)
     gps_reader.start()
 

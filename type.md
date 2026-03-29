@@ -149,7 +149,7 @@
 ## pygps2() クラス
 使用例
 ```
-gps = pygps2(op0=True, op1=True, op2=True, op3=True, op4=True, op5=True, op6="GGA")
+gps = pygps2(op0=True, op1=True, op2=True, op3=True, op4=True, op5=True, op6="GGA", op7=callback)
 ```
 op0~6はオプションである。
 - op0はGSAに衛星識別子を取得するかどうかを設定できる
@@ -159,6 +159,7 @@ op0~6はオプションである。
 - op4はチェックサムを使ってセンテンスを解析するかどうか設定できる
 - op5は経緯度を十進数に変換する際、decimalを使うかfloatを使うか選択できるようにするオプションである。
 - op6はセンテンスのループの始まりを選択できるオプションである。(起点)
+- op7は割り込み処理用の関数 op6で指定した(指定していない場合はGGA)センテンスが来たときに呼び出される。
 
 ## analyze_sentence
 使用例
