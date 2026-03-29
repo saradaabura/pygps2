@@ -1,4 +1,4 @@
-﻿# Version3.96
+﻿# Version3.95
 import time
 import math
 import sys
@@ -305,7 +305,7 @@ class pygps2:
             
             check_temp = self.parsed_data["GSV"][sttype][band][len(self.parsed_data["GSV"][sttype][band]) - 1]
             check_temp = check_temp.split(",")
-            if check_temp[1] == check_temp[2]: # 最後のセンテンスになったら解析する(同BAND&同衛星)
+            if check_temp[1] == check_temp[2]: # 最後のセンテンスになったら解析する(同BAND&同衛星であることを想定)
                 sentences = self.parsed_data["GSV"][sttype][band]
                 for s in sentences:
                     self.temp_gsv.append(self.parse_gsv(s))
@@ -327,6 +327,5 @@ class pygps2:
             # 保持しなくていいかもしれない。
         if stype == self.FIRST_SENTENCE:
             print("呼び出し")
-            self.UPDATE_CALLBACK()
-            
-
+            if self.UPDATE_CALLBACK is not None:
+                self.UPDATE_CALLBACK()
