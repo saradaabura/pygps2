@@ -21,7 +21,7 @@ except ImportError:
             def __float__(self): return float(self.v)
 
 class pygps2:
-    def __init__(self, op0=True, op1=True, op2=True, op3=True, op4=True, op5=True, op6="GGA"):
+    def __init__(self, op0=True, op1=True, op2=True, op3=True, op4=True, op5=True, op6="GGA", op7=None):
         # オプション デフォではすべて有効
         self.OBTAIN_IDENTIFLER_FROM_GSA = op0
         self.IN_BAND_DATA_INTO_GSV = op1
@@ -30,6 +30,7 @@ class pygps2:
         self.ENABLE_CHECKSUM = op4
         self.USE_DECIMAL = op5
         self.FIRST_SENTENCE = op6
+        self.UPDATE_CALLBACK = op7
         
         self.D = DecimalCls
         impl = sys.implementation.name
@@ -293,7 +294,6 @@ class pygps2:
                 self.TXT = self.parse_txt(temp)
         # 複数のセンテンスになりうるGSV GSAだけ特別処理
         elif stype == "GSV" and en_gsv:
-            print("eeee")
             if "*" in temp[len(temp) - 1]:# this is not working...
                 band = temp[len(temp) - 1]
                 band = str(band.split("*")[0])
@@ -325,3 +325,8 @@ class pygps2:
             pass#今後検討
             #self.parsed_data["Other"].append(sentence)
             # 保持しなくていいかもしれない。
+        if stype == self.FIRST_SENTENCE:
+            print("呼び出し")
+            self.UPDATE_CALLBACK()
+            
+
