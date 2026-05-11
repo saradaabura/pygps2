@@ -361,3 +361,52 @@ class pygps2:
             print("呼び出し")
             if self.UPDATE_CALLBACK is not None:
                 self.UPDATE_CALLBACK()
+                
+                
+    def analyze_sentences_block(self, sentences):
+        sens2sen = sentences.split("\r\n")
+        # 分類
+        nmeas = {"GGA": [], "GLL": [], "GSA": [], "GSV": [], "RMC": [], "VTG": [], "ZDA": [], "GST": [], "GNS": [], "TXT": []}
+        for asen in sens2sen:
+            if asen == None or asen == "":
+                continue
+            if asen[0] == "$":
+                if asen[3:6] == "GGA" or asen[3:6] == "GLL" or asen[3:6] == "GSA" or asen[3:6] == "GSV" or asen[3:6] == "RMC" or asen[3:6] == "VTG" or asen[3:6] == "ZDA" or asen[3:6] == "GST" or asen[3:6] == "GNS":
+                    nmeas[str(asen[3:6])].append(asen)
+        # 解析プログラム
+        # GGA
+        if nmeas["GGA"]:
+            self.GGA = self.parse_gga(nmeas["GGA"][-1].split(","))
+        # GLL
+        if nmeas["GLL"]:
+            self.GLL = self.parse_gll(nmeas["GLL"][-1].split(","))
+        # GSA
+        if nmeas["GSA"]:
+            temp_GSA = []
+            for sen in nmeas["GSA"]:
+                temp_GSA.append(self.parse_gsa(sen))
+            self.GSA = self.merge_gsa(temp_GSA)
+        # GSV
+        if nmeas["GSV"]:
+            temp_GSV = []
+            for sen in nmeas["GSV"]:
+                temp_GSV.append(self.parse_gsv(sen))
+            self.GSV = self.merge_gsv(temp_GSV)
+        #RMC
+        if nmeas["RMC"]:
+            self.RMC = self.parse_rmc(nmeas["RMC"][-1].split(","))
+        #VTG
+        if nmeas["VTG"]:
+            self.VTG = self.parse_vtg(nmeas["VTG"][-1].split(","))
+        #ZDA
+        if nmeas["ZDA"]:
+            self.ZDA = self.parse_zda(nmeas["ZDA"][-1].split(","))
+        #GST
+        if nmeas["GST"]:
+            self.GST = self.parse_gst(nmeas["GST"][-1].split(","))
+        #GNS
+        if nmeas["GNS"]:
+            self.GNS = self.parse_gns(nmeas["GNS"][-1].split(","))
+        #TXT
+        if nmeas["TXT"]:
+            self.TXT = self.parse_txt(nmeas["TXT"][-1].split(","))
