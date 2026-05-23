@@ -177,7 +177,7 @@ class pygps2:
                     if val not in ("0", ""): sats.append(s)
             seen = []
             merged["satellites_used"] = [x for x in sats if not (x in seen or seen.append(x))]
-            for k in ["self.parsed_dataop", "hdop", "vdop"]:
+            for k in ["pdop", "hdop", "vdop"]:
                 vals = [float(g.get(k, 0)) for g in gsa_list if g and float(g.get(k, 0)) > 0]
                 merged[k] = str(sum(vals)/len(vals)) if vals else "0.0"
             return merged
