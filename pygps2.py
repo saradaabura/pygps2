@@ -1,4 +1,4 @@
-﻿# Version3.95
+# Version3.96
 import time
 import math
 import sys
@@ -126,7 +126,7 @@ class pygps2:
     # XXGSAセンテンス
     def parse_gsa(self, sentence):
         try:
-            if not sentence: return {"fix_select":"A","fix_status":"1","satellites_used":["0"]*12,"self.parsed_dataop":"0.0","hdop":"0.0","vdop":"0.0"}
+            if not sentence: return {"fix_select":"A","fix_status":"1","satellites_used":["0"]*12,"pdop":"0.0","hdop":"0.0","vdop":"0.0"}
             f = sentence.split(",")
             sys_id = self._safe_get(f, 18)
             sats = [ (self._safe_get(f, i, "0"), sys_id) if self.OBTAIN_IDENTIFLER_FROM_GSA else self._safe_get(f, i, "0") for i in range(3, 15) ]
@@ -273,7 +273,7 @@ class pygps2:
             return {k: self._safe_get(f, i+1, None) for i, k in enumerate(["several_lines", "free", "type", "text"])}
         except: return None
 
-    # GP,GN GSVからQZSとSBASを検出し、タイプやPRNを変換する。QZSは193-210、SBASは33-64(補正後120-151)。
+    # GP,GN GSVからQZSとSBASを検出し、タイプやPRNを変換する。
     def detect_system(self, info, system="QZS"):
         try:
             output = []
