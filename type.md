@@ -17,7 +17,7 @@
 {'num_messages': '8', 'message_num': '1', 'num_satellites': '6', 'satellites_info': [{'prn': '05', 'type': 'GP', 'elevation': '0.0', 'azimuth': '0.0', 'snr': [26.0], 'band': [1]}, {'prn': '195', 'type': 'QZS', 'elevation': '0.0', 'azimuth': '0.0', 'snr': [35.0, 29.0], 'band': [1, 8]}, {'prn': '59', 'type': 'GB', 'elevation': '0.0', 'azimuth': '0.0', 'snr': [37.0], 'band': [1]}, {'prn': '39', 'type': 'GB', 'elevation': '0.0', 'azimuth': '0.0', 'snr': [39.0, 25.0], 'band': [1, 4]}, {'prn': '03', 'type': 'GB', 'elevation': '0.0', 'azimuth': '0.0', 'snr': [29.0], 'band': [1]}, {'prn': '16', 'type': 'GB', 'elevation': '0.0', 'azimuth': '0.0', 'snr': [33.0], 'band': [1]}, {'prn': '01', 'type': 'GB', 'elevation': '0.0', 'azimuth': '0.0', 'snr': [33.0], 'band': [1]}, {'prn': '37', 'type': 'GB', 'elevation': '0.0', 'azimuth': '0.0', 'snr': [33.0], 'band': [1]}]}
 ```
 - num_messages : メッセージ数
-- num_satellites : 衛星数(lenから取得する　修正)
+- num_satellites : 衛星数
 - satellites_info : 衛星情報
   - snr : SNR
   - elevation : 仰角
@@ -164,9 +164,19 @@ op0~6はオプションである。
 ## analyze_sentence
 使用例
 ```
-analyze_sentence(a_sentence, en_gsv=True, en_gsa=True)
+analyze_sentence(a_sentence, en_gsv=True, en_gsa=True, en_txt=True)
 ```
 - a_sentenceは必須
  - デコードされた1センテンスを入力(一行のみ)
-- ```en_gsv```,```en_gsa```はオプション
- - GSV,GSAセンテンスの解析を有効にするかどうか指定できる。
+- ```en_gsv```,```en_gsa```,```en_txt```はオプション
+ - GSV,GSA,TXTセンテンスの解析を有効にするかどうか指定できる。
+## analyze_sentences_block
+使用例
+```
+gnss.analyze_sentences_block(nmea_str)
+```
+- nmea_strには、str型のNMEAブロックを入れる。以下はその例。
+
+```txt:nmea_str
+'\r\n\r\n$GNGGA,145455.000,3543.0,N,138.3371320,E,1,21,1.69,93.384,M,11.063,M,,*45\r\n$GNGLL,3543.0,N,138.3371320,E,145455.000,A,A*4C\r\n$GNGSA,A,3,194,26,28,199,27,32,195,,,,,,2.59,1.69,1.96,1*35\r\n$GNGSA,A,3,67,88,,,,,,,,,,,2.59,1.69,1.96,2*0D\r\n$GNGSA,A,3,19,28,,,,,,,,,,,2.59,1.69,1.96,3*0F\r\n$GNGSA,A,3,29,08,22,,,,,,,,,,2.59,1.69,1.96,4*09\r\n$GPGSV,4,1,15,31,82,064,16,194,79,182,23,26,69,326,20,28,55,119,24,1*5B\r\n$GLGSV,1,1,04,68,33,300,11,67,33,237,15,86,27,044,,88,17,162,31,1*78\r\n$GAGSV,3,1,11,23,72,320,,04,58,263,,28,56,213,,06,42,299,,7*71\r\n$GBGSV,5,1,19,07,71,334,,57,62,030,,10,58,319,11,29,50,132,16,1*74\r\n$GBGSV,1,1,03,29,50,132,25,08,29,198,30,35,15,185,20,4*45\r\n$GNRMC,145455.000,A,3543.0,N,138.3371320,E,1.56,168.77,030726,,,A,V*0C\r\n$GNVTG,168.77,T,,M,1.56,N,2.88,K,A*2C\r\n$GNZDA,145455.000,03,07,2026,,*4E\r\n$GNGST,145455.000,3.6,8.2,4.1,174.6,8.1,4.1,15.9*42\r\n$GNGNS,145455.000,3543.0,N,138.3371320,E,AAAA,21,1.69,87.384,M,37.063,M,,,V*15\r\n$PAIRMSG,90,145455.000,1*5D\r\n$PAIRMSG,91,145455.000,1,0*40\r\n'
+```

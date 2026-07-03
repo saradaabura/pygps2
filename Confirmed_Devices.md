@@ -6,6 +6,7 @@
 ### CPython
 - Windows 11 Python 3.14 Python 3.10.11(Thonny)
 ### MicroPython
-GSVデータを取得できなかった。
+リアルタイムでの解析(analyze_sentences関数)はできないが、ブロックごとの解析(analyze_sentences_block関数)は使える
 - Raspberry Pi Pico 1 MicroPython v1.25.0 on 2025-04-15; Raspberry Pi Pico with RP2040
 - ESP32 MicroPython v1.27.0-preview.463.g22cff2f6f5 on 2025-11-29; Generic ESP32 module with SPIRAM with ESP32
+- MicroPython v1.28.0 on 2026-04-06; Raspberry Pi Pico 2 W with RP2350
